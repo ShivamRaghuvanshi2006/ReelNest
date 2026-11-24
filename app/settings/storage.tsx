@@ -1,0 +1,76 @@
+import React, { useState } from 'react';
+import { Stack } from 'expo-router';
+import { maglevEngine } from 'maglev-engine';
+import { useSettings } from '../../context/SettingsContext';
+import { useMaglevEngine as useEngine } from '../../context/EngineContext';
+import { Banner, Button, ListRow, Toggle } from '../../components/ui';
+import { Caption, Card, SettingsPage, friendlyPath } from '../../components/settings/SettingsParts';
+import { banners, notices } from '../../constants/copy';
+
+const hideCopy = {
+  title: 'Hide from gallery',
+  subtitle: "Photos and video apps won't list Maglev's downloads. Your files stay in the folder.",
+  caption: 'Turning this off shows only new files. Files already hidden show up the next time they are scanned.',
+} as const;
+
+export default function StorageSettings() {
+  const { settings, updateSettings } = useSettings();
+  const { storageStatus, defaultStoragePath } = useEngine();
+  const [error, setError] = useState<string | null>(null);
+  const folder = settings.downloadFolder;
+
+  const change = async () => {
+    setError(null);
+    try {
+      const res = await maglevEngine.pickDownloadFolder();
+      if ('cancelled' in res) return;
+      updateSettings({ downloadFolder: { uri: res.uri, displayName: res.displayName, mode: res.mode } });
+    } catch {
+      setError(notices.inline.folderPickerFailed);
+    }
+  };
+
+  const caption = !folder
+    ? 'Files are saved to the default folder.'
+    : folder.mode === 'staging'
+      ? 'Files are copied there when they finish.'
+      : 'Files are saved straight to this folder.';
+
+  return (
+    <SettingsPage title="Storage">
+      <Stack.Screen options={{ headerShown: false }} />
+      {storageStatus?.safLost ? (
+        <Banner tone="danger" title={banners.storage.folderAccessLost.title} body={banners.storage.folderAccessLost.body} actionLabel="Pick again" onAction={change} />
+      ) : storageStatus?.fallback ? (
+        <Banner tone="warning" title={banners.storage.appStorageFallback.title} body={banners.storage.appStorageFallback.body} actionLabel="Choose folder" onAction={change} />
+      ) : null}
+      {error ? <Banner tone="danger" title={error} actionLabel="Retry" onAction={change} /> : null}
+      <Card>
+        <ListRow
+          icon="folder"
+          title="Download folder"
+          subtitle={folder ? folder.displayName : friendlyPath(storageStatus?.path || defaultStoragePath)}
+        />
+      </Card>
+      <Caption>{caption}</Caption>
+      <Button label="Change folder" onPress={change} variant="secondary" />
+      {folder ? (
+        <Button label="Use default folder" onPress={() => updateSettings({ downloadFolder: null })} variant="ghost" />
+      ) : null}
+      <Card>
+        <ListRow
+          title={hideCopy.title}
+          subtitle={hideCopy.subtitle}
+          accessory={
+            <Toggle
+              value={settings.storage.hideFromGallery}
+              onValueChange={(v) => updateSettings((prev) => ({ storage: { ...prev.storage, hideFromGallery: v } }))}
+              accessibilityLabel={hideCopy.title}
+            />
+          }
+        />
+      </Card>
+      <Caption>{hideCopy.caption}</Caption>
+    </SettingsPage>
+  );
+}

@@ -1,0 +1,187 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { getCookies, sanitizeFileName, type DownloadOptions, type UrlProbe } from 'maglev-engine';
+import { useTheme } from '../../context/ThemeContext';
+import { useMaglevEngine } from '../../context/EngineContext';
+import { ThemeColors, spacing, type } from '../../constants/theme';
+import { formatBytes } from '../../constants/format';
+import { haptic } from '../../constants/haptics';
+import { banners, foundTray, mobileDataLine, notices } from '../../constants/copy';
+import { probeErrorView } from '../../utils/downloadCopy';
+import { useDownloadAdmission } from '../../utils/useDownloadAdmission';
+import { hostOf } from '../../utils/browserUrl';
+import { Banner, Button, TextField } from '../ui';
+import { FloatingSheet, afterSheetCloses, NoteRow } from './FloatingSheet';
+import { useSettings } from '../../context/SettingsContext';
+import { SaveToChoice } from './SaveToChoice';
+import { saveFolder } from './saveTo';
+import { pageUrlOption } from './pageUrlOption';
+
+/** A file the browser found, or one a page offered as a download. */
+export interface DownloadTarget {
+  url: string;
+  name: string;
+  size: number | null;
+  /** The page it came from. Sent as the Referer. */
+  pageUrl: string;
+  /** The user agent the page used. Sent as the User-Agent. */
+  userAgent: string;
+  installer?: boolean;
+}
+
+type Phase = 'probing' | 'ready' | 'error' | 'adding';
+
+/** "https://host" for a page link, or '' when it has none. Sent as the Origin. */
+function originOf(url: string): string {
+  const m = /^(https?:\/\/(?:[^/?#@]*@)?(?:\[[^\]]+\]|[^/?#]+))/i.exec((url ?? '').trim());
+  return m ? m[1].replace(/\/\/[^/@]*@/, '//') : '';
+}
+
+/**
+ * Headers that make the download look like the page asked for it: the cookies, the referer, the origin and the
+ * user agent. `Cookie` is the playlist link's own cookie; `Cookies` holds the WebView jar's cookies per host (the
+ * playlist host and the page host), and the engine sends each host its own on every playlist, key and segment
+ * request (NATIVE_CONTRACT 24.8, "Request headers").
+ */
+export async function downloadHeaders(t: Pick<DownloadTarget, 'url' | 'pageUrl' | 'userAgent'>): Promise<NonNullable<DownloadOptions['headers']>> {
+  const headers: NonNullable<DownloadOptions['headers']> = {};
+  const cookie = await getCookies(t.url);
+  if (cookie) headers.Cookie = cookie;
+  const cookies: { host: string; cookie: string }[] = [];
+  const seen = new Set<string>();
+  for (const u of [t.url, t.pageUrl]) {
+    const host = hostOf(u);
+    if (!host || seen.has(host)) continue;
+    seen.add(host);
+    const c = u === t.url ? cookie : await getCookies(u);
+    if (c) cookies.push({ host, cookie: c });
+  }
+  if (cookies.length) headers.Cookies = cookies;
+  if (t.pageUrl) {
+    headers.Referer = t.pageUrl;
+    const origin = originOf(t.pageUrl);
+    if (origin) headers.Origin = origin;
+  }
+  if (t.userAgent) headers['User-Agent'] = t.userAgent;
+  return headers;
+}
+
+/** Name, size and folder for one file, then Start. Same checks as Add download (probe, free space, admission). */
+export function FoundDownloadSheet({ target, onClose, onView }: { target: DownloadTarget | null; onClose: () => void; /** Opens the new download in Transfers (the View action on the notice). */ onView?: (id: string) => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { probeUrl, startDownload, showNotice, onMeteredNetwork } = useMaglevEngine();
+  const { settings } = useSettings();
+  const last = useRef<DownloadTarget | null>(target);
+  if (target) last.current = target;
+  const t = target ?? last.current;
+
+  const [phase, setPhase] = useState<Phase>('probing');
+  const [name, setName] = useState('');
+  const [probe, setProbe] = useState<UrlProbe | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [tries, setTries] = useState(0);
+  // null = the default folder. Else the subfolder name typed for this download only.
+  const [sub, setSub] = useState<string | null>(null);
+  const token = useRef(0);
+
+  const url = target?.url ?? null;
+  useEffect(() => {
+    if (!url || !target) return;
+    const mine = ++token.current;
+    setPhase('probing');
+    setProbe(null);
+    setMessage(null);
+    setName(target.name);
+    setSub(null);
+    void (async () => {
+      const headers = await downloadHeaders(target);
+      const res = await probeUrl(url, { headers });
+      if (mine !== token.current) return;
+      if (res.ok) {
+        setProbe(res);
+        setName((n) => (n === target.name || !n ? res.name || target.name : n));
+        setPhase('ready');
+        return;
+      }
+      setMessage(probeErrorView(res.code, res.message, res.httpStatus).body);
+      setPhase('error');
+    })();
+    // The target object changes with every render of the parent; the link and a retry decide a new probe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, tries, probeUrl]);
+
+  const size = probe?.size ?? t?.size ?? null;
+  const { doesntFit, noSpace } = useDownloadAdmission(size, phase === 'ready');
+
+  if (!t) return null;
+  const mobileNote = phase === 'ready' ? mobileDataLine(onMeteredNetwork, settings.network.wifiOnly, size) : null;
+  const adding = phase === 'adding';
+  const root = settings.storage.defaultPath;
+  const folder = sub != null ? saveFolder(root, sub) : null;
+  const folderMissing = sub != null && folder == null;
+
+  const start = async () => {
+    setPhase('adding');
+    setMessage(null);
+    const clean = sanitizeFileName(name.trim());
+    const edited = name.trim() !== '' && clean !== (probe?.name ?? t.name);
+    const headers = await downloadHeaders(t);
+    const res = await startDownload(t.url, { headers, ...pageUrlOption(t.pageUrl), ...(edited ? { name: clean } : {}), ...(folder ? { folder } : {}) });
+    if (res.ok) {
+      haptic('commit');
+      // Close first: the sheet is a Modal (its own window), so a notice raised while it is still up is hidden under it.
+      onClose();
+      afterSheetCloses(() => showNotice({ message: notices.browser.addedToTransfers, actionLabel: foundTray.view, onAction: () => onView?.(res.id) }, 5000));
+      return;
+    }
+    if (res.code === 'DUPLICATE') {
+      onClose();
+      afterSheetCloses(() => showNotice({ message: notices.addDownload.duplicate }));
+      return;
+    }
+    haptic('fail');
+    setMessage(res.message || notices.inline.startDownloadFailed);
+    setPhase('ready');
+  };
+
+  return (
+    <FloatingSheet visible={target != null} onClose={onClose} title="Download" subtitle={hostOf(t.url)}>
+      <View style={styles.body}>
+        <TextField
+          onSurface
+          label="Name"
+          value={name}
+          onChangeText={setName}
+          mono
+          multiline
+          minLines={1}
+          size="lg"
+          editable={phase === 'ready'}
+          accessibilityLabel="File name"
+        />
+        <Text style={styles.meta}>{phase === 'probing' ? 'Checking the file' : size != null ? formatBytes(size) : 'Size unknown'}</Text>
+        <SaveToChoice value={sub} onChange={setSub} root={root} disabled={adding} />
+        {mobileNote ? <NoteRow text={mobileNote} /> : null}
+        {t.installer ? <Banner tone="warning" title={banners.browser.installer.title} body={banners.browser.installer.body} /> : null}
+        {doesntFit ? <Banner tone="danger" title={banners.addDownload.notEnoughSpace.title} body={noSpace} /> : null}
+        {message ? <Banner tone="danger" title={message} /> : null}
+        <View style={styles.actions}>
+          <Button label="Cancel" variant="ghost" onPress={onClose} disabled={adding} />
+          {phase === 'error' ? (
+            <Button label="Try again" onPress={() => setTries((n) => n + 1)} />
+          ) : (
+            <Button label="Start" loading={adding} disabled={phase !== 'ready' || doesntFit || folderMissing} onPress={() => void start()} />
+          )}
+        </View>
+      </View>
+    </FloatingSheet>
+  );
+}
+
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    body: { gap: spacing.sm },
+    meta: { ...type.mono, fontSize: type.size.sm, color: c.textMuted },
+    actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
+  });

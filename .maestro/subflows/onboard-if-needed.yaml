@@ -1,0 +1,12 @@
+# Starts the app (no state clearing) and finishes onboarding only when it is showing.
+appId: com.maglev
+---
+- launchApp
+- runFlow:
+    file: wait-for-app.yaml
+    env:
+      TEXT: "Get started|Transfers"
+- runFlow:
+    when:
+      visible: "Get started"
+    file: onboarding-steps.yaml

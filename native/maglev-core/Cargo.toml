@@ -1,0 +1,67 @@
+[package]
+name = "maglev-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Maglev Team"]
+description = "Native BitTorrent engine for Maglev powered by librqbit"
+
+[lib]
+name = "maglev_core"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# default-features = false drops `default-tls` (native-tls / OpenSSL, which does not exist on Android)
+# and `http-api-client`. `rust-tls` selects reqwest/rustls and the `ring` SHA-1 backend.
+# `http-api`, `webui` and `upnp-serve-adapter` stay off, so no embedded web server or web UI is built.
+librqbit = { version = "=9.1.0", default-features = false, features = ["rust-tls"] }
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "net", "io-util", "macros"] }
+# `StreamExt::next` for the DHT peer stream (`BoxStream`). librqbit already depends on futures 0.3.
+futures = { version = "0.3", default-features = false, features = ["std"] }
+jni = { version = "0.21", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+parking_lot = "0.13"
+bytes = "1"
+tracing = "0.1"
+# URL downloads (docs/NATIVE_CONTRACT.md section 17). Same major as the reqwest librqbit pulls in, so cargo
+# resolves one copy. Only `rustls` (already on through librqbit) and `socks` (proxy, also on through librqbit) are
+# selected; `Response::chunk` needs no feature. The rustls-platform-verifier patch below applies to this copy too.
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "socks"] }
+# statvfs for the free-space check of URL downloads (no helper existed). Already in the graph through tokio and librqbit.
+libc = "0.2"
+# HLS and DASH downloads (docs/NATIVE_CONTRACT.md section 24.8). `roxmltree` parses the MPD: read-only, no unsafe, no
+# dependencies, MIT/Apache-2.0. `aes` + `cbc` (RustCrypto, MIT/Apache-2.0) decrypt HLS METHOD=AES-128 segments;
+# `cbc` needs `alloc` for the `*_vec_mut` helpers. Versions are pinned exactly (cipher 0.4 generation).
+roxmltree = "=0.21.2"
+aes = "=0.8.4"
+cbc = { version = "=0.1.2", features = ["alloc"] }
+
+# reqwest 0.13's `rustls` feature hard-wires rustls-platform-verifier, which on Android needs a JNI
+# init plus a Kotlin companion component. reqwest has no feature to pick another verifier and
+# librqbit builds its own reqwest::Client, so the crate is replaced by a local one with the same
+# API that verifies against the bundled Mozilla roots (webpki-roots). See vendor/ README comment.
+#
+# librqbit is vendored too: it adds `ManagedTorrent::set_file_priority_order` and `set_ratelimits`. The patch is
+# listed in vendor/librqbit/MAGLEV_PATCH.md.
+#
+# librqbit-core is vendored for BEP 19 web seeds (rqbit PR #739): it parses `url-list` and `ws=` and adds the
+# `name.utf-8` / `path.utf-8` fields. It is the same 9.1.0 that librqbit 9.1.0 resolves to; every other crate of the
+# workspace that depends on it picks the path copy too. See vendor/librqbit/MAGLEV_PATCH.md, "Web seeds".
+[patch.crates-io]
+librqbit = { path = "vendor/librqbit" }
+librqbit-core = { path = "vendor/librqbit-core" }
+rustls-platform-verifier = { path = "vendor/rustls-platform-verifier" }
+
+[features]
+default = ["jni-bridge"]
+jni-bridge = []
+
+[profile.release]
+# Size over raw speed: the engine is network and disk bound, and piece hashing runs in
+# ring's hand written assembly, which opt-level does not touch.
+opt-level = "s"
+lto = true
+codegen-units = 1
+# No panic = "abort": the contract maps panics to {"ok":false,"code":"INTERNAL"} through
+# catch_unwind, and a panic inside a tokio task must not take the whole app down.
+strip = true

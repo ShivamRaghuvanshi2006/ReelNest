@@ -1,0 +1,77 @@
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
+import { ThemeColors, alpha, radius, spacing, type, touch } from '../../constants/theme';
+import { PressableScale } from './PressableScale';
+
+export interface ChipProps {
+  label: string;
+  selected?: boolean;
+  onPress?: () => void;
+  count?: number;
+  disabled?: boolean;
+  testID?: string;
+  /** `radio` for a single-choice group: reports a checked state. Default `button`. */
+  role?: 'button' | 'radio';
+}
+
+export function Chip({ label, selected = false, onPress, count, disabled = false, testID, role = 'button' }: ChipProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const hasCount = typeof count === 'number';
+  return (
+    <PressableScale
+      onPress={onPress}
+      haptic="select"
+      disabled={disabled}
+      testID={testID}
+      accessibilityRole={role}
+      accessibilityLabel={hasCount ? `${label}, ${count}` : label}
+      accessibilityState={role === 'radio' ? { checked: selected, disabled } : { selected, disabled }}
+      style={(pressed) => [
+        styles.chip,
+        selected ? styles.selected : pressed ? styles.pressed : styles.idle,
+        disabled && styles.disabled,
+      ]}
+    >
+      <Text style={[styles.label, { color: selected ? colors.accentText : colors.text }]}>
+        {label}
+      </Text>
+      {hasCount ? (
+        <View style={[styles.count, selected && styles.countSelected]}>
+          <Text style={[styles.countText, { color: selected ? colors.accentText : colors.textMuted }]}>{count}</Text>
+        </View>
+      ) : null}
+    </PressableScale>
+  );
+}
+
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    chip: {
+      minHeight: touch.min,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.xs,
+      borderRadius: radius.pill,
+      borderWidth: 1,
+    },
+    idle: { backgroundColor: c.surface, borderColor: c.border },
+    pressed: { backgroundColor: c.surfaceRaised, borderColor: c.border },
+    selected: { backgroundColor: alpha(c.accent, 0.15), borderColor: c.accent },
+    disabled: { opacity: 0.4 },
+    label: { ...type.bodyStrong, fontSize: type.size.md, flexShrink: 1 },
+    count: {
+      minWidth: 20,
+      height: 20,
+      paddingHorizontal: 5, // design-exception: small chip tuned to its fixed height; side padding 5
+      borderRadius: 4, // design-exception: small chip radius 4 sits under half its height
+      backgroundColor: c.surfaceRaised,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    countSelected: { backgroundColor: alpha(c.accent, 0.2) },
+    countText: { ...type.mono, fontSize: type.size.xs },
+  });

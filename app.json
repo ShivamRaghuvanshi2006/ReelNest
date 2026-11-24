@@ -1,0 +1,210 @@
+{
+  "expo": {
+    "extra": {
+      "homepage": "https://harshdayal.dev/maglev"
+    },
+    "name": "Maglev",
+    "slug": "maglev",
+    "version": "0.33",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "maglev",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "backgroundColor": "#05070A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.maglev.client",
+      "icon": "./assets/icon.png"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "monochromeImage": "./assets/adaptive-icon-monochrome.png",
+        "backgroundColor": "#0B2A30"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.maglev",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_WIFI_STATE",
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_DATA_SYNC",
+        "FOREGROUND_SERVICE_SPECIAL_USE",
+        "POST_NOTIFICATIONS",
+        "REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+      ],
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "magnet"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "mimeType": "application/x-bittorrent"
+            },
+            {
+              "mimeType": "application/x-torrent"
+            },
+            {
+              "scheme": "file",
+              "pathPattern": ".*\\.torrent"
+            },
+            {
+              "scheme": "content",
+              "pathPattern": ".*\\.torrent"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "SEND",
+          "data": [
+            {
+              "mimeType": "text/plain"
+            },
+            {
+              "mimeType": "application/x-bittorrent"
+            },
+            {
+              "mimeType": "application/x-torrent"
+            }
+          ],
+          "category": [
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "SEND_MULTIPLE",
+          "data": [
+            {
+              "mimeType": "application/x-bittorrent"
+            },
+            {
+              "mimeType": "application/x-torrent"
+            }
+          ],
+          "category": [
+            "DEFAULT"
+          ]
+        }
+      ],
+      "versionCode": 33
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Silkscreen",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/silkscreen/400Regular/Silkscreen_400Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "SpaceMono",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/space-mono/400Regular/SpaceMono_400Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "SpaceMonoBold",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/space-mono/700Bold/SpaceMono_700Bold.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Inter",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "InterMedium",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "InterSemiBold",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "InterBold",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo-google-fonts/inter/700Bold/Inter_700Bold.ttf",
+                    "weight": 400
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "./plugins/withAbiSplits.js",
+      "./plugins/withSizeReduction.js",
+      "./plugins/withShareIntents.js",
+      "./plugins/withAppIcons.js",
+      "./plugins/withWindowBackground.js",
+      "./plugins/withBackupRules.js",
+      "./plugins/withCleartextLan.js",
+      "./plugins/withReleaseSigning.js",
+      "./plugins/withSelfUpdate.js"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

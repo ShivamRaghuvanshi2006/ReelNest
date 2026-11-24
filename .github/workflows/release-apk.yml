@@ -1,0 +1,352 @@
+name: Build and Release Android APK
+
+# Releases reuse the APKs that ci.yml built for the same commit on main (all three ABIs).
+# If that run is missing, failed or expired, this workflow builds them itself.
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '*beta*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reuse:
+    name: Reuse CI APKs
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      found: ${{ steps.done.outputs.found }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Tag matches app.json version (<major>.<minor>)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node scripts/bump-version.js check "${{ github.ref_name }}"
+
+      - name: Release notes exist for this version (release-notes/<version>.md)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node scripts/release-notes.js build "${{ github.ref_name }}" > /dev/null
+
+      - name: Find and download the CI APKs for this commit
+        id: find
+        # Never fail the release because reuse was not possible; the build job is the fallback.
+        continue-on-error: true
+        timeout-minutes: 50
+        shell: bash
+        run: |
+          set -uo pipefail
+          SHA="${{ github.sha }}"
+          RUN=""
+          # The tag can land seconds after the push to main, before CI has registered a run.
+          for i in 1 2 3 4 5 6 7 8; do
+            RUN=$(gh run list --workflow ci.yml --branch main --commit "$SHA" --event push --limit 10 \
+              --json databaseId,conclusion --jq '[.[] | select(.conclusion != "cancelled")][0].databaseId // empty') || RUN=""
+            [ -n "$RUN" ] && break
+            echo "No ci.yml run on main for $SHA yet (attempt $i/8)"; sleep 15
+          done
+          if [ -z "$RUN" ]; then echo "Not reusing: no ci.yml run on main for $SHA"; exit 0; fi
+          echo "CI run: $RUN"
+
+          STATUS=$(gh run view "$RUN" --json status --jq .status)
+          if [ "$STATUS" != "completed" ]; then
+            echo "CI run $RUN is $STATUS, waiting up to 40 minutes"
+            timeout 2400 gh run watch "$RUN" --interval 30 >/dev/null 2>&1 || true
+          fi
+          read -r STATUS CONCLUSION < <(gh run view "$RUN" --json status,conclusion --jq '[.status, .conclusion] | join(" ")')
+          if [ "$STATUS" != "completed" ] || [ "$CONCLUSION" != "success" ]; then
+            echo "Not reusing: CI run $RUN is $STATUS/$CONCLUSION"; exit 0
+          fi
+
+          LIVE=$(gh api "repos/$GH_REPO/actions/runs/$RUN/artifacts" --paginate \
+            --jq '.artifacts[] | select(.name == "apks" and (.expired | not)) | .id' | wc -l)
+          if [ "$LIVE" -lt 1 ]; then echo "Not reusing: CI run $RUN has no live apks artifact"; exit 0; fi
+
+          rm -rf ci-apks reuse-apks; mkdir -p reuse-apks
+          if ! gh run download "$RUN" --name apks --dir ci-apks; then
+            echo "Not reusing: download of apks from run $RUN failed"; exit 0
+          fi
+          for abi in universal arm64-v8a armeabi-v7a x86_64; do
+            f=$(find ci-apks -type f -name "app-${abi}-release.apk" | head -n 1)
+            if [ -z "$f" ]; then echo "Not reusing: app-${abi}-release.apk missing from run $RUN"; find ci-apks -type f; exit 0; fi
+            cp "$f" reuse-apks/
+          done
+          ls -lh reuse-apks
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          # Optional: the Accrescent APK set exists only when CI had the signing secrets.
+          mkdir -p reuse-apkset
+          if gh run download "$RUN" --name accrescent-apks --dir reuse-apkset 2>/dev/null && [ -f reuse-apkset/maglev.apks ]; then
+            echo "apkset=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No accrescent-apks artifact on run $RUN; releasing APKs only"
+          fi
+
+      - name: Upload reused APKs
+        if: steps.find.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-apks
+          path: reuse-apks/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload reused APK set
+        if: steps.find.outputs.apkset == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-apkset
+          path: reuse-apkset/maglev.apks
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Mark reuse as done
+        id: done
+        run: |
+          if [ "${{ steps.find.outputs.ready }}" = "true" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "Reusing CI APKs"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "Building APKs from scratch"
+          fi
+
+  rust-android:
+    name: Rust Android
+    needs: reuse
+    if: needs.reuse.outputs.found != 'true'
+    uses: ./.github/workflows/_rust-android.yml
+    with:
+      abis: 'arm64-v8a,armeabi-v7a,x86_64'
+
+  build-apk:
+    name: Build Android APK
+    needs: [reuse, rust-android]
+    if: needs.reuse.outputs.found != 'true'
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Setup Gradle (dependency and build cache)
+        # Tags are not the default branch, so the cache is read-only here: it restores what main CI wrote.
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || yes | $ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager --licenses 2>/dev/null || true
+
+      - name: Install NDK (retries a corrupt download)
+        # Must match the ndkVersion React Native pins; Gradle would otherwise fetch it mid-build with no retry.
+        run: |
+          NDK="ndk;27.1.12297006"
+          for i in 1 2 3; do
+            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "$NDK" >/dev/null && break
+            echo "NDK install attempt $i failed, retrying"; rm -rf "$ANDROID_HOME/ndk/27.1.12297006"; sleep 15
+          done
+          test -f "$ANDROID_HOME/ndk/27.1.12297006/source.properties" || { echo "NDK install failed"; exit 1; }
+
+      - name: Download jniLibs
+        uses: actions/download-artifact@v8
+        with:
+          pattern: jniLibs-*
+          merge-multiple: true
+          path: modules/maglev-engine/android/src/main/jniLibs
+
+      - name: Verify jniLibs layout
+        run: |
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            test -f "modules/maglev-engine/android/src/main/jniLibs/$abi/libmaglev_core.so" \
+              || { echo "Missing $abi/libmaglev_core.so"; find modules/maglev-engine/android/src/main/jniLibs -type f; exit 1; }
+          done
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Prebuild Android project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Decode release keystore (only when the secret exists)
+        env:
+          MAGLEV_KEYSTORE_B64: ${{ secrets.MAGLEV_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$MAGLEV_KEYSTORE_B64" ]; then
+            (umask 077; printf '%s' "$MAGLEV_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/maglev-release.jks")
+            echo "MAGLEV_KEYSTORE_PATH=$RUNNER_TEMP/maglev-release.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::No release keystore secret; APKs are debug-signed"
+          fi
+
+      - name: Build Android Release APK
+        env:
+          MAGLEV_KEYSTORE_PASSWORD: ${{ secrets.MAGLEV_KEYSTORE_PASSWORD }}
+          MAGLEV_KEY_ALIAS: ${{ secrets.MAGLEV_KEY_ALIAS }}
+          MAGLEV_KEY_PASSWORD: ${{ secrets.MAGLEV_KEY_PASSWORD }}
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease --stacktrace
+
+      - name: Verify APK signing (tags must not be debug-signed)
+        run: |
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
+          for apk in android/app/build/outputs/apk/release/*.apk; do
+            CERTS=$("$APKSIGNER" verify --print-certs "$apk")
+            echo "$(basename "$apk"): $(echo "$CERTS" | grep -m1 'certificate SHA-256 digest')"
+            if echo "$CERTS" | grep -q 'CN=Android Debug'; then
+              echo "::error::$(basename "$apk") is debug-signed. Set the MAGLEV_KEYSTORE_* secrets (docs/RELEASE_SIGNING.md)."; exit 1
+            fi
+          done
+
+      - name: Build signed APK set for Accrescent
+        if: env.MAGLEV_KEYSTORE_PATH != ''
+        env:
+          MAGLEV_KEYSTORE_PASSWORD: ${{ secrets.MAGLEV_KEYSTORE_PASSWORD }}
+          MAGLEV_KEY_ALIAS: ${{ secrets.MAGLEV_KEY_ALIAS }}
+          MAGLEV_KEY_PASSWORD: ${{ secrets.MAGLEV_KEY_PASSWORD }}
+          BUNDLETOOL_VERSION: '1.18.3'
+          BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+        run: |
+          set -euo pipefail
+          (cd android && ./gradlew bundleRelease --stacktrace)
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -f "$AAB"
+          JAR="$RUNNER_TEMP/bundletool.jar"
+          curl -fsSL -o "$JAR" "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
+          echo "$BUNDLETOOL_SHA256  $JAR" | sha256sum -c -
+          # The AAB must carry the same scheme as the universal APK (base*10), or the APK set cannot upgrade it.
+          WANT=$(( $(node -p "const a=require('./app.json');(a.expo||a).android.versionCode") * 10 ))
+          GOT=$(java -jar "$JAR" dump manifest --bundle="$AAB" --xpath /manifest/@android:versionCode)
+          echo "AAB versionCode $GOT (want $WANT)"
+          [ "$GOT" = "$WANT" ] || { echo "::error::AAB versionCode $GOT, expected $WANT"; exit 1; }
+          (umask 077
+           printf '%s' "$MAGLEV_KEYSTORE_PASSWORD" > "$RUNNER_TEMP/ks.pass"
+           printf '%s' "$MAGLEV_KEY_PASSWORD" > "$RUNNER_TEMP/key.pass")
+          trap 'rm -f "$RUNNER_TEMP/ks.pass" "$RUNNER_TEMP/key.pass"' EXIT
+          mkdir -p apkset
+          java -jar "$JAR" build-apks --bundle="$AAB" --output=apkset/maglev.apks \
+            --ks="$MAGLEV_KEYSTORE_PATH" --ks-key-alias="$MAGLEV_KEY_ALIAS" \
+            --ks-pass="file:$RUNNER_TEMP/ks.pass" --key-pass="file:$RUNNER_TEMP/key.pass"
+
+      - name: List APKs
+        run: ls -lh android/app/build/outputs/apk/release/*.apk
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-apks
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload APK set
+        if: env.MAGLEV_KEYSTORE_PATH != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-apkset
+          path: apkset/maglev.apks
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish release
+    needs: [reuse, build-apk]
+    if: always() && (needs.reuse.outputs.found == 'true' || needs.build-apk.result == 'success')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Only for release-notes/ and scripts/release-notes.js; the APKs come from the jobs above.
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            release-notes
+            scripts/release-notes.js
+            app.json
+
+      - name: Download APKs
+        uses: actions/download-artifact@v8
+        with:
+          name: release-apks
+          path: release-apks
+
+      - name: Name APKs
+        run: |
+          mkdir -p build-artifacts
+          TAG="${{ github.ref_name }}"
+          for abi in universal arm64-v8a armeabi-v7a x86_64; do
+            src=$(find release-apks -type f -name "app-${abi}-release.apk" | head -n 1)
+            test -n "$src" || { echo "Missing app-${abi}-release.apk"; find release-apks -type f; exit 1; }
+            cp "$src" "build-artifacts/Maglev-${TAG}-${abi}.apk"
+          done
+          ls -lh build-artifacts
+
+      - name: Download APK set (optional)
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: release-apkset
+          path: release-apkset
+
+      - name: Name APK set
+        run: |
+          if [ -f release-apkset/maglev.apks ]; then
+            cp release-apkset/maglev.apks "build-artifacts/Maglev-${{ github.ref_name }}.apks"
+          else
+            echo "No APK set for this release"
+          fi
+
+      # One checksum line per published file, so anyone can check a download with `sha256sum -c`.
+      - name: Write SHA256SUMS
+        run: |
+          cd build-artifacts
+          sha256sum Maglev-*.apk $(ls Maglev-*.apks 2>/dev/null) > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Write release notes
+        run: node scripts/release-notes.js build "${{ github.ref_name }}" > release-body.md
+
+      - name: Create GitHub Release & Upload APKs
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Maglev ${{ github.ref_name }}
+          body_path: release-body.md
+          files: |
+            build-artifacts/Maglev-${{ github.ref_name }}-universal.apk
+            build-artifacts/Maglev-${{ github.ref_name }}-arm64-v8a.apk
+            build-artifacts/Maglev-${{ github.ref_name }}-armeabi-v7a.apk
+            build-artifacts/Maglev-${{ github.ref_name }}-x86_64.apk
+            build-artifacts/Maglev-${{ github.ref_name }}.apks
+            build-artifacts/SHA256SUMS
+          draft: false
+          # Beta is in the tag name; a normal release is what GitHub shows in the repo sidebar.
+          prerelease: false
+          make_latest: true

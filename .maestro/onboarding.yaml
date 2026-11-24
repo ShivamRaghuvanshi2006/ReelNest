@@ -1,0 +1,15 @@
+# First launch: onboarding to an empty Transfers screen.
+appId: com.maglev
+name: onboarding
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: subflows/wait-for-app.yaml
+    env:
+      TEXT: "Get started"
+- assertVisible: "Torrents, web links and videos in one place."
+- runFlow: subflows/onboarding-steps.yaml
+- extendedWaitUntil:
+    visible: "Add a link"
+    timeout: 20000

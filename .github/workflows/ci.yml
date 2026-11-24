@@ -1,0 +1,386 @@
+name: CI
+
+# Docs-only pushes skip CI (the README badge keeps the last real result). Pull requests always run it, because
+# main requires these checks on the pull request itself; a run started by hand on the same commit does not count.
+on:
+  # Flow: feature branches → PR into dev → dev (the main CI run, where features converge) → PR dev → main
+  # (the release build: all three ABIs, strict signing, APK set) → main reuses that PR's APKs (job `reuse`),
+  # and release-apk.yml publishes them. Main only builds if the merge changed anything the PR didn't build.
+  push:
+    branches: [main, dev]
+    paths-ignore: ['**/*.md', 'docs/**', 'screens/**', 'LICENSE']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-test:
+    name: Rust tests (no JNI feature)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.100.0
+          components: clippy
+
+      - name: Cache Cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native/maglev-core
+
+      - name: Run tests
+        run: cargo test --manifest-path native/maglev-core/Cargo.toml --no-default-features
+
+      - name: Run TLS verifier shim tests
+        run: cargo test --manifest-path native/maglev-core/vendor/rustls-platform-verifier/Cargo.toml
+
+      - name: Clippy (non-blocking)
+        continue-on-error: true
+        run: cargo clippy --manifest-path native/maglev-core/Cargo.toml --no-default-features -- -D warnings
+
+  js:
+    name: JS checks (typecheck, tests, assistant eval)
+    runs-on: ubuntu-latest
+    # Runs in parallel with the APK build (which takes far longer); a failure here still fails the run.
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          # Tests import .ts files directly with type stripping, which needs Node 22.18 or newer.
+          node-version: '22.18'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit and contract tests
+        run: npm test
+
+      - name: Assistant tests
+        run: npm run test:assistant
+
+      - name: Assistant eval (scripted model, no key)
+        # run.js exits 1 when any check fails or a scenario errors.
+        run: node scripts/eval-assistant/run.js --fake
+
+  # On a push to main: if this merge commit has exactly the tree of the pull request it came from, and that
+  # pull request's CI (base main) passed, take its APKs instead of building them again. Otherwise build.
+  reuse:
+    name: Reuse pull request APKs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      found: ${{ steps.find.outputs.found }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout repository (with the merged pull request's head)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      - name: Find and download the pull request's APKs
+        id: find
+        # Never fails the run: when reuse isn't possible, the build jobs run as usual.
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "found=false" >> "$GITHUB_OUTPUT"
+          HEAD2=$(git rev-parse -q --verify HEAD^2) || { echo "Not reusing: not a merge commit"; exit 0; }
+          if [ "$(git rev-parse HEAD^{tree})" != "$(git rev-parse HEAD^2^{tree})" ]; then
+            echo "Not reusing: the merge changed files beyond the pull request ($HEAD2)"; exit 0
+          fi
+          RUN=$(gh run list --workflow ci.yml --commit "$HEAD2" --event pull_request --status success --limit 5 \
+            --json databaseId --jq '.[0].databaseId // empty') || RUN=""
+          if [ -z "$RUN" ]; then echo "Not reusing: no successful pull request CI run for $HEAD2"; exit 0; fi
+          echo "Pull request CI run: $RUN"
+          rm -rf pr-apks pr-set
+          gh run download "$RUN" --name apks --dir pr-apks || { echo "Not reusing: run $RUN has no apks artifact"; exit 0; }
+          for abi in universal arm64-v8a armeabi-v7a x86_64; do
+            test -f "pr-apks/app-${abi}-release.apk" || { echo "Not reusing: app-${abi}-release.apk missing (run $RUN was not a release build)"; exit 0; }
+          done
+          gh run download "$RUN" --name accrescent-apks --dir pr-set || echo "Run $RUN has no APK set (no signing secrets); none is reused"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "Reusing APKs from pull request CI run $RUN"
+
+      - name: Upload APKs
+        if: steps.find.outputs.found == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: apks
+          path: pr-apks/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload APK set
+        if: steps.find.outputs.found == 'true' && hashFiles('pr-set/maglev.apks') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: accrescent-apks
+          path: pr-set/maglev.apks
+          retention-days: 7
+
+  rust-android:
+    name: Rust Android
+    needs: reuse
+    # Runs whenever reuse didn't happen (reuse is skipped off main, or found nothing).
+    if: ${{ !cancelled() && needs.reuse.outputs.found != 'true' }}
+    uses: ./.github/workflows/_rust-android.yml
+    with:
+      # Release builds (main, and pull requests into main) build all three ABIs; everything else builds arm64 only.
+      abis: ${{ (github.ref == 'refs/heads/main' || github.base_ref == 'main') && 'arm64-v8a,armeabi-v7a,x86_64' || 'arm64-v8a' }}
+
+  apk:
+    name: Build APK
+    needs: rust-android
+    # Explicit: rust-android's own `needs` (reuse) is skipped off main, which would otherwise skip this job too.
+    if: ${{ !cancelled() && needs.rust-android.result == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+      # Everyday CI builds arm64 only (plugins/withAbiSplits.js). main and pull requests into main build all three;
+      # main reuses a pull request's set when nothing changed (job reuse), and release-apk.yml reuses main's `apks` artifact (app-{universal,arm64-v8a,armeabi-v7a,x86_64}-release.apk).
+      MAGLEV_ABIS: ${{ (github.ref == 'refs/heads/main' || github.base_ref == 'main') && 'arm64-v8a,armeabi-v7a,x86_64' || 'arm64-v8a' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Gradle (dependency and build cache)
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          # Feature branches write the cache too; the default is read-only off main.
+          cache-read-only: false
+
+      - name: Accept Android SDK licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+
+      - name: Install NDK (retries a corrupt download)
+        # Must match the ndkVersion React Native pins; Gradle would otherwise fetch it mid-build with no retry.
+        run: |
+          NDK="ndk;27.1.12297006"
+          for i in 1 2 3; do
+            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "$NDK" >/dev/null && break
+            echo "NDK install attempt $i failed, retrying"; rm -rf "$ANDROID_HOME/ndk/27.1.12297006"; sleep 15
+          done
+          test -f "$ANDROID_HOME/ndk/27.1.12297006/source.properties" || { echo "NDK install failed"; exit 1; }
+
+      - name: Download jniLibs
+        uses: actions/download-artifact@v8
+        with:
+          pattern: jniLibs-*
+          merge-multiple: true
+          path: modules/maglev-engine/android/src/main/jniLibs
+
+      - name: Verify jniLibs layout
+        run: |
+          for abi in ${MAGLEV_ABIS//,/ }; do
+            test -f "modules/maglev-engine/android/src/main/jniLibs/$abi/libmaglev_core.so" \
+              || { echo "Missing $abi/libmaglev_core.so"; find modules/maglev-engine/android/src/main/jniLibs -type f; exit 1; }
+          done
+          ls -l modules/maglev-engine/android/src/main/jniLibs/*/
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Prebuild Android project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Decode release keystore (only when the secret exists)
+        # Forks and PRs have no secrets: this step is a no-op and Gradle keeps debug signing (plugins/withReleaseSigning.js).
+        env:
+          MAGLEV_KEYSTORE_B64: ${{ secrets.MAGLEV_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$MAGLEV_KEYSTORE_B64" ]; then
+            (umask 077; printf '%s' "$MAGLEV_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/maglev-release.jks")
+            echo "MAGLEV_KEYSTORE_PATH=$RUNNER_TEMP/maglev-release.jks" >> "$GITHUB_ENV"
+            echo "Release keystore decoded"
+          else
+            echo "No release keystore secret; APKs stay debug-signed"
+          fi
+
+      - name: Build release APKs
+        # Passwords are given to this step only, not to every later step.
+        env:
+          MAGLEV_KEYSTORE_PASSWORD: ${{ secrets.MAGLEV_KEYSTORE_PASSWORD }}
+          MAGLEV_KEY_ALIAS: ${{ secrets.MAGLEV_KEY_ALIAS }}
+          MAGLEV_KEY_PASSWORD: ${{ secrets.MAGLEV_KEY_PASSWORD }}
+        run: |
+          cd android
+          chmod +x gradlew
+          # --profile writes per-task timings to android/build/reports/profile (uploaded below).
+          ./gradlew assembleRelease --stacktrace --profile
+
+      - name: Upload Gradle profile (per-task build times)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gradle-profile
+          path: android/build/reports/profile/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Verify APK signing
+        # Fails on main, pull requests into main and tags when an APK still carries the Android debug certificate; warns elsewhere.
+        # Only the public SHA-256 certificate digest is printed.
+        shell: bash
+        run: |
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
+          STRICT=false
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.base_ref }}" = "main" ] || [[ "${{ github.ref }}" == refs/tags/* ]]; then STRICT=true; fi
+          BAD=0
+          for apk in android/app/build/outputs/apk/release/*.apk; do
+            CERTS=$("$APKSIGNER" verify --print-certs "$apk") || { echo "::error::apksigner rejected $apk"; exit 1; }
+            echo "$(basename "$apk"): $(echo "$CERTS" | grep -m1 'certificate SHA-256 digest')"
+            if echo "$CERTS" | grep -q 'CN=Android Debug'; then
+              BAD=1
+              echo "::warning::$(basename "$apk") is signed with the Android debug certificate"
+            fi
+          done
+          if [ "$BAD" = 1 ] && [ "$STRICT" = true ]; then
+            echo "::error::Debug-signed APK on main or a tag. Set the MAGLEV_KEYSTORE_* secrets (docs/RELEASE_SIGNING.md)."
+            exit 1
+          fi
+
+      - name: List APKs
+        run: ls -lh android/app/build/outputs/apk/release/*.apk
+
+      - name: Verify versionCodes (base*10 + ABI digit; universal is base*10)
+        shell: bash
+        run: |
+          AAPT2=$(ls -d "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -n 1)
+          BASE=$(node -p "const a=require('./app.json');(a.expo||a).android.versionCode")
+          declare -A DIGIT=([universal]=0 [armeabi-v7a]=1 [x86_64]=3 [arm64-v8a]=4)
+          for apk in android/app/build/outputs/apk/release/*.apk; do
+            NAME=$(basename "$apk" -release.apk); ABI=${NAME#app-}
+            GOT=$("$AAPT2" dump badging "$apk" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" | head -n 1)
+            WANT=$((BASE * 10 + ${DIGIT[$ABI]}))
+            echo "$NAME: versionCode $GOT (want $WANT)"
+            [ "$GOT" = "$WANT" ] || { echo "::error::$NAME has versionCode $GOT, expected $WANT"; exit 1; }
+          done
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v7
+        with:
+          name: apks
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Build signed APK set for Accrescent (main, pull requests into main and tags, when signing secrets exist)
+        if: env.MAGLEV_KEYSTORE_PATH != '' && (github.ref == 'refs/heads/main' || github.base_ref == 'main' || startsWith(github.ref, 'refs/tags/'))
+        env:
+          MAGLEV_KEYSTORE_PASSWORD: ${{ secrets.MAGLEV_KEYSTORE_PASSWORD }}
+          MAGLEV_KEY_ALIAS: ${{ secrets.MAGLEV_KEY_ALIAS }}
+          MAGLEV_KEY_PASSWORD: ${{ secrets.MAGLEV_KEY_PASSWORD }}
+          # bundletool 1.18.3; digest matches the GitHub release page.
+          BUNDLETOOL_VERSION: '1.18.3'
+          BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+        run: |
+          set -euo pipefail
+          (cd android && ./gradlew bundleRelease --stacktrace)
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -f "$AAB"
+          JAR="$RUNNER_TEMP/bundletool.jar"
+          curl -fsSL -o "$JAR" "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
+          echo "$BUNDLETOOL_SHA256  $JAR" | sha256sum -c -
+          # The AAB must carry the same scheme as the universal APK (base*10), or the APK set cannot upgrade it.
+          WANT=$(( $(node -p "const a=require('./app.json');(a.expo||a).android.versionCode") * 10 ))
+          GOT=$(java -jar "$JAR" dump manifest --bundle="$AAB" --xpath /manifest/@android:versionCode)
+          echo "AAB versionCode $GOT (want $WANT)"
+          [ "$GOT" = "$WANT" ] || { echo "::error::AAB versionCode $GOT, expected $WANT"; exit 1; }
+          # bundletool takes passwords as pass: or file: only (no env:), so use 0600 files and remove them after.
+          (umask 077
+           printf '%s' "$MAGLEV_KEYSTORE_PASSWORD" > "$RUNNER_TEMP/ks.pass"
+           printf '%s' "$MAGLEV_KEY_PASSWORD" > "$RUNNER_TEMP/key.pass")
+          trap 'rm -f "$RUNNER_TEMP/ks.pass" "$RUNNER_TEMP/key.pass"' EXIT
+          mkdir -p apkset
+          java -jar "$JAR" build-apks --bundle="$AAB" --output=apkset/maglev.apks \
+            --ks="$MAGLEV_KEYSTORE_PATH" --ks-key-alias="$MAGLEV_KEY_ALIAS" \
+            --ks-pass="file:$RUNNER_TEMP/ks.pass" --key-pass="file:$RUNNER_TEMP/key.pass"
+          ls -lh apkset/maglev.apks
+
+      - name: Upload APK set
+        if: env.MAGLEV_KEYSTORE_PATH != '' && (github.ref == 'refs/heads/main' || github.base_ref == 'main' || startsWith(github.ref, 'refs/tags/'))
+        uses: actions/upload-artifact@v7
+        with:
+          name: accrescent-apks
+          path: apkset/maglev.apks
+          if-no-files-found: error
+          retention-days: 7
+
+      # After the upload, so a test failure never costs us the APK. AGP 9 creates host tests for debug only.
+      - name: Kotlin unit tests (schedule, feed rules, restart policy)
+        run: |
+          cd android
+          ./gradlew :maglev-engine:testDebugUnitTest --stacktrace
+
+  contracts:
+    name: Contract tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: P3 reality contracts (non-blocking until P0s land)
+        continue-on-error: true
+        run: node scripts/test-p3-reality-contracts.js
+
+      - name: ABI splits
+        run: node scripts/test-abi-splits.js
+
+      - name: Config plugins
+        run: node scripts/test-plugins.js
+
+      - name: Search providers (offline fixtures)
+        run: node scripts/test-search.js && node scripts/test-search-direct.js && node scripts/test-sources-books.js && node scripts/test-sources-feeds.js && node scripts/test-sources-anime-adult-games.js
+
+      - name: Feed rules (shared vectors)
+        run: node scripts/test-feeds.js
+
+      - name: Version scheme (major.minor)
+        run: node scripts/test-version.js

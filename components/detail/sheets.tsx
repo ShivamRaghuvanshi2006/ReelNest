@@ -1,0 +1,219 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { maglevEngine, type DetailFile, type PausedBy, type TorrentState } from 'maglev-engine';
+import { useTheme } from '../../context/ThemeContext';
+import { ThemeColors, spacing, type } from '../../constants/theme';
+import { formatBytes } from '../../constants/format';
+import { Banner, Button, ListRow, Sheet } from '../ui';
+import { fileName, isStreamable, streamReadiness } from './torrentLabels';
+import { banners, notices } from '../../constants/copy';
+import { entrySubtitle, type EntryMode } from '../subtitles/flow';
+import { FIND_SUBTITLES } from '../../utils/subtitles/copy';
+
+interface DeleteSheetProps {
+  visible: boolean;
+  name: string;
+  busy: boolean;
+  error: string | null;
+  onClose: () => void;
+  onRemove: () => void;
+  onDeleteFiles: () => void;
+  /** SM-33: the SD card is gone, so deleting files is off. */
+  storageGone?: boolean;
+}
+
+export function DeleteSheet({ visible, name, busy, error, onClose, onRemove, onDeleteFiles, storageGone = false }: DeleteSheetProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Delete torrent?" subtitle={name}>
+      {error ? <Banner tone="danger" title={banners.detail.deleteFailed.title} body={error} /> : null}
+      <View style={styles.stack}>
+        <Button label="Remove from list" variant="secondary" fullWidth loading={busy} onPress={onRemove} />
+        <Button label="Delete with files" variant="danger" fullWidth disabled={busy || storageGone} onPress={onDeleteFiles} />
+        {storageGone ? <Text style={styles.hint}>The SD card isn't there.</Text> : null}
+        <Button label="Cancel" variant="ghost" fullWidth disabled={busy} onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+interface RemoveFilesSheetProps {
+  visible: boolean;
+  /** How many files will be removed. */
+  count: number;
+  /** Downloaded bytes of those files, which is what the phone gets back. */
+  bytes: number;
+  busy: boolean;
+  error: string | null;
+  onClose: () => void;
+  onConfirm: () => void;
+}
+
+/** Confirm sheet for removing files' data from a torrent (NATIVE_CONTRACT 14). There is no undo. */
+export function RemoveFilesSheet({ visible, count, bytes, busy, error, onClose, onConfirm }: RemoveFilesSheetProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  return (
+    <Sheet visible={visible} onClose={onClose} title={`Remove ${count} ${count === 1 ? 'file' : 'files'}?`}>
+      {error ? <Banner tone="danger" title={banners.detail.removeFailed.title} body={error} /> : null}
+      <Text style={styles.hint}>
+        {`Deletes ${formatBytes(bytes)} from your phone and stops downloading ${count === 1 ? 'it' : 'them'}. Other files keep going.`}
+      </Text>
+      <View style={styles.stack}>
+        <Button label="Remove" icon="trash" variant="danger" fullWidth loading={busy} onPress={onConfirm} />
+        <Button label="Cancel" variant="ghost" fullWidth disabled={busy} onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+interface SavedTorrentSheetProps {
+  /** The result of `exportTorrent`, or null when the sheet is closed. */
+  saved: { path: string; name: string; folder: string } | null;
+  onClose: () => void;
+}
+
+/** Shown after "Save .torrent file": where it went, and a Share button (NATIVE_CONTRACT 15). */
+export function SavedTorrentSheet({ saved, onClose }: SavedTorrentSheetProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setError(null);
+  }, [saved]);
+
+  const share = async () => {
+    if (!saved) return;
+    try {
+      const res = await maglevEngine.shareExportedTorrent(saved.path);
+      if (!res.ok) setError(res.message || notices.inline.shareFailed);
+      else onClose();
+    } catch {
+      setError(notices.inline.shareFailed);
+    }
+  };
+
+  return (
+    <Sheet visible={!!saved} onClose={onClose} title="Saved" subtitle={saved ? `${saved.folder}/${saved.name}` : undefined}>
+      {error ? <Banner tone="danger" title={banners.detail.shareFailed.title} body={error} /> : null}
+      <Text style={styles.hint}>The file keeps this torrent's current trackers.</Text>
+      <View style={styles.stack}>
+        <Button label="Share" icon="share" variant="secondary" fullWidth onPress={share} />
+        <Button label="Done" variant="ghost" fullWidth onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+interface FileSheetProps {
+  id: string;
+  file: DetailFile | null;
+  torrentState: TorrentState;
+  pausedBy: PausedBy | null;
+  /** Resumes the torrent; resolves true on success. */
+  onResume: () => Promise<boolean>;
+  onNotice: (text: string) => void;
+  onClose: () => void;
+  /** Find subtitles… (36.10): hidden, disabled with "When this file starts" (nothing on disk yet), or enabled (42.1). Default hidden. */
+  subtitles?: EntryMode;
+  onFindSubtitles?: (file: DetailFile) => void;
+}
+
+/** Open and Share for finished files; Stream for video and audio, finished or not (NATIVE_CONTRACT 11.4). */
+export function FileActionsSheet({ id, file, torrentState, pausedBy, onResume, onNotice, onClose, subtitles = 'hidden', onFindSubtitles }: FileSheetProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    setError(null);
+    setBusy(false);
+  }, [file]);
+
+  const done = !!file && file.length > 0 && file.progressBytes >= file.length;
+  const streamable = !!file && isStreamable(file.path);
+  const skipped = !!file && file.priority === 'skip';
+  const moving = torrentState === 'MOVING';
+  const readiness = file ? streamReadiness(file) : null;
+
+  const run = async (call: Promise<{ ok: boolean; message?: string }>, fallback: string) => {
+    try {
+      const res = await call;
+      if (!res.ok) setError(res.message || fallback);
+      else onClose();
+    } catch {
+      setError(fallback);
+    }
+  };
+
+  const stream = async () => {
+    if (!file) return;
+    setError(null);
+    setBusy(true);
+    try {
+      const userPaused = torrentState === 'PAUSED' && pausedBy === 'user';
+      if (userPaused && !(await onResume())) {
+        setError(notices.inline.resumeFailed);
+        return;
+      }
+      const url = await maglevEngine.streamUrl(id, file.index);
+      if (!url.ok) {
+        setError(url.message || notices.inline.streamFailed);
+        return;
+      }
+      const res = await maglevEngine.openStream(url.url, url.mime, fileName(file.path));
+      if (!res.ok) {
+        setError(res.message || notices.inline.noPlayer);
+        return;
+      }
+      if (userPaused) onNotice(notices.detail.resumedToStream);
+      onClose();
+    } catch {
+      setError(notices.inline.streamFailed);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const streamSubtitle = skipped
+    ? "Skipped files can't be streamed. Set a priority first."
+    : moving
+      ? 'Wait for the move to finish'
+      : readiness?.ready
+        ? 'Ready to play'
+        : `Starting may pause to buffer (${readiness?.percent ?? 0}% ready)`;
+
+  return (
+    <Sheet visible={!!file} onClose={onClose} title={file ? fileName(file.path) : 'File'}>
+      {error ? <Banner tone="danger" title={banners.detail.actionFailed.title} body={error} /> : null}
+      {file && done ? (
+        <>
+          <ListRow title="Open" icon="file" onPress={() => run(maglevEngine.openFile(id, file.index), 'No app can open this file.')} />
+          <ListRow title="Share" icon="share" onPress={() => run(maglevEngine.shareFile(id, file.index), 'Sharing failed.')} />
+        </>
+      ) : null}
+      {file && streamable ? (
+        <ListRow title="Stream" subtitle={streamSubtitle} icon="stream" disabled={skipped || moving || busy} onPress={stream} />
+      ) : null}
+      {file && subtitles !== 'hidden' ? (
+        <ListRow
+          title={FIND_SUBTITLES}
+          subtitle={entrySubtitle(subtitles)}
+          icon="file-doc"
+          disabled={subtitles !== 'enabled'}
+          onPress={() => onFindSubtitles?.(file)}
+        />
+      ) : null}
+      {file && !done && !streamable ? <Text style={styles.hint}>Available once the file finishes downloading.</Text> : null}
+    </Sheet>
+  );
+}
+
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    stack: { gap: spacing.sm, marginTop: spacing.sm },
+    hint: { ...type.body, fontSize: type.size.md, color: c.textMuted, paddingVertical: spacing.md },
+  });

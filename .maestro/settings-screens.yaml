@@ -1,0 +1,115 @@
+# Open every Settings sub-screen, check its page title or a key control, screenshot each.
+# Settings (app/(tabs)/settings.tsx) is grouped and long: Needs attention, App (About, Updates, Stats), General (Appearance, Assistant,
+# Notifications, Backup and restore), Finding things (Search sources, Auto-download), Downloads (Downloads, Speed and sharing, Storage,
+# Scheduling, Watches), Network and power (Network, Power, Browser). subflows/open-settings-row.yaml scrolls to a row before tapping it.
+# Pages are left with the in-app "Go back" button (components/ui/Screen.tsx:38).
+appId: com.maglev
+name: settings-screens
+---
+- runFlow: subflows/onboard-if-needed.yaml
+- tapOn: "Settings"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "About"
+- assertVisible: "Built by Kaos"
+- takeScreenshot: settings-about
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Updates"
+- assertVisible: "App version"
+- takeScreenshot: settings-updates
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Appearance"
+- assertVisible: "Font"
+- takeScreenshot: settings-appearance
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Notifications"
+- assertVisible: "Finished-download alerts"
+- takeScreenshot: settings-notifications
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Assistant"
+- assertVisible: "Adds an Assistant tab.*"
+- takeScreenshot: settings-assistant
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Backup and restore"
+- assertVisible: "Export backup"
+- takeScreenshot: settings-backup
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Search sources"
+- assertVisible: "Show adult sources"
+- takeScreenshot: settings-search-sources
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Auto-download"
+- assertVisible: "Download new items automatically"
+- takeScreenshot: settings-auto-download
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Speed and sharing"
+- assertVisible: "Download limit"
+- takeScreenshot: settings-speed-queue
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Storage"
+- assertVisible: "Download folder"
+- takeScreenshot: settings-storage
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Scheduling"
+- assertVisible: "Use a schedule"
+- takeScreenshot: settings-scheduling
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Watches"
+- assertVisible: "Maglev checks for new copies.*"
+- takeScreenshot: settings-watches
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Network"
+- assertVisible: "Wi-Fi only"
+- takeScreenshot: settings-network
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Power"
+- assertVisible: "Charging only"
+- takeScreenshot: settings-power
+- tapOn: "Go back"
+- runFlow:
+    file: subflows/open-settings-row.yaml
+    env:
+      ROW: "Browser"
+- assertVisible: "Ad blocking"
+- takeScreenshot: settings-browser
+- tapOn: "Go back"

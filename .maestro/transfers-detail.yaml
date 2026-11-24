@@ -1,0 +1,46 @@
+# Open a torrent's detail screen, check its sections, open one file's sheet, then go back.
+# Sections come from app/torrent/[id].tsx:78-83 (TABS: Files, Peers, Trackers, Pieces) and the stat labels at :820-830.
+appId: com.maglev
+name: transfers-detail
+---
+- runFlow: subflows/onboard-if-needed.yaml
+- runFlow: subflows/clear-leftovers.yaml
+- runFlow:
+    file: subflows/add-from-card.yaml
+    env:
+      LINK: "magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.tracker.cl%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Fexplodie.org%3A6969%2Fannounce"
+- tapOn:
+    id: "transfer-card"
+- extendedWaitUntil:
+    visible: "Detail section"
+    timeout: 60000
+# SegmentedControl accessibilityLabel: app/torrent/[id].tsx:851
+- assertVisible: "Files"
+- assertVisible: "Peers"
+- assertVisible: "Trackers"
+- assertVisible: "Pieces"
+# Since 0.30 the default Compact download page (Settings > Appearance > Download page) has no six-box grid: the "Download" and "Size"
+# boxes (components/detail/TorrentStats.tsx) only show in Detailed. Compact shows the progress card, a
+# Speed row and the Saved to row, so check those instead.
+- assertVisible: "Speed"
+- assertVisible: "Saved to"
+- tapOn: "Files"
+# File row label: `${file.path}, ${size}, ${pct} percent, ${priority}` (components/detail/FileListRow.tsx:48). Rows are sorted by name and the
+# list is long (Sintel has subtitle files before the .mp4, and the torrent can finish in seconds on CI), so match any row, not an .mp4.
+- extendedWaitUntil:
+    visible: ".*, [0-9.]+ [KMGT]?B, [0-9]+ percent, .*"
+    timeout: 90000
+- tapOn:
+    text: ".*, [0-9.]+ [KMGT]?B, [0-9]+ percent, .*"
+    index: 0
+- assertVisible: "File priority"
+# Priority sheet title for one file: app/torrent/[id].tsx:974
+- tapOn: "Close"
+# Sheet close: components/ui/Sheet.tsx:164
+- tapOn: "Go back"
+# Screen back button: components/ui/Screen.tsx:38
+- extendedWaitUntil:
+    visible:
+      id: "transfer-card"
+    timeout: 20000
+- runFlow: subflows/remove-all-with-files.yaml
