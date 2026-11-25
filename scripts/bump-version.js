@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Maglev versions are <major>.<minor> (user decision 2026-11-11). app.json holds the truth:
+ * ReelNest versions are <major>.<minor> (user decision 2026-11-11). app.json holds the truth:
  *   expo.version              "0.1"
  *   expo.android.versionCode  major*1000 + minor  (ABI splits then use code*10 + abi digit)
  * package.json mirrors it as semver "<major>.<minor>.0" because npm requires three parts.

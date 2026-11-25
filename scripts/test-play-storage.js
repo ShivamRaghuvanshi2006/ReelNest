@@ -124,7 +124,7 @@ async function main() {
     const card = fs.readFileSync(path.join(__dirname, '..', 'components', 'TransferCard.tsx'), 'utf8');
     check('row Play uses the video icon, not the Resume triangle', /<IconButton icon="file-video"[^>]*playCopy\.a11y/.test(card) && !/<IconButton icon="play"[^>]*playCopy\.a11y/.test(card));
   }
-  const kt = fs.readFileSync(path.join(root, 'modules/maglev-engine/android/src/main/java/com/maglev/engine/service/StorageGuard.kt'), 'utf8');
+  const kt = fs.readFileSync(path.join(root, 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/service/StorageGuard.kt'), 'utf8');
   check('Kotlin notification copy equals the app copy', kt.includes(`"${copy.storageCopy.pausedTitle}"`) && kt.includes(`"${copy.storageCopy.freeUp}"`));
   const noBang = Object.values({ ...copy.storageCopy, ...copy.playCopy }).filter((v) => typeof v === 'string').every((s) => !/!|please|successfully/i.test(s));
   check('copy has no banned words', noBang);
@@ -137,9 +137,9 @@ async function main() {
   check('screen has no hex colours', !/#[0-9a-fA-F]{6}\b/.test(src));
 
   // Rust and Kotlin pieces exist.
-  const rs = fs.readFileSync(path.join(root, 'native/maglev-core/src/storage_guard.rs'), 'utf8');
+  const rs = fs.readFileSync(path.join(root, 'native/reelnest-core/src/storage_guard.rs'), 'utf8');
   check('Rust reserve constants', /500 \* 1024 \* 1024/.test(rs) && /200 \* 1024 \* 1024/.test(rs) && /RESERVE_DIVISOR: u64 = 50/.test(rs));
-  check('lib.rs declares storage_guard', /pub mod storage_guard;/.test(fs.readFileSync(path.join(root, 'native/maglev-core/src/lib.rs'), 'utf8')));
+  check('lib.rs declares storage_guard', /pub mod storage_guard;/.test(fs.readFileSync(path.join(root, 'native/reelnest-core/src/lib.rs'), 'utf8')));
 
   // Wiring.
   const card = fs.readFileSync(path.join(root, 'components/TransferCard.tsx'), 'utf8');
@@ -149,7 +149,7 @@ async function main() {
 
   // Delete size counts skipped files too (heldBytes, NATIVE_CONTRACT 18.4): deleting removes the whole folder.
   {
-    const { snapshotToTelemetry } = await import('../modules/maglev-engine/src/snapshotMapping.ts');
+    const { snapshotToTelemetry } = await import('../modules/reelnest-engine/src/snapshotMapping.ts');
     const base = { id: 'a'.repeat(40), name: 'Sintel', state: 'SEEDING', finished: true, progressBytes: 1600, totalBytes: 1600, uploadedBytes: 0, downBps: 0, upBps: 0, peersLive: 0, peersSeen: 0, etaSecs: -1, ratio: 0, seedingSecs: 0, pausedBy: null, error: null, outputFolder: '/x', addedAt: 0 };
     check('heldBytes reaches the app', snapshotToTelemetry({ ...base, heldBytes: 120001600 }).heldBytes === 120001600);
     check('an older engine without heldBytes falls back to the downloaded bytes', snapshotToTelemetry(base).heldBytes === 1600);

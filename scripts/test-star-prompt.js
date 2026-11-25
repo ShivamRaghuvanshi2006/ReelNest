@@ -97,7 +97,7 @@ const DAY = 24 * 60 * 60 * 1000;
   console.log('[copy]');
   const copy = await import('../constants/copy.ts');
   const c = copy.starCopy;
-  check('title and body', c.title === 'Enjoying Maglev?' && c.body === 'A star on GitHub helps other people find it.');
+  check('title and body', c.title === 'Enjoying ReelNest?' && c.body === 'A star on GitHub helps other people find it.');
   check('buttons', c.star === 'Star on GitHub' && c.notNow === 'Not now' && c.never === "Don't ask again");
 
   console.log(`\n${passed} passed, ${failed} failed`);

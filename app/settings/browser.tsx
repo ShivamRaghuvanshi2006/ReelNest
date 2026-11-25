@@ -6,9 +6,9 @@ import {
   resetBlocklist,
   type BlocklistErrorCode,
   type BlocklistInfo,
-} from 'maglev-engine';
+} from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { haptic } from '../../constants/haptics';
 import { bookmarkCopy } from '../../constants/bookmarkCopy';
@@ -51,7 +51,7 @@ function formatDate(ms: number): string {
 export default function BrowserSettings() {
   const { colors } = useTheme();
   const s = useMemo(() => makeStyles(colors), [colors]);
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const router = useRouter();
   const [prefs, setPrefs] = useBrowserPrefs();
   const [info, setInfo] = useState<BlocklistInfo | null>(null);

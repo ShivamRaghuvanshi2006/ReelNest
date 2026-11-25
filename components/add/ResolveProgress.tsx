@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { maglevEngine, type ResolveActivity } from 'maglev-engine';
+import { reelnestEngine, type ResolveActivity } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { Button, ProgressBar } from '../ui';
@@ -37,7 +37,7 @@ export function ResolveProgress({ infoHash, starting, onStartNow, onCancel }: Pr
     let alive = true;
     const poll = () => {
       if (!infoHash) return;
-      maglevEngine
+      reelnestEngine
         .getResolveActivity(infoHash)
         .then((res) => {
           if (alive) setActivity(res.ok ? res : null);

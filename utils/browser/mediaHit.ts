@@ -64,10 +64,10 @@ export const mediaMenuCopy = {
   copyVideoAddress: 'Copy video address',
   showFound: 'Show files found on this page',
   linkOptions: 'Link options',
-  imageInline: "This image is part of the page, so Maglev can't save it from here.",
-  videoBlob: "This video plays in a way Maglev can't save directly. Try the files found on this page.",
-  videoInline: "This video is part of the page, so Maglev can't save it from here.",
-  videoNone: 'This video has no address Maglev can save.',
+  imageInline: "This image is part of the page, so ReelNest can't save it from here.",
+  videoBlob: "This video plays in a way ReelNest can't save directly. Try the files found on this page.",
+  videoInline: "This video is part of the page, so ReelNest can't save it from here.",
+  videoNone: 'This video has no address ReelNest can save.',
 } as const;
 
 const MAX_URL = 4096;
@@ -145,7 +145,7 @@ export function classifyVideoUrl(url: string): 'direct' | 'hls' | 'dash' {
 }
 
 /**
- * Parses what the page script posted: a JSON string or an object `{type:'maglev-media-hit', kind, src, poster?,
+ * Parses what the page script posted: a JSON string or an object `{type:'reelnest-media-hit', kind, src, poster?,
  * linkHref?, alt?, pageUrl}`. Returns null for anything else, for a kind of `link` (the native link menu owns
  * those) and for a payload with no media at all.
  */
@@ -161,7 +161,7 @@ export function parseMediaHit(raw: unknown): MediaHit | null {
   }
   if (!o || typeof o !== 'object') return null;
   const p = o as Record<string, unknown>;
-  if (p.type !== 'maglev-media-hit') return null;
+  if (p.type !== 'reelnest-media-hit') return null;
   if (p.kind !== 'image' && p.kind !== 'video') return null;
   const pageUrl = typeof p.pageUrl === 'string' && split(p.pageUrl) ? p.pageUrl : '';
   const url = resolveHttpUrl(p.src, pageUrl);

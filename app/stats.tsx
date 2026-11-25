@@ -193,7 +193,7 @@ export default function StatsScreen() {
   let hint = '';
   if (off) {
     r1 = 'Stats are off';
-    r2 = "Maglev isn't keeping stats right now.";
+    r2 = "ReelNest isn't keeping stats right now.";
   } else if (failed) {
     r1 = "Stats couldn't be read";
     r2 = 'Try again later.';

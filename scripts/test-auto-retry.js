@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-const KT = 'modules/maglev-engine/android/src/main/java/com/maglev/engine/';
+const KT = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/';
 
 let failed = 0;
 function check(name, cond, extra) {
@@ -18,9 +18,9 @@ function check(name, cond, extra) {
 }
 
 async function main() {
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const { migrateSettings } = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
-  const { toGovernance, toNativeConfig } = await import('../modules/maglev-engine/src/toNativeConfig.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const { migrateSettings } = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
+  const { toGovernance, toNativeConfig } = await import('../modules/reelnest-engine/src/toNativeConfig.ts');
 
   console.log('settings');
   const b = DEFAULT_SETTINGS.bandwidth;
@@ -38,10 +38,10 @@ async function main() {
   const g = toGovernance(s);
   check('pushed to Kotlin in the governance payload', g.autoRetry === 'off' && g.autoRetryDelayMin === 15 && g.autoRetryAlways === true);
   check('not sent to Rust', !Object.keys(toNativeConfig(s)).some((k) => /retry/.test(k)));
-  check('mock keeps them', /autoRetryDelayMin/.test(read('modules/maglev-engine/src/MaglevMockEngine.ts')));
+  check('mock keeps them', /autoRetryDelayMin/.test(read('modules/reelnest-engine/src/ReelNestMockEngine.ts')));
 
   console.log('Kotlin');
-  check('module saves them from setGovernance', /AutoRetry\.save\(/.test(read(KT + 'MaglevEngineModule.kt')));
+  check('module saves them from setGovernance', /AutoRetry\.save\(/.test(read(KT + 'ReelNestEngineModule.kt')));
   const w = read(KT + 'AutoRetryWorker.kt');
   check('worker is a CoroutineWorker', /class AutoRetryWorker[\s\S]{0,80}CoroutineWorker/.test(w));
   check('one-time work, unique per download, delayed', /OneTimeWorkRequest\.Builder\(AutoRetryWorker/.test(w) && /enqueueUniqueWork\(/.test(w) && /setInitialDelay\(/.test(w));

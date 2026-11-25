@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import type { DownloadSnapshot } from 'maglev-engine';
+import type { DownloadSnapshot } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, alpha, radius, spacing, touch, type } from '../../constants/theme';
 import { formatEta } from '../../utils/rates';

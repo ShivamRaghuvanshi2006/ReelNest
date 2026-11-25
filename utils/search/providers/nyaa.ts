@@ -5,7 +5,7 @@ import { extractBlocks, parseSize, tagText, toInt, toMs } from '../text.ts';
 
 export const ID = 'nyaa';
 
-// Maglev category -> Nyaa `c` code. 'all' and 'other' search everything.
+// ReelNest category -> Nyaa `c` code. 'all' and 'other' search everything.
 const NYAA_CODES: Partial<Record<Category, string>> = {
   anime: '1_0',
   music: '2_0',

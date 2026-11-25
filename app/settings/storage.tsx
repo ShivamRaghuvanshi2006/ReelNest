@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Stack } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
-import { useMaglevEngine as useEngine } from '../../context/EngineContext';
+import { useReelNestEngine as useEngine } from '../../context/EngineContext';
 import { Banner, Button, ListRow, Toggle } from '../../components/ui';
 import { Caption, Card, SettingsPage, friendlyPath } from '../../components/settings/SettingsParts';
 import { banners, notices } from '../../constants/copy';
 
 const hideCopy = {
   title: 'Hide from gallery',
-  subtitle: "Photos and video apps won't list Maglev's downloads. Your files stay in the folder.",
+  subtitle: "Photos and video apps won't list ReelNest's downloads. Your files stay in the folder.",
   caption: 'Turning this off shows only new files. Files already hidden show up the next time they are scanned.',
 } as const;
 
@@ -22,7 +22,7 @@ export default function StorageSettings() {
   const change = async () => {
     setError(null);
     try {
-      const res = await maglevEngine.pickDownloadFolder();
+      const res = await reelnestEngine.pickDownloadFolder();
       if ('cancelled' in res) return;
       updateSettings({ downloadFolder: { uri: res.uri, displayName: res.displayName, mode: res.mode } });
     } catch {

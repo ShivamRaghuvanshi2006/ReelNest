@@ -1,21 +1,21 @@
 # F-Droid submission notes
 
-Recipe: `distribution/fdroid/com.maglev.yml` (copy to `fdroiddata/metadata/com.maglev.yml`).
+Recipe: `distribution/fdroid/com.reelnest.yml` (copy to `fdroiddata/metadata/com.reelnest.yml`).
 `fdroid lint` and `fdroid rewritemeta` (fdroidserver 2.4.5) pass on it against stub `config/categories.yml` and
 `config/antiFeatures.yml`. Nothing was built: the recipe is untested on a buildserver. Run
-`fdroid build -v -l com.maglev` in an fdroiddata checkout (needs the Android SDK) before opening the merge request.
+`fdroid build -v -l com.reelnest` in an fdroiddata checkout (needs the Android SDK) before opening the merge request.
 
 ## What must change in the repo, ranked
 
 ### Blockers (the build cannot be accepted or cannot be reproduced without these)
 
-1. **`native/maglev-core/Cargo.lock` is gitignored** (`.gitignore` line 21, absent at tag `v0.19-beta`).
+1. **`native/reelnest-core/Cargo.lock` is gitignored** (`.gitignore` line 21, absent at tag `v0.19-beta`).
    F-Droid builds would resolve the newest semver-compatible crates on the day of the build, so two builds differ
    and a malicious or broken crate release goes straight into the APK. Fix: delete the `Cargo.lock` line from
-   `.gitignore`, commit `native/maglev-core/Cargo.lock`, and add `--locked` to `cargo ndk ... build --release` in both
+   `.gitignore`, commit `native/reelnest-core/Cargo.lock`, and add `--locked` to `cargo ndk ... build --release` in both
    `_rust-android.yml` and the recipe. Affects v0.19-beta; the recipe can only add `--locked` for a tag that has the file.
 2. **No pinned Rust toolchain.** `_rust-android.yml` uses `dtolnay/rust-toolchain@stable`. Add
-   `native/maglev-core/rust-toolchain.toml` (`[toolchain] channel = "1.91.1"`, targets for the three Android triples) and
+   `native/reelnest-core/rust-toolchain.toml` (`[toolchain] channel = "1.91.1"`, targets for the three Android triples) and
    change the recipe to read it, as cfait does: `export RUST_VERSION=$(sed -n 's/channel = "\(.*\)"/\1/p' rust-toolchain.toml)`.
    The recipe hardcodes `1.91.1` as a stand-in; set it to the version the release CI actually used.
 3. **Version code is generated, so the F-Droid bot cannot update it.** `plugins/withAbiSplits.js` makes
@@ -25,12 +25,12 @@ Recipe: `distribution/fdroid/com.maglev.yml` (copy to `fdroiddata/metadata/com.m
    updater a plain file: commit `distribution/fdroid/versions.txt` and use `UpdateCheckData`. Do not drop the ABI digit
    without a plan: Android refuses an upgrade to a lower versionCode (see comment in `withAbiSplits.js`).
 4. **Non-free network services need `AntiFeatures: NonFreeNet`.** The assistant calls `openrouter.ai`, `console.groq.com`
-   and `platform.claude.com` (grep of `utils/`, `context/`, `app/`, `modules/maglev-engine/src`). The recipe already
+   and `platform.claude.com` (grep of `utils/`, `context/`, `app/`, `modules/reelnest-engine/src`). The recipe already
    declares it. If the assistant is off by default and needs a user key, say so in the store description so reviewers
    do not read it as tracking. The search tab queries third-party torrent index sites (1337x, nyaa.si, thepiratebay.org and
    others). Reviewers may ask about the app's description of content; it is not an anti-feature by itself.
 5. **Release signing must stay out of the recipe path.** `plugins/withReleaseSigning.js` is already safe: it does nothing
-   without `MAGLEV_KEYSTORE_PATH`. But Expo's template signs `release` with the debug key, so the recipe deletes every
+   without `REELNEST_KEYSTORE_PATH`. But Expo's template signs `release` with the debug key, so the recipe deletes every
    `signingConfig ` line from `android/app/build.gradle` (same as the F-Droid React Native template). Keep the
    plugin's block free of `signingConfig ` lines outside the `if (...)` guard or the recipe's `sed` will break it.
 
@@ -54,7 +54,7 @@ Recipe: `distribution/fdroid/com.maglev.yml` (copy to `fdroiddata/metadata/com.m
    `--ignore-scripts` so no postinstall can download binaries. If a dependency needs its script, run it in
    `prebuild`. `package-lock.json` is committed, good.
 10. **Google components.** None found. `package.json` has no `expo-notifications`, `expo-location`, `expo-camera`,
-    `react-native-device-info`, firebase, or Play Services. `modules/maglev-engine/android/build.gradle` uses AndroidX
+    `react-native-device-info`, firebase, or Play Services. `modules/reelnest-engine/android/build.gradle` uses AndroidX
     only (`work-runtime-ktx` is Apache-2.0 and from `google()` maven, which F-Droid accepts). If one is added later, use
     the `firebase-stub` srclib and `sed` lines in the F-Droid template. `expo-web-browser` and `react-native-webview`
     use the system WebView; no GMS.
@@ -62,7 +62,7 @@ Recipe: `distribution/fdroid/com.maglev.yml` (copy to `fdroiddata/metadata/com.m
     F-Droid flags unrecognised repositories. `android/build.gradle` is in `scanignore`; if reviewers reject that,
     `sed -i '/jitpack/d' android/build.gradle` in `prebuild`.
 12. **Non-code assets.** Fonts come from `@expo-google-fonts/*` (OFL) and icons from `pixelarticons` (MIT,
-    `assets/licenses/pixelarticons-LICENSE`). Fine. `native/maglev-core/vendor/librqbit/resources/test/*.bin` are test
+    `assets/licenses/pixelarticons-LICENSE`). Fine. `native/reelnest-core/vendor/librqbit/resources/test/*.bin` are test
     fixtures; add them to `scanignore` or `rm:` if the scanner flags them.
 
 ### Packaging and metadata
@@ -71,7 +71,7 @@ Recipe: `distribution/fdroid/com.maglev.yml` (copy to `fdroiddata/metadata/com.m
     full_description.txt,images/phoneScreenshots/*.png,changelogs/<versionCode>.txt}` or the listing will be empty.
     Screenshots exist in `store/images/canon/`. Changelog source: `release-notes/<version>.md`.
 14. **License.** `LICENSE` is the GPLv3 text and `package.json` says `GPL-3.0-only`. The recipe uses `GPL-3.0-only`. The
-    module `modules/maglev-engine/package.json` says `MIT`; MIT code inside a GPLv3 app is fine. The vendored
+    module `modules/reelnest-engine/package.json` says `MIT`; MIT code inside a GPLv3 app is fine. The vendored
     `librqbit` / `librqbit-core` are Apache-2.0 / MIT per their own `LICENSE` files.
 15. **Tag naming.** `release-apk.yml` triggers on `v*`. Beta tags `v<maj>.<min>-beta` match the recipe's
     `UpdateCheckMode: Tags ^v[0-9]+\.[0-9]+-beta$`. F-Droid users get betas as stable unless you tag stable releases `v<maj>.<min>`
@@ -86,7 +86,7 @@ Short answer: not out of the box; feasible for arm64-v8a after items 1 and 2, wi
 - F-Droid's reproducible flow copies the upstream v2/v3 signature onto its own unsigned APK, so the two APKs must be
   byte-identical apart from the signature
   ([Reproducible Builds](https://f-droid.org/docs/Reproducible_Builds/)). The recipe sets `binary:` per ABI to the GitHub
-  release asset `Maglev-v<ver>-<abi>.apk` and `AllowedAPKSigningKeys` (placeholder; fill with the release cert SHA-256).
+  release asset `ReelNest-v<ver>-<abi>.apk` and `AllowedAPKSigningKeys` (placeholder; fill with the release cert SHA-256).
   `withReleaseSigning.js` already signs with v2+v3 only (`enableV1Signing = false`), which is what copying needs.
 - The docs say NDK output is the most fragile part: "Anything built using the NDK will be much more sensitive."
   Differences to remove: CI builds Rust on `ubuntu-latest` with an unpinned toolchain and NDK r27c while Gradle uses
@@ -97,7 +97,7 @@ Short answer: not out of the box; feasible for arm64-v8a after items 1 and 2, wi
   release APK from the tag with the pinned toolchain.
 - `expo prebuild` template drift (item 8), the committed `Cargo.lock` (item 1) and the Hermes bytecode (built from the JS bundle,
   deterministic given the same Node and `package-lock.json`) are the remaining variables.
-- Per-ABI split APKs are fine: the recipe builds with `MAGLEV_ABIS=<abi>` so each split only has one native set.
+- Per-ABI split APKs are fine: the recipe builds with `REELNEST_ABIS=<abi>` so each split only has one native set.
   The universal APK is built too but not published.
 - If the Rust library stays unreproducible, drop `binary:` and `AllowedAPKSigningKeys` and let F-Droid sign. Users who installed
   from GitHub then cannot upgrade in place (different signing key); that is the cost of skipping verification.

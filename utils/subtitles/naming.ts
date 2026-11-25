@@ -9,7 +9,7 @@ import type { SubFormat } from './types.ts';
 
 const VIDEO_EXT = /\.(mkv|mp4|m4v|avi|mov|webm|ts|m2ts|mts|wmv|flv|mpg|mpeg|mpe|3gp|ogv|divx|vob)$/i;
 
-/** A file name is at most 255 UTF-8 bytes; the temporary file next to it adds ".<name>.maglev-tmp" (12 bytes). */
+/** A file name is at most 255 UTF-8 bytes; the temporary file next to it adds ".<name>.reelnest-tmp" (12 bytes). */
 const NAME_LIMIT = 255;
 const TEMP_OVERHEAD = 12;
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The Maglev mark's motion: generated frame sets (scripts/build-logo.py -> markPaths.ts) and the
+// The pixel-train illustration's motion: generated frame sets (scripts/build-logo.py -> markPaths.ts) and the
 // pure helpers in components/brand/markMotion.ts (boost travel, stepped ranges, tap and arrival gates).
 // Needs Node 22.18+ (runs the TypeScript source directly via type stripping).
 

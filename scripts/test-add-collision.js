@@ -9,8 +9,8 @@ function check(name, cond) {
   if (cond) console.log(`  ok   ${name}`);
   else { failed++; console.error(`  FAIL ${name}`); }
 }
-const engine = read('native/maglev-core/src/engine.rs');
-const types = read('native/maglev-core/src/types.rs');
+const engine = read('native/reelnest-core/src/engine.rs');
+const types = read('native/reelnest-core/src/types.rs');
 const add = engine.slice(engine.indexOf('async fn add_resolved'), engine.indexOf('fn is_known'));
 check('add_resolved picks a writable folder', add.includes('pick_writable_folder(') && add.includes('can_open_for_write'));
 check('picker is defined once and probes by opening for write', /pub fn pick_writable_folder/.test(types) && /OpenOptions::new\(\)\s*\.write\(true\)/.test(types));

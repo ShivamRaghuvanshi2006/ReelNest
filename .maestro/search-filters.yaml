@@ -1,5 +1,5 @@
 # Search "Sintel", switch category chips, change the sort, check results stay and the count updates.
-appId: com.maglev
+appId: com.ReelNest
 name: search-filters
 ---
 - runFlow: subflows/onboard-if-needed.yaml

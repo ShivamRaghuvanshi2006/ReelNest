@@ -67,7 +67,7 @@ async function main() {
   const buildContext = (system, history, budget, toolsTokens = 0) => ctx.buildContext(system, history, budget, toolsTokens);
   const SUMMARY_OK = 'f ok'; // digest of {"ok":true,"data":{...}} from a tool named f
 
-  const SYSTEM = 'You are the Maglev assistant. Rules follow.';
+  const SYSTEM = 'You are the ReelNest assistant. Rules follow.';
   const sum = (ms) => ms.reduce((n, m) => n + messageTokens(m), 0);
 
   /** Build a history of `turns` user turns. Tool results have sizes from `sizes`, in characters. */

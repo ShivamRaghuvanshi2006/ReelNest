@@ -1,4 +1,4 @@
-// SM-32 files changed outside Maglev, plus the copy for SM-33 and SM-37 health banners (NATIVE_CONTRACT 18, 20).
+// SM-32 files changed outside ReelNest, plus the copy for SM-33 and SM-37 health banners (NATIVE_CONTRACT 18, 20).
 // Pure: no React, no IO. The detail screen runs the effects.
 // Anything not in the transition table is a no-op.
 
@@ -161,7 +161,7 @@ export function fileHealthBanner(state: FileHealthState): HealthBanner | null {
     const n = state.indices.length;
     return {
       tone: 'warning',
-      title: n === 1 ? '1 file was deleted outside Maglev.' : `${n} files were deleted outside Maglev.`,
+      title: n === 1 ? '1 file was deleted outside ReelNest.' : `${n} files were deleted outside ReelNest.`,
       buttons: [
         { id: 'stop', label: 'Stop downloading them', variant: 'secondary' },
         { id: 'again', label: 'Download again', variant: 'primary' },

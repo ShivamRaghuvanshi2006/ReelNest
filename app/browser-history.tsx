@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { ThemeColors, spacing, type } from '../constants/theme';
 import { haptic } from '../constants/haptics';
 import { empty, historyCopy, notices } from '../constants/copy';
@@ -78,7 +78,7 @@ export default function BrowserHistoryScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const [prefs] = useBrowserPrefs();
   const version = useHistoryVersion();
 

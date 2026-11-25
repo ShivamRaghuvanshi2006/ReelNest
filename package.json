@@ -1,5 +1,5 @@
 {
-  "name": "maglev",
+  "name": "reelnest",
   "version": "0.33.0",
   "main": "index.ts",
   "scripts": {
@@ -56,7 +56,7 @@
     "expo-status-bar": "~58.0.4",
     "expo-task-manager": "~58.0.13",
     "expo-web-browser": "~58.0.8",
-    "maglev-engine": "file:./modules/maglev-engine",
+    "reelnest-engine": "file:./modules/reelnest-engine",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-native": "0.88.1",

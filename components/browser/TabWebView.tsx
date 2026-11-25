@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
-  MaglevBrowser,
+  ReelNestBrowser,
   type BrowserBlockedCountEvent,
   type BrowserDownloadRequestEvent,
   type BrowserFindResultEvent,
@@ -15,13 +15,13 @@ import {
   type BrowserPopupBlockedEvent,
   type BrowserPopupRequestEvent,
   type BrowserRefusedEvent,
-  type MaglevBrowserRef,
-} from 'maglev-engine';
+  type ReelNestBrowserRef,
+} from 'reelnest-engine';
 import type { PopupPolicy } from '../../utils/prefs/browser';
 import { mediaHitScript } from '../../utils/browser/mediaHitScript';
 
 /**
- * The page script needs no nonce: it reports through the native call `__maglevMediaHit()` after a long press, so the
+ * The page script needs no nonce: it reports through the native call `__reelnestMediaHit()` after a long press, so the
  * per-page nonce of PageScan (which the view owns) is never used and '' is passed.
  */
 const MEDIA_HIT_SCRIPT = mediaHitScript('');
@@ -67,7 +67,7 @@ export interface TabWebViewProps {
   darkPages: boolean;
   handlers: TabHandlers;
   /** Hands the screen this tab's view ref (and null again on unmount). */
-  register: (id: string, ref: React.RefObject<MaglevBrowserRef | null> | null) => void;
+  register: (id: string, ref: React.RefObject<ReelNestBrowserRef | null> | null) => void;
 }
 
 /**
@@ -75,14 +75,14 @@ export interface TabWebViewProps {
  * ignores touches but stays mounted, so switching back is instant.
  */
 export function TabWebView({ id, url, active, adBlock, allowAdsHosts, desktopMode, textZoom, privateMode, popupPolicy, popupAllowHosts, pullToRefresh, refreshColor, refreshBackground, darkPages, handlers: h, register }: TabWebViewProps) {
-  const ref = useRef<MaglevBrowserRef>(null);
+  const ref = useRef<ReelNestBrowserRef>(null);
   useEffect(() => {
     register(id, ref);
     return () => register(id, null);
   }, [id, register]);
   return (
     <View style={[StyleSheet.absoluteFill, !active && styles.hidden]} pointerEvents={active ? 'auto' : 'none'}>
-    <MaglevBrowser
+    <ReelNestBrowser
       ref={ref}
       url={url}
       active={active}

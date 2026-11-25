@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
-import { maglevEngine, type DetailFile } from 'maglev-engine';
+import { reelnestEngine, type DetailFile } from 'reelnest-engine';
 import { useEngineState, useEngineStatus, useEngineTelemetry } from '../../context/EngineContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useListsVersion } from '../../utils/lists/hooks';
@@ -187,7 +187,7 @@ export function useSubtitleRequests(): void {
       const k = lid(id);
       if (detailBusy.current.has(k) || detailBusy.current.size >= MAX_DETAIL_INFLIGHT) return;
       detailBusy.current.add(k);
-      void maglevEngine
+      void reelnestEngine
         .getDetail(id)
         .then((r) => {
           if (r.ok) {
@@ -243,7 +243,7 @@ export function useSubtitleRequests(): void {
         writeCard(ref, target, 'none', languages[0]);
       };
       try {
-        // Already has its subtitles in the user's language: nothing is fetched. D11: if Maglev saved one, it is `saved`.
+        // Already has its subtitles in the user's language: nothing is fetched. D11: if ReelNest saved one, it is `saved`.
         if (existingFiles && languages.some((l) => hasExistingSubtitle(target.existing?.videoPath ?? file.fileName, l, existingFiles))) {
           const res = resolveExisting(prev);
           finish(res, prev.tries);
@@ -253,7 +253,7 @@ export function useSubtitleRequests(): void {
         const typed = entry.ask.searchName;
         let hash: string | undefined;
         if (kind === 'fingerprint' && !typed) {
-          const h = await hashIfComplete({ ...target, complete: true }, maglevEngine);
+          const h = await hashIfComplete({ ...target, complete: true }, reelnestEngine);
           if (ctl.signal.aborted) return;
           if (h.missing) {
             // F11: a video that is gone keeps an earlier needs-pick.
@@ -283,14 +283,14 @@ export function useSubtitleRequests(): void {
           }
           const saved = await downloadAndSave(
             { candidate: out.pick.candidate, provider, sourceName: provider.name, target, query: res.query, choice: 'normal', signal: ctl.signal },
-            { unzip: (b) => maglevEngine.unzipSubtitles(b), save: (v, n, b, r) => maglevEngine.saveSubtitle(v, n, b, r) },
+            { unzip: (b) => reelnestEngine.unzipSubtitles(b), save: (v, n, b, r) => reelnestEngine.saveSubtitle(v, n, b, r) },
           );
           if (ctl.signal.aborted && saved.status !== 'saved') return;
           if (saved.status === 'saved') {
             setRun(key, fileKey, { vp: target.videoPath, phase: 'saved', tries, saved: true }, { otherLang: null, epoch });
             writeCard(ref, target, 'saved', saved.language, saved.fileName);
           } else if (saved.status === 'name-taken' || saved.status === 'copies-full') {
-            // A subtitle of that name is already there; auto never replaces or keeps a second copy. D11: if Maglev saved
+            // A subtitle of that name is already there; auto never replaces or keeps a second copy. D11: if ReelNest saved
             // it, the video is `saved` and its card is left alone.
             const r = resolveExisting(prev);
             finish(r, tries);
@@ -417,7 +417,7 @@ export function useSubtitleRequests(): void {
           const complete = f.progressBytes >= f.length || (finished && videos.length === 1);
           const target = torrentTarget(t.id, info.folder, f, allPaths.map((path) => ({ path })));
           if (!target) {
-            // D9: a folder Maglev can't write to (a picked SAF folder) is `unavailable`, not `none`; nothing polls it.
+            // D9: a folder ReelNest can't write to (a picked SAF folder) is `unavailable`, not `none`; nothing polls it.
             if (!isSettledPhase(r.phase)) setRun(key, fileKey, { ...r, phase: 'unavailable' }, { epoch: ref.epoch });
             continue;
           }

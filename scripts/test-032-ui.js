@@ -34,14 +34,14 @@ async function main() {
   const addTorrent = read('app/add-torrent.tsx');
   for (const [name, src] of [['add-download', addDownload], ['add-torrent', addTorrent]]) {
     check(`${name}: Change uses pickFolder (not the default-saving pickDownloadFolder)`,
-      /pickFolderForThisDownload\(\(\) => maglevEngine\.pickFolder\(\)\)/.test(src) && !/pickDownloadFolder/.test(src));
+      /pickFolderForThisDownload\(\(\) => reelnestEngine\.pickFolder\(\)\)/.test(src) && !/pickDownloadFolder/.test(src));
     check(`${name}: an unsupported folder shows a plain notice`, /notices\.inline\.folderNotDirect/.test(src));
   }
   check('add-download passes the picked folder to startDownload', /\.\.\.\(folderPath \? \{ folder: folderPath \} : \{\}\)/.test(addDownload));
   check('add-torrent passes the picked folder as outputFolder (both add paths)',
     (addTorrent.match(/outputFolder: folder\?\.uri \?\? null/g) || []).length === 2);
   check('Settings, Storage and onboarding still set the default', /pickDownloadFolder/.test(read('app/settings/storage.tsx')) && /pickDownloadFolder/.test(read('app/onboarding.tsx')));
-  check('PickFolderResult carries the optional path', /path\?: string \| null/.test(read('modules/maglev-engine/src/MaglevEngine.types.ts')));
+  check('PickFolderResult carries the optional path', /path\?: string \| null/.test(read('modules/reelnest-engine/src/ReelNestEngine.types.ts')));
 
   // 2. "engine" -> "downloader" in copy
   console.log('Copy: engine -> downloader');
@@ -54,7 +54,7 @@ async function main() {
   check('error screen messages say downloader', /The downloader took too long to start\./.test(errScreen) && /The downloader didn't say why\./.test(errScreen));
   check("assistant NOT_READY says downloader", /The downloader isn't ready yet\./.test(read('utils/assistant/toolRunner.ts')));
   const gone = ['Engine failed to start', 'Start engine', 'The download engine'];
-  const shown = ['constants/copy.ts', 'utils/addErrorNotice.ts', 'app/engine-error.tsx', 'utils/assistant/toolRunner.ts', 'modules/maglev-engine/src/MaglevNativeBridge.ts']
+  const shown = ['constants/copy.ts', 'utils/addErrorNotice.ts', 'app/engine-error.tsx', 'utils/assistant/toolRunner.ts', 'modules/reelnest-engine/src/ReelNestNativeBridge.ts']
     .map((f) => read(f).split('\n').filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l)).join('\n'));
   for (const s of gone) check(`no "${s}" left in user-facing copy`, shown.every((t) => !t.includes(s)));
 
@@ -94,12 +94,12 @@ async function main() {
   const banner = read('components/settings/NetworkRestartBanner.tsx');
   check('banner says "Restart the downloader to apply these changes" with a Restart action',
     /restartTitle: 'Restart the downloader to apply these changes'/.test(read('constants/copy.ts')) && /restartAction: 'Restart'/.test(read('constants/copy.ts')) && /copy\.restartTitle/.test(banner));
-  check('restart calls the module restartEngine when present and treats ok:false as a failure', /typeof maglevEngine\.restartEngine === 'function'/.test(banner) && /ok === false/.test(banner));
+  check('restart calls the module restartEngine when present and treats ok:false as a failure', /typeof reelnestEngine\.restartEngine === 'function'/.test(banner) && /ok === false/.test(banner));
   check('restart has a busy state and notices for done and error', /setBusy\(true\)/.test(banner) && /copy\.restarted/.test(banner) && /copy\.restartFailed/.test(banner));
   check('banner appears on Network and Advanced', /NetworkRestartBanner/.test(network) && /NetworkRestartBanner/.test(advanced));
   check('old "Takes effect next launch" chip is gone', !/Takes effect next launch/.test(network + advanced + banner));
   check('block list row uses the danger subtitle tone', /subtitleTone=\{blocklistLine\.danger \? 'danger' : undefined\}/.test(advanced) && /subtitleTone === 'danger'/.test(read('components/ui/ListRow.tsx')));
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
   check('types: EffectiveConfig carries restartPending and the blocklist status', /restartPending: boolean/.test(types) && /export type BlocklistState = 'off' \| 'on' \| 'unreadable'/.test(types) && /restartEngine\(\): Promise<EngineResult>/.test(types));
 
   if (failed) {

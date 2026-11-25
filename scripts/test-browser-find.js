@@ -28,9 +28,9 @@ require('node:module').registerHooks({
   },
 });
 
-const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/MaglevBrowserView.kt');
-const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-const ts = read('modules/maglev-engine/src/MaglevBrowser.tsx');
+const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/ReelNestBrowserView.kt');
+const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+const ts = read('modules/reelnest-engine/src/ReelNestBrowser.tsx');
 const tab = read('components/browser/TabWebView.tsx');
 const bar = read('components/browser/FindBar.tsx');
 const sheet = read('components/browser/TextSizeSheet.tsx');
@@ -55,8 +55,8 @@ async function main() {
 
   console.log('module registration');
   check('the view declares onFindResult', /Events\([^)]*"onFindResult"/.test(mod));
-  check('Prop textZoom calls setTextZoom', /Prop\("textZoom"\) \{ view: MaglevBrowserView, value: Int -> view\.setTextZoom\(value\) \}/.test(mod));
-  check('findInPage, findNext and clearFind are AsyncFunctions on the view', /AsyncFunction\("findInPage"\) \{ view: MaglevBrowserView, query: String, promise: Promise/.test(mod) && /AsyncFunction\("findNext"\) \{ view: MaglevBrowserView, forward: Boolean, promise: Promise/.test(mod) && /AsyncFunction\("clearFind"\) \{ view: MaglevBrowserView, promise: Promise/.test(mod));
+  check('Prop textZoom calls setTextZoom', /Prop\("textZoom"\) \{ view: ReelNestBrowserView, value: Int -> view\.setTextZoom\(value\) \}/.test(mod));
+  check('findInPage, findNext and clearFind are AsyncFunctions on the view', /AsyncFunction\("findInPage"\) \{ view: ReelNestBrowserView, query: String, promise: Promise/.test(mod) && /AsyncFunction\("findNext"\) \{ view: ReelNestBrowserView, forward: Boolean, promise: Promise/.test(mod) && /AsyncFunction\("clearFind"\) \{ view: ReelNestBrowserView, promise: Promise/.test(mod));
 
   console.log('TS wrapper');
   check('the result event type', /BrowserFindResultEvent = \{ active: number; total: number; done: boolean \}/.test(ts));

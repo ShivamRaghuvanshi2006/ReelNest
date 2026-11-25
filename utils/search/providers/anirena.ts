@@ -1,6 +1,6 @@
 // Ported from prajwalch/TorrentSearch (MIT), https://github.com/prajwalch/TorrentSearch/blob/main/app/src/main/kotlin/com/prajwalch/torrentsearch/providers/AniRena.kt
 // TorrentSearch scrapes the old HTML site and reads the magnet from a redirect header. The current site has an RSS
-// feed with no hash, and the detail page shows the info hash, so Maglev uses RSS plus `resolveMagnet`.
+// feed with no hash, and the detail page shows the info hash, so ReelNest uses RSS plus `resolveMagnet`.
 import type { Category, ParseContext, SearchProvider, SearchResult } from '../types.ts';
 import { httpText, ProviderError } from '../http.ts';
 import { buildMagnet, normalizeInfoHash } from '../magnet.ts';

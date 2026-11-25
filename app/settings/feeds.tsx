@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
-import type { FeedAutomationStatus, FeedRule } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
+import type { FeedAutomationStatus, FeedRule } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { Button, ListRow, SectionHeader, Toggle } from '../../components/ui';
@@ -57,7 +57,7 @@ export default function AutoDownloadSettings() {
 
   const refresh = useCallback(async () => {
     try {
-      setStatus(await maglevEngine.getFeedAutomationStatus());
+      setStatus(await reelnestEngine.getFeedAutomationStatus());
     } catch {
       setStatus(null);
     }
@@ -75,7 +75,7 @@ export default function AutoDownloadSettings() {
   const checkNow = async () => {
     setChecking(true);
     try {
-      await maglevEngine.runFeedCheckNow();
+      await reelnestEngine.runFeedCheckNow();
       // The check runs in the background; look again once it has had time to start.
       setTimeout(() => void refresh(), 2500);
     } catch {

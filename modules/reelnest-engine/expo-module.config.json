@@ -1,0 +1,6 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "modules": ["com.reelnest.engine.ReelNestEngineModule", "com.reelnest.engine.watch.ReelNestWatchModule", "com.reelnest.engine.share.ReelNestQuickShareModule"]
+  }
+}

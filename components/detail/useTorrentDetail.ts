@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
-import { maglevEngine, type Detail } from 'maglev-engine';
+import { reelnestEngine, type Detail } from 'reelnest-engine';
 import { notices } from '../../constants/copy';
 
 export type DetailStatus = 'loading' | 'ready' | 'missing' | 'error';
@@ -33,7 +33,7 @@ export function useTorrentDetail(id: string | undefined, wantPieces: boolean) {
         if (inFlight.current) return;
         inFlight.current = true;
         try {
-          const res = await maglevEngine.getDetail(id);
+          const res = await reelnestEngine.getDetail(id);
           if (!alive) return;
           if (res.ok) {
             hasData.current = true;
@@ -43,7 +43,7 @@ export function useTorrentDetail(id: string | undefined, wantPieces: boolean) {
             setTick((t) => t + 1);
             if (wantRef.current) {
               try {
-                const cells = await maglevEngine.getPieceBitfield(id);
+                const cells = await reelnestEngine.getPieceBitfield(id);
                 if (alive) setPieces(cells);
               } catch {
                 // pieces are optional; keep the last grid

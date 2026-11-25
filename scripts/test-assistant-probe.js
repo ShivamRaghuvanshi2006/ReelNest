@@ -40,7 +40,7 @@ async function main() {
   check('bearer key in the header', seen.init.headers.Authorization === 'Bearer sk-secret');
   check('no attribution headers to a non-OpenRouter provider', !('HTTP-Referer' in seen.init.headers) && !('X-Title' in seen.init.headers));
   await probeModel({ ...INPUT, preset: 'openrouter', baseUrl: 'https://openrouter.ai/api/v1' }, spy);
-  check('OpenRouter probe sends attribution', seen.init.headers['HTTP-Referer'] === 'https://github.com/Kaos599/Maglev' && seen.init.headers['X-Title'] === 'Maglev' && seen.init.headers.Authorization === 'Bearer sk-secret');
+  check('OpenRouter probe sends attribution', seen.init.headers['HTTP-Referer'] === 'https://github.com/ShivamRaghuvanshi2006/ReelNest' && seen.init.headers['X-Title'] === 'ReelNest' && seen.init.headers.Authorization === 'Bearer sk-secret');
   const body = JSON.parse(seen.init.body);
   check('model is sent', body.model === 'gpt-5-nano');
   check('non-streaming', body.stream === false);
@@ -102,7 +102,7 @@ async function main() {
   const m2 = reduceProvider(testing, await run(res(401, {})));
   check('401 event -> invalid with the bad-key copy', m2.state.kind === 'invalid' && /didn't accept this key/.test(m2.state.reason));
   const m3 = reduceProvider(testing, await run(res(200, { choices: [{ message: { content: 'x' } }] })));
-  check('no tool support -> invalid', m3.state.kind === 'invalid' && /can't work with Maglev's actions/.test(m3.state.reason));
+  check('no tool support -> invalid', m3.state.kind === 'invalid' && /can't work with ReelNest's actions/.test(m3.state.reason));
 
   // ---- PKCE ----
   console.log('pkce');
@@ -122,7 +122,7 @@ async function main() {
   check('auth URL host and path', url.origin === 'https://openrouter.ai' && url.pathname === '/auth');
   check('auth URL carries the challenge and S256', url.searchParams.get('code_challenge') === challenge && url.searchParams.get('code_challenge_method') === 'S256');
   check('auth URL has no callback_url (headless mode)', !url.searchParams.has('callback_url'));
-  check('auth URL names the key Maglev', url.searchParams.get('key_label') === 'Maglev');
+  check('auth URL names the key ReelNest', url.searchParams.get('key_label') === 'ReelNest');
   check('auth URL never carries a verifier', !/verifier/.test(url.search));
 
   console.log('code parsing');

@@ -12,7 +12,7 @@ node scripts/eval-assistant/run.js --only 1,5,9
 node scripts/eval-assistant/run.js --fake    # scripted model, canned search, no network, no key
 node scripts/eval-assistant/run.js --only 16,19,22 --model openai/gpt-5-nano   # a subset on another model
 node scripts/eval-assistant/run.js --gap 8   # seconds between model requests (default 4)
-MAGLEV_EVAL_MODEL=openai/gpt-5-nano node scripts/eval-assistant/run.js   # same as --model; the flag wins
+REELNEST_EVAL_MODEL=openai/gpt-5-nano node scripts/eval-assistant/run.js   # same as --model; the flag wins
 ```
 
 Default model is `meta-llama/llama-3.3-70b-instruct:free`. Free models allow about 20 requests a minute and about

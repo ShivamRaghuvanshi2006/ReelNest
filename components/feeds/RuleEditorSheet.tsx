@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { FeedRule } from 'maglev-engine';
+import type { FeedRule } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { Button, Chip, ListRow, Sheet, TextField, Toggle } from '../ui';

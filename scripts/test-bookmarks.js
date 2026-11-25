@@ -128,7 +128,7 @@ function check(name, cond, extra) {
   const icons = read('components/icons.generated.ts');
   check('bookmark icon exists', /"?bookmark"?:\s*"/.test(icons));
   const fmt = read('utils/backup/format.ts');
-  check('bookmarks travel in the backup (the user\'s own choices), history does not', /bookmarks: 'maglev\.browser\.bookmarks\.v1'/.test(fmt) && !/history/i.test(fmt.replace(/Browsing history[^\n]*/g, '')));
+  check('bookmarks travel in the backup (the user\'s own choices), history does not', /bookmarks: 'reelnest\.browser\.bookmarks\.v1'/.test(fmt) && !/history/i.test(fmt.replace(/Browsing history[^\n]*/g, '')));
   check('backup restore merges bookmarks through the store', /importBookmarks/.test(read('utils/backup/io.ts')));
 
   if (failed) {

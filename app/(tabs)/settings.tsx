@@ -2,9 +2,9 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Keyboard, Linking, NativeScrollEvent, NativeSyntheticEvent, ScrollView, ScrollViewInstance, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Constants from 'expo-constants';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
-import { useMaglevEngine as useEngine } from '../../context/EngineContext';
+import { useReelNestEngine as useEngine } from '../../context/EngineContext';
 import { Banner, ListRow, Screen, SectionHeader } from '../../components/ui';
 import { BottomFade, MoreBelowPill } from '../../components/settings/MoreBelow';
 import { getMoreHintSeen, markMoreHintSeen, nearEnd } from '../../utils/prefs/moreHint';
@@ -25,7 +25,7 @@ import { useSubtitleSettings } from '../../components/subtitles-settings/useSubt
 import { SettingsSearchField, SettingsSearchResults } from '../../components/settings/SettingsSearch';
 
 const ACCENT_LABEL = {
-  lime: 'Lime',
+  yellow: 'Yellow',
   cyan: 'Cyan',
   pink: 'Pink',
   orange: 'Orange',
@@ -94,7 +94,7 @@ function NeedsAttention() {
           tone="warning"
           title={banners.settings.batteryRestricted.title}
           actionLabel="Allow background"
-          onAction={() => void maglevEngine.openBatterySettings().then(refreshPermissions)}
+          onAction={() => void reelnestEngine.openBatterySettings().then(refreshPermissions)}
         />,
       );
     }
@@ -106,7 +106,7 @@ function NeedsAttention() {
           title={banners.settings.legacyStorageDenied.title}
           body={banners.settings.legacyStorageDenied.body}
           actionLabel="Grant access"
-          onAction={() => void maglevEngine.requestLegacyStorage().then(refreshPermissions)}
+          onAction={() => void reelnestEngine.requestLegacyStorage().then(refreshPermissions)}
         />,
       );
     }

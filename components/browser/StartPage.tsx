@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, radius, spacing, touch, type } from '../../constants/theme';
 import { bookmarkCopy } from '../../constants/bookmarkCopy';
 import { haptic } from '../../constants/haptics';
@@ -49,7 +49,7 @@ export function StartPage({ onOpen, privateMode = false, frequent }: StartPagePr
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const [prefs] = useBrowserPrefs();
   const version = useHistoryVersion();
   const bookmarks = useBookmarks();

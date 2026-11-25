@@ -193,7 +193,7 @@ async function main() {
   check('tapMatchesLink: same site, other site, no link, image link', P.tapMatchesLink('ads.example.com', 'example.com') && !P.tapMatchesLink('good.com', 'ad.test') && !P.tapMatchesLink(null, 'ad.test') && P.tapMatchesLink('*', 'anything.test'));
   check('untrusted tap follows the policy (window: ask / block)', dn('ask', false, tt(true, false, false), 'window') === 'ask' && dn('block', false, tt(true, false, false), 'window') === 'blocked');
   check('untrusted tap redirect: ask / block', dn('ask', false, tt(true, false, false), 'redirect') === 'ask' && dn('block', false, tt(true, false, false), 'redirect') === 'blocked');
-  check('TAP_MS matches Kotlin', P.TAP_MS === 3000 && /TAP_MS = 3000L/.test(require('fs').readFileSync(require('path').join(__dirname, '..', 'modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/RegistrableHost.kt'), 'utf8')));
+  check('TAP_MS matches Kotlin', P.TAP_MS === 3000 && /TAP_MS = 3000L/.test(require('fs').readFileSync(require('path').join(__dirname, '..', 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/RegistrableHost.kt'), 'utf8')));
 
   console.log('T5 pop-up prompt');
   const rq = (url, kind = 'window', sourceUrl = 'https://www.Source.com/page') => ({ url, kind, sourceUrl });

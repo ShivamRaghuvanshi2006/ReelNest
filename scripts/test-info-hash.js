@@ -28,7 +28,7 @@ function hexToBase32(hex) {
 const BASE32 = hexToBase32(HEX);
 
 async function main() {
-  const M = await import('../modules/maglev-engine/src/magnet.ts');
+  const M = await import('../modules/reelnest-engine/src/magnet.ts');
   const { parseSource, parseMagnet, normalizeInfoHash } = M;
 
   console.log('bare info hash');

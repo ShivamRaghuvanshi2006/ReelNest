@@ -25,7 +25,7 @@ export interface UpdatePrefs {
 }
 
 const UPDATE_MODES: readonly UpdateMode[] = ['ask', 'download', 'auto'];
-const KEY = 'maglev.update.prefs.v1';
+const KEY = 'reelnest.update.prefs.v1';
 
 export function defaultUpdatePrefs(): UpdatePrefs {
   return { updateMode: 'download', updateAutoCheck: true, lastCheckAt: null, skippedVersion: null, pending: null, available: null, notifiedVersion: null, showHighlights: true };

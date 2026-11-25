@@ -3,8 +3,8 @@
  * The request carries no token and nothing but the app version in its User-Agent.
  */
 
-const RELEASES_URL = 'https://api.github.com/repos/Kaos599/Maglev/releases/latest';
-const ISSUES_URL = 'https://github.com/Kaos599/Maglev/issues/new';
+const RELEASES_URL = 'https://api.github.com/repos/ShivamRaghuvanshi2006/ReelNest/releases/latest';
+const ISSUES_URL = 'https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/new';
 const CHECK_TIMEOUT_MS = 15_000;
 const NOTES_MAX_CHARS = 4000;
 /** versionCode % 10 per plugins/withAbiSplits.js. */
@@ -75,14 +75,14 @@ interface RawAsset {
   size?: unknown;
 }
 
-/** The asset `Maglev-<tag>-<abi>.apk` with a `sha256:<64 hex>` digest, or null. */
+/** The asset `ReelNest-<tag>-<abi>.apk` with a `sha256:<64 hex>` digest, or null. */
 function chooseAsset(
   assets: unknown,
   tag: string,
   abi: Abi | null,
 ): { apkUrl: string; sha256: string; size: number } | null {
   if (!abi || !Array.isArray(assets)) return null;
-  const wanted = `Maglev-${tag}-${abi}.apk`;
+  const wanted = `ReelNest-${tag}-${abi}.apk`;
   const a = (assets as RawAsset[]).find((x) => x && x.name === wanted);
   if (!a || typeof a.browser_download_url !== 'string') return null;
   const d = typeof a.digest === 'string' ? /^sha256:([0-9a-fA-F]{64})$/.exec(a.digest) : null;
@@ -105,7 +105,7 @@ export function parseRelease(json: unknown, installed: Installed): UpdateInfo | 
     version: tag.slice(1),
     tag,
     notes,
-    pageUrl: typeof r.html_url === 'string' ? r.html_url : `https://github.com/Kaos599/Maglev/releases/tag/${tag}`,
+    pageUrl: typeof r.html_url === 'string' ? r.html_url : `https://github.com/ShivamRaghuvanshi2006/ReelNest/releases/tag/${tag}`,
     apkUrl: asset.apkUrl,
     sha256: asset.sha256,
     size: asset.size,
@@ -133,7 +133,7 @@ export async function checkForUpdate(
     let res;
     try {
       res = await fetchImpl(RELEASES_URL, {
-        headers: { Accept: 'application/vnd.github+json', 'User-Agent': `Maglev/${installed.version}` },
+        headers: { Accept: 'application/vnd.github+json', 'User-Agent': `ReelNest/${installed.version}` },
         signal: controller?.signal,
         // Never send the browser's github.com cookies (docs/NATIVE_CONTRACT.md section 30).
         credentials: 'omit',

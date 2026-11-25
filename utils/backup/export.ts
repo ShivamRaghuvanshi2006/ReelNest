@@ -1,9 +1,9 @@
 /**
  * Builds the backup object from what the app already has. Pure: the engine and the stores are injected.
  */
-import { SETTINGS_SCHEMA_VERSION, type MaglevSettings } from '../../modules/maglev-engine/src/MaglevSettings.types.ts';
+import { SETTINGS_SCHEMA_VERSION, type ReelNestSettings } from '../../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 import type { StatsSection } from '../stats/store.ts';
-import type { DownloadSnapshot, Snapshot } from '../../modules/maglev-engine/src/MaglevEngine.types.ts';
+import type { DownloadSnapshot, Snapshot } from '../../modules/reelnest-engine/src/ReelNestEngine.types.ts';
 import {
   BACKUP_EXTENSION,
   BACKUP_FORMAT,
@@ -29,7 +29,7 @@ export interface TorrentRestoreData {
 export interface ExportDeps {
   appVersion: string;
   now: () => number;
-  settings: MaglevSettings;
+  settings: ReelNestSettings;
   /** The parsed kv value for a key, or undefined when nothing is stored. */
   readPref: (key: PrefKey) => unknown;
   torrents: Snapshot[];
@@ -126,5 +126,5 @@ export function serializeBackup(b: Backup): string {
 export function backupFileName(now: number): string {
   const d = new Date(now);
   const p = (n: number) => String(n).padStart(2, '0');
-  return `maglev-${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}${BACKUP_EXTENSION}`;
+  return `reelnest-${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}${BACKUP_EXTENSION}`;
 }

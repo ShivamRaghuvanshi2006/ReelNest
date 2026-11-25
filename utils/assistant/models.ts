@@ -10,7 +10,7 @@
 import { presetById, type PresetId } from '../prefs/assistant.ts';
 
 export const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models';
-export const MODELS_CACHE_KEY = 'maglev.assistant.models.v1';
+export const MODELS_CACHE_KEY = 'reelnest.assistant.models.v1';
 /** The list is fetched at most once a day. */
 const MODELS_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -197,10 +197,10 @@ export function modelDisplayName(prefs: { presetId: PresetId; model: string; mod
 
 // ---- Attribution (OpenRouter only) ----
 
-const APP_REFERER = 'https://github.com/Kaos599/Maglev';
-const APP_TITLE = 'Maglev';
+const APP_REFERER = 'https://github.com/ShivamRaghuvanshi2006/ReelNest';
+const APP_TITLE = 'ReelNest';
 
-/** Headers that identify Maglev to OpenRouter. Empty for every other provider: nothing is sent to them. */
+/** Headers that identify ReelNest to OpenRouter. Empty for every other provider: nothing is sent to them. */
 export function attributionHeaders(presetId: string): Record<string, string> {
   if (presetId !== 'openrouter') return {};
   return { 'HTTP-Referer': APP_REFERER, 'X-Title': APP_TITLE };

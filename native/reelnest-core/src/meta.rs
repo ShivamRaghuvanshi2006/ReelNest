@@ -1,0 +1,276 @@
+//! ReelNest-side torrent metadata, persisted as `sessionDir/reelnest_meta.json`.
+//!
+//! librqbit persists torrents, fastresume bitfields and its own paused flag. This file adds what
+//! librqbit does not know: who paused a torrent, queue membership, `added_at`, seeding time,
+//! cumulative upload, pending magnet links, the active governance blocks and the last applied config.
+
+use std::collections::BTreeMap;
+use std::io::Write;
+use std::path::{Path, PathBuf};
+
+use serde::{Deserialize, Serialize};
+
+use crate::config::NativeConfig;
+use crate::priority::FilePriorityEntry;
+use crate::timing::Timing;
+use crate::types::ErrorInfo;
+
+pub const META_FILE: &str = "reelnest_meta.json";
+
+/// A magnet link that is still looking for its metadata. Survives a restart.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PendingAdd {
+    pub source: String,
+    pub name: Option<String>,
+    pub only_files: Option<Vec<u32>>,
+    pub output_folder: Option<String>,
+    pub sequential: bool,
+    /// Per-file choices to apply once the metadata arrives.
+    #[serde(default)]
+    pub file_priorities: Option<Vec<FilePriorityEntry>>,
+    /// Set when the lookup failed. Cleared on the next start.
+    #[serde(default)]
+    pub error: Option<ErrorInfo>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+#[serde(default)]
+pub struct TorrentMeta {
+    pub added_at: i64,
+    pub paused_by: Option<String>,
+    pub queued: bool,
+    /// Wall-clock milliseconds spent in SEEDING.
+    pub seeding_ms: u64,
+    pub uploaded_base: u64,
+    pub last_uploaded_seen: u64,
+    /// Highest verified byte count seen; used to tell "never started" from "files were deleted".
+    pub max_progress_bytes: u64,
+    pub limits_waived: bool,
+    /// "Resume anyway" (contract section 25): the exemptable rule tags do not pause this torrent.
+    pub allowed_anyway: bool,
+    /// The exemption was granted while the torrent was already complete (seeding), so finishing does not clear it.
+    pub allowed_anyway_seeding: bool,
+    pub sequential: bool,
+    pub last_error: Option<ErrorInfo>,
+    pub pending: Option<PendingAdd>,
+    /// Health tag (contract section 18.2): `files_missing`, `files_changed`, `storage_full`,
+    /// `storage_unavailable` or `no_peers`. While set the planner keeps the torrent paused.
+    pub health: Option<String>,
+    /// Wall-clock milliseconds when a magnet started looking for its metadata (section 20).
+    /// Set when the magnet is added, cleared when the metadata arrives.
+    pub resolving_since_ms: Option<i64>,
+    /// Active time, finish time and the network split (contract section 34.1). Missing in files from before 0.26.
+    pub timing: Timing,
+    /// Wall-clock milliseconds since a torrent with metadata, 0 bytes and no connected peer began
+    /// waiting for peers (section 20.1). Cleared as soon as a peer connects or a byte arrives.
+    /// Never saved: each process start gets a fresh window, so time the app was not running never counts
+    /// (a fast-resumed torrent can go live without a check that would reset it).
+    #[serde(skip)]
+    pub stalled_since_ms: Option<i64>,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct MetaFile {
+    pub version: u32,
+    pub torrents: BTreeMap<String, TorrentMeta>,
+    /// Governance reasons that currently block transfers.
+    pub blocked: Vec<String>,
+    pub config: Option<NativeConfig>,
+}
+
+pub struct MetaStore {
+    path: PathBuf,
+    pub data: MetaFile,
+    dirty: bool,
+}
+
+impl MetaStore {
+    /// Loads the file. A missing or unreadable file gives an empty store, never an error:
+    /// librqbit's own persistence still restores the torrents.
+    pub fn load(session_dir: &Path) -> Self {
+        let path = session_dir.join(META_FILE);
+        let data = std::fs::read(&path)
+            .ok()
+            .and_then(|b| serde_json::from_slice::<MetaFile>(&b).ok())
+            .unwrap_or_default();
+        Self {
+            path,
+            data,
+            dirty: false,
+        }
+    }
+
+    pub fn mark_dirty(&mut self) {
+        self.dirty = true;
+    }
+
+    pub fn is_dirty(&self) -> bool {
+        self.dirty
+    }
+
+    pub fn get(&self, id: &str) -> Option<&TorrentMeta> {
+        self.data.torrents.get(id)
+    }
+
+    /// Mutable access that does not mark the store dirty; call `mark_dirty` after a real change.
+    pub fn get_mut(&mut self, id: &str) -> Option<&mut TorrentMeta> {
+        self.data.torrents.get_mut(id)
+    }
+
+    /// Applies `f` to an entry and marks the store dirty.
+    pub fn update<R>(&mut self, id: &str, f: impl FnOnce(&mut TorrentMeta) -> R) -> Option<R> {
+        let r = self.data.torrents.get_mut(id).map(f);
+        if r.is_some() {
+            self.dirty = true;
+        }
+        r
+    }
+
+    pub fn insert(&mut self, id: &str, meta: TorrentMeta) {
+        self.dirty = true;
+        self.data.torrents.insert(id.to_string(), meta);
+    }
+
+    pub fn remove(&mut self, id: &str) -> Option<TorrentMeta> {
+        self.dirty = true;
+        self.data.torrents.remove(id)
+    }
+
+    pub fn contains(&self, id: &str) -> bool {
+        self.data.torrents.contains_key(id)
+    }
+
+    /// Atomic write: temp file, flush to disk, rename over the real file.
+    pub fn save(&mut self) -> std::io::Result<()> {
+        let bytes = serde_json::to_vec(&self.data).map_err(std::io::Error::other)?;
+        write_atomic(&self.path, &bytes)?;
+        self.dirty = false;
+        Ok(())
+    }
+}
+
+pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut tmp = path.as_os_str().to_owned();
+    tmp.push(".tmp");
+    let tmp = PathBuf::from(tmp);
+    {
+        let mut f = std::fs::File::create(&tmp)?;
+        f.write_all(bytes)?;
+        f.sync_all()?;
+    }
+    std::fs::rename(&tmp, path)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn temp_dir(tag: &str) -> PathBuf {
+        let d = std::env::temp_dir().join(format!("reelnest-meta-{tag}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&d);
+        std::fs::create_dir_all(&d).unwrap();
+        d
+    }
+
+    #[test]
+    fn round_trips_through_disk() {
+        let dir = temp_dir("rt");
+        let mut s = MetaStore::load(&dir);
+        assert!(s.data.torrents.is_empty());
+        s.insert(
+            "abc",
+            TorrentMeta {
+                added_at: 42,
+                paused_by: Some("fgs_timeout".into()),
+                queued: true,
+                ..Default::default()
+            },
+        );
+        s.data.blocked = vec!["wifi_only".into()];
+        let mut cfg = NativeConfig::default();
+        cfg.listen_port = 7000;
+        s.data.config = Some(cfg);
+        s.save().unwrap();
+        assert!(!s.is_dirty());
+        assert!(!dir.join("reelnest_meta.json.tmp").exists());
+
+        let s2 = MetaStore::load(&dir);
+        let m = s2.get("abc").unwrap();
+        assert_eq!(m.added_at, 42);
+        assert_eq!(m.paused_by.as_deref(), Some("fgs_timeout"));
+        assert!(m.queued);
+        assert_eq!(s2.data.blocked, vec!["wifi_only".to_string()]);
+        assert_eq!(s2.data.config.as_ref().unwrap().listen_port, 7000);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn corrupt_file_gives_empty_store() {
+        let dir = temp_dir("bad");
+        std::fs::write(dir.join(META_FILE), b"{not json").unwrap();
+        let s = MetaStore::load(&dir);
+        assert!(s.data.torrents.is_empty());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn missing_fields_default() {
+        let dir = temp_dir("old");
+        std::fs::write(
+            dir.join(META_FILE),
+            br#"{"torrents":{"x":{"added_at":5}}}"#,
+        )
+        .unwrap();
+        let s = MetaStore::load(&dir);
+        let m = s.get("x").unwrap();
+        assert_eq!(m.added_at, 5);
+        assert!(m.paused_by.is_none() && !m.queued);
+        // Files written before health existed load with no health and no resolve clock.
+        assert!(m.health.is_none() && m.resolving_since_ms.is_none() && m.stalled_since_ms.is_none());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn timing_round_trips_and_old_files_have_none() {
+        let dir = temp_dir("timing");
+        let mut s = MetaStore::load(&dir);
+        let mut t = Timing::new();
+        t.active_ms = 61_000;
+        t.session_bytes = 10;
+        t.bytes_mobile = 10;
+        s.insert("abc", TorrentMeta { timing: t.clone(), ..Default::default() });
+        s.insert("old", TorrentMeta { added_at: 1, ..Default::default() });
+        s.save().unwrap();
+        let s2 = MetaStore::load(&dir);
+        assert_eq!(s2.get("abc").unwrap().timing, t);
+        assert_eq!(s2.get("old").unwrap().timing, Timing::default());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn health_and_resolve_clock_round_trip() {
+        let dir = temp_dir("health");
+        let mut s = MetaStore::load(&dir);
+        s.insert(
+            "abc",
+            TorrentMeta {
+                health: Some("files_missing".into()),
+                resolving_since_ms: Some(1_700_000_000_000),
+                stalled_since_ms: Some(1_700_000_005_000),
+                ..Default::default()
+            },
+        );
+        s.save().unwrap();
+        let s2 = MetaStore::load(&dir);
+        let m = s2.get("abc").unwrap();
+        assert_eq!(m.health.as_deref(), Some("files_missing"));
+        assert_eq!(m.resolving_since_ms, Some(1_700_000_000_000));
+        // The stall clock is not saved (section 20.1): a reload starts a fresh window.
+        assert_eq!(m.stalled_since_ms, None);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+}

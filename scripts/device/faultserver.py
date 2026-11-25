@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fault-injecting LAN server for Maglev link-download tests (used by test-link-faults.sh).
+"""Fault-injecting LAN server for ReelNest link-download tests (used by test-link-faults.sh).
 
     python3 faultserver.py [--port 8766] [--log faultserver.log]
 
@@ -171,7 +171,7 @@ class H(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(description='Fault-injecting HTTP server for Maglev link-download tests')
+    ap = argparse.ArgumentParser(description='Fault-injecting HTTP server for ReelNest link-download tests')
     ap.add_argument('--port', type=int, default=8766)
     ap.add_argument('--log', default='faultserver.log', help='JSON-lines log, appended to')
     args = ap.parse_args()

@@ -3,7 +3,7 @@
  * the page's cookie, referer and user agent. The single-download sheet and the batch both use this path.
  * The engine and the header builder are passed in so the function runs without React or native modules.
  */
-import type { DownloadOptions, EngineResult, UrlProbe } from '../../modules/maglev-engine/src/MaglevEngine.types';
+import type { DownloadOptions, EngineResult, UrlProbe } from '../../modules/reelnest-engine/src/ReelNestEngine.types';
 import { pageUrlOption } from './pageUrlOption';
 
 export interface StartDeps {

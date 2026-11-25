@@ -4,6 +4,8 @@
 process.removeAllListeners('warning');
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('node:url');
+const load = (p) => import(pathToFileURL(p).href);
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 let failed = 0;
@@ -16,7 +18,7 @@ function check(name, cond, extra) {
 }
 
 (async () => {
-  const f = await import(path.join(root, 'components/settings/settingsFocusMatch.ts')).catch(() => null);
+  const f = await load(path.join(root, 'components/settings/settingsFocusMatch.ts')).catch(() => null);
   const m = f && f.pickAnchor;
   check('settingsFocusMatch exports pickAnchor', typeof m === 'function');
   if (m) {

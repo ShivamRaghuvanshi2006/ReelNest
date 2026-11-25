@@ -35,7 +35,7 @@ check('vocabulary is select, tap, commit, done, warn, fail', verbs.join(',') ===
 check('header documents every verb', verbs.every((v) => new RegExp(`\\b${v}\\b`).test(hapticsSrc.split('export')[0])));
 check('raw triggerHaptic is gone from constants/haptics.ts', !/triggerHaptic/.test(hapticsSrc));
 
-const files = [...walk(path.join(root, 'app')), ...walk(path.join(root, 'components')), ...walk(path.join(root, 'context')), ...walk(path.join(root, 'utils')), ...walk(path.join(root, 'modules/maglev-engine/src'))];
+const files = [...walk(path.join(root, 'app')), ...walk(path.join(root, 'components')), ...walk(path.join(root, 'context')), ...walk(path.join(root, 'utils')), ...walk(path.join(root, 'modules/reelnest-engine/src'))];
 
 const rawImports = files.filter((f) => /from\s+['"]expo-haptics['"]|require\(['"]expo-haptics['"]\)/.test(fs.readFileSync(f, 'utf8'))).map(rel);
 check('no expo-haptics import outside constants/haptics.ts', rawImports.length === 0, rawImports.join(', '));

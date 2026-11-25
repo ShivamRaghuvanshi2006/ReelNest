@@ -5,7 +5,7 @@ import { toInt, toMs } from '../text.ts';
 
 export const ID = 'archive';
 
-// Maglev category -> Internet Archive mediatype list. 'all' has no mediatype filter.
+// ReelNest category -> Internet Archive mediatype list. 'all' has no mediatype filter.
 const MEDIA_TYPES: Partial<Record<Category, string[]>> = {
   movies: ['movies'],
   music: ['audio'],

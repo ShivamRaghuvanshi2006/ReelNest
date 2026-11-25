@@ -11,9 +11,9 @@ function check(name, cond) {
   else { failed++; console.error(`  FAIL ${name}`); }
 }
 const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
-const view = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/MaglevBrowserView.kt');
-const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-const wrapper = read('modules/maglev-engine/src/MaglevBrowser.tsx');
+const view = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/ReelNestBrowserView.kt');
+const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+const wrapper = read('modules/reelnest-engine/src/ReelNestBrowser.tsx');
 
 // Body of a Kotlin block starting at the first match of `re` (brace matching).
 function block(src, re) {
@@ -52,9 +52,9 @@ check('runs the page scan', /scan\(\)|scanNow\(\)/.test(rf));
 check('a loading page is scanned after the load ends', /scanAfterLoad/.test(rf) && /scanAfterLoad/.test(block(view, /override fun onPageFinished\(/)));
 
 console.log('resetFound (module and wrapper)');
-const reg = block(mod, /View\(MaglevBrowserView::class\)/);
+const reg = block(mod, /View\(ReelNestBrowserView::class\)/);
 check('module registers resetFound on the browser view', /AsyncFunction\("resetFound"\)/.test(reg));
-check('registration takes a Promise', /AsyncFunction\("resetFound"\)\s*\{\s*view: MaglevBrowserView,\s*promise: Promise/.test(reg));
+check('registration takes a Promise', /AsyncFunction\("resetFound"\)\s*\{\s*view: ReelNestBrowserView,\s*promise: Promise/.test(reg));
 check('TS ref types resetFound as a Promise<void>', /resetFound\(\): Promise<void>/.test(wrapper));
 check('TS handle forwards resetFound', /resetFound:\s*\(\)\s*=>/.test(wrapper) && /nativeRef\.current\?\.resetFound\(\)/.test(wrapper));
 

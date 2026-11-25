@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AccessibilityInfo, AppState, Dimensions, ScrollView, StyleSheet, Text, View, findNodeHandle, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, touch, type } from '../../constants/theme';
@@ -92,7 +92,7 @@ export default function SearchScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
-  const { startTorrent, restartEngine, telemetry, getFreeSpace, downloads, onMeteredNetwork } = useMaglevEngine();
+  const { startTorrent, restartEngine, telemetry, getFreeSpace, downloads, onMeteredNetwork } = useReelNestEngine();
   const { settings } = useSettings();
   const [prefs, updatePrefs] = useSearchPrefs();
 
@@ -351,7 +351,7 @@ export default function SearchScreen() {
       }
       if (r.directUrl && !r.magnet) {
         // A plain file over http (a mirror override): the link flow only takes https, and it is not a torrent.
-        show({ tone: 'danger', title: "This link isn't secure, so Maglev won't download it" });
+        show({ tone: 'danger', title: "This link isn't secure, so ReelNest won't download it" });
         return;
       }
       const busyKey = r.infoHash;
@@ -683,7 +683,7 @@ export default function SearchScreen() {
           />
           <View style={styles.disclaimerRow}>
             <PixelIcon name="shield" size={16} color={colors.textMuted} />
-            <Text style={styles.disclaimer}>Maglev doesn't host or index anything. You're responsible for what you download.</Text>
+            <Text style={styles.disclaimer}>ReelNest doesn't host or index anything. You're responsible for what you download.</Text>
           </View>
         </ScrollView>
       );

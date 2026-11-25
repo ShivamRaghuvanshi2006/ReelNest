@@ -4,7 +4,7 @@
 
 All ten apps had a reachable official page, so none were dropped.
 
-- **Maglev**: https://github.com/Kaos599/Maglev (README and site/build/content.json only)
+- **ReelNest**: https://github.com/ShivamRaghuvanshi2006/ReelNest (README and site/build/content.json only)
 - **LibreTorrent**: https://github.com/proninyaroslav/libretorrent (the URL https://github.com/LibreTorrent/LibreTorrent returned 404); https://f-droid.org/packages/org.proninyaroslav.libretorrent/
 - **BiglyBT (Android)**: https://www.biglybt.com/ (desktop site, ad-free and news only); https://github.com/BiglySoftware/BiglyBT-Android; https://f-droid.org/en/packages/com.biglybt.android.client/; https://play.google.com/store/apps/details?id=com.biglybt.android.client&hl=en_US
 - **Seal**: https://github.com/JunkFood02/Seal (README); https://github.com/JunkFood02/Seal/blob/main/README.md; https://f-droid.org/packages/com.junkfood.seal/
@@ -25,8 +25,8 @@ Not used: the Uptodown, Aptoide, AppBrain and similar mirror pages that turned u
 
 ## Uncertain or judgment-call cells
 
-- **Maglev, "Needs an account" = No.** The README and content.json do not say this. The value is from the brief (sign-in: none needed). Confirm before publishing.
-- **Maglev, "Minimum Android version" = Android 7.** From the README badge and content.json FAQ.
+- **ReelNest, "Needs an account" = No.** The README and content.json do not say this. The value is from the brief (sign-in: none needed). Confirm before publishing.
+- **ReelNest, "Minimum Android version" = Android 7.** From the README badge and content.json FAQ.
 - **LibreTorrent, background downloads = No.** Its pages do not describe background downloads or notifications, though it lists a foreground-service permission on F-Droid. Marked No because the pages do not state it.
 - **LibreTorrent, speed limits = Yes, Wi-Fi only = Yes (checked 2026-11-14).** Its source strings list "Max. ⬇ speed", "Max. ⬆ speed" and "Only use connections without a quota (for example Wi-Fi or Ethernet)": https://github.com/proninyaroslav/libretorrent/blob/master/app/src/main/res/values/strings.xml. **Plain links = No:** not listed on its pages.
 - **BiglyBT, magnet links = No.** The Android pages do not mention magnets; the desktop project does. Worth a second look, since a torrent client almost certainly supports magnets.
@@ -59,7 +59,7 @@ Not used: the Uptodown, Aptoide, AppBrain and similar mirror pages that turned u
 - **Flud and ADM, "Contains ads" = Yes**, from their Play pages.
 - **Flud, ADM, 1DM+ and FDM, "Open source" = No.** Not listed. Their pages do not say they are closed source either.
 - **Flud, 1DM+, ADM and FDM, minimum Android.** Not listed on the Play pages that were read.
-- **Maglev, live streams = No, YouTube = No.** From the README.
+- **ReelNest, live streams = No, YouTube = No.** From the README.
 
 ## Fetch errors seen
 
@@ -70,15 +70,15 @@ Not used: the Uptodown, Aptoide, AppBrain and similar mirror pages that turned u
 
 ## Rows added 2026-11-13
 
-Maglev evidence is the README and the code: merged results and fake-upload warnings (utils/search/aggregate.ts, utils/search/safety.ts), Jackett or Prowlarr (components/search-providers/TorznabSheet.tsx), follow a show (components/search/FollowSheet.tsx), open folder (components/transfers/DownloadSheet.tsx), mobile data note (utils/addChecks.ts, components/search/MobileDataSheet.tsx), VPN only (app/settings/network.tsx), battery and charging (app/settings/power.tsx), Quick Settings tile (modules/maglev-engine/android MaglevTileService), themes (app/settings/interface.tsx). No analytics SDK appears in package.json or app.json.
+ReelNest evidence is the README and the code: merged results and fake-upload warnings (utils/search/aggregate.ts, utils/search/safety.ts), Jackett or Prowlarr (components/search-providers/TorznabSheet.tsx), follow a show (components/search/FollowSheet.tsx), open folder (components/transfers/DownloadSheet.tsx), mobile data note (utils/addChecks.ts, components/search/MobileDataSheet.tsx), VPN only (app/settings/network.tsx), battery and charging (app/settings/power.tsx), Quick Settings tile (modules/reelnest-engine/android ReelNestTileService), themes (app/settings/interface.tsx). No analytics SDK appears in package.json or app.json.
 
-Competitor sources: Play pages for Flud, 1DM+, ADM, FDM and BiglyBT (read through a text extractor because the plain fetch returned empty pages), F-Droid listings for LibreTorrent, BiglyBT, Seal, YTDLnis and NewPipe, and the READMEs. Rows with Maglev-only Yes (search merging, warnings, indexers, follow, VPN, tile, mobile-data prompt) have no competitor page that lists the feature.
+Competitor sources: Play pages for Flud, 1DM+, ADM, FDM and BiglyBT (read through a text extractor because the plain fetch returned empty pages), F-Droid listings for LibreTorrent, BiglyBT, Seal, YTDLnis and NewPipe, and the READMEs. Rows with ReelNest-only Yes (search merging, warnings, indexers, follow, VPN, tile, mobile-data prompt) have no competitor page that lists the feature.
 
 - **No analytics or tracking:** Yes for F-Droid apps with no Tracking anti-feature and FDM ("No data collected" on Play). BiglyBT has the Tracking anti-feature. Flud, 1DM+ and ADM declare collection or sharing in Play data safety.
 - **No ads and No in-app purchases:** Yes where the page says ad free, or where the store listing has no Contains ads or In-app purchases label. This is a looser reading than "must be listed", because a label the store requires is absent. Check again if a store adds a label.
 - **Pauses on low battery:** ADM Yes (its page lists autostop on low battery). LibreTorrent Partial (lists "battery settings" without detail).
 - **Dark and light themes:** Seal and YTDLnis Partial (theming named, dark or light not).
-- **No account needed:** Yes for every app, as before (no page mentions a sign-in requirement). Maglev's value still comes from the brief and the app having no sign-in step.
+- **No account needed:** Yes for every app, as before (no page mentions a sign-in requirement). ReelNest's value still comes from the brief and the app having no sign-in step.
 
 ## Alternative pages (added with the one-page-per-app pages)
 
@@ -90,7 +90,7 @@ Not built: BiglyBT and FDM pages (no separate search demand was checked, and the
 
 Row `subtitles`, "Finds subtitles for saved videos": the app looks up subtitle files for a video you already have and saves one next to it. Embedding the subtitles a video's own site offers while downloading is a different job, so it does not count.
 
-Maglev evidence: `utils/subtitles/providers/` (21 sources), `utils/subtitles/naming.ts`, `release-notes/0.30.md`. Competitor cells follow the table's rule: a feature the app's own pages do not list is No. Pages read on 2026-11-18, searched for "subtitle" and "caption":
+ReelNest evidence: `utils/subtitles/providers/` (21 sources), `utils/subtitles/naming.ts`, `release-notes/0.30.md`. Competitor cells follow the table's rule: a feature the app's own pages do not list is No. Pages read on 2026-11-18, searched for "subtitle" and "caption":
 
 - **LibreTorrent**, No: README https://raw.githubusercontent.com/proninyaroslav/libretorrent/master/README.md and F-Droid https://f-droid.org/packages/org.proninyaroslav.libretorrent/ list none. Its source (https://github.com/proninyaroslav/libretorrent) was not searched.
 - **BiglyBT**, No: Play description (full text, https://play.google.com/store/apps/details?id=com.biglybt.android.client&hl=en&gl=US) and F-Droid https://f-droid.org/en/packages/com.biglybt.android.client/ list none.
@@ -108,7 +108,7 @@ Maglev evidence: `utils/subtitles/providers/` (21 sources), `utils/subtitles/nam
 
 Rows `backup` (Control), `search-size-filter` (Torrents) and `mining-https` (Browser and streams, after pop-up control). Same rule as the subtitles row: a feature the app's own pages do not list is No. Partial means the page lists a narrower version. Pages read on 2026-11-18. The Play pages were read in full ("About this app" text), not as excerpts.
 
-Maglev evidence: `utils/backup/format.ts` and `export.ts` (parts: settings, search sources, feeds, schedule, assistant, torrents, downloads; the assistant key reference is stripped; stats are an optional tick in `app/settings/backup.tsx`), `components/search/sizeRange.ts` (slider stops 50 MB to 64 GB, no minimum, no maximum), `utils/browser/hardening.ts` (`upgradeToHttps` with fall back) and `modules/maglev-engine/android/.../BlocklistStore.kt` (`miners.txt` merged into every active list), `release-notes/0.30.md`.
+ReelNest evidence: `utils/backup/format.ts` and `export.ts` (parts: settings, search sources, feeds, schedule, assistant, torrents, downloads; the assistant key reference is stripped; stats are an optional tick in `app/settings/backup.tsx`), `components/search/sizeRange.ts` (slider stops 50 MB to 64 GB, no minimum, no maximum), `utils/browser/hardening.ts` (`upgradeToHttps` with fall back) and `modules/reelnest-engine/android/.../BlocklistStore.kt` (`miners.txt` merged into every active list), `release-notes/0.30.md`.
 
 Backup and restore:
 - **LibreTorrent**, Partial: strings.xml https://raw.githubusercontent.com/proninyaroslav/libretorrent/master/app/src/main/res/values/strings.xml has "Save backup", "Restore backup", "Channels saved" (RSS channels only). README https://raw.githubusercontent.com/proninyaroslav/libretorrent/master/README.md and F-Droid https://f-droid.org/packages/org.proninyaroslav.libretorrent/ list no backup.
@@ -121,7 +121,7 @@ Backup and restore:
 - **ADM**, Yes: Play description (full text, https://play.google.com/store/apps/details?id=com.dv.adm&hl=en&gl=US), "backup list of downloads and settings".
 - **FDM**, No: Play description (full text, https://play.google.com/store/apps/details?id=org.freedownloadmanager.fdm&hl=en_US) lists none.
 
-Filter search results by size: only Maglev lists a size filter on search results. Apps with no search of their own (LibreTorrent, Flud, 1DM+, FDM, Seal, YTDLnis) are No, the same way the torrent-search row treats them. BiglyBT (Play page) filters the files inside a torrent, and ADM (Play page) searches and sorts the files inside a torrent; neither is a search-result filter. NewPipe (README) searches videos and playlists and lists no size filter. YTDLnis README lists feeding search queries from a text file, no size filter.
+Filter search results by size: only ReelNest lists a size filter on search results. Apps with no search of their own (LibreTorrent, Flud, 1DM+, FDM, Seal, YTDLnis) are No, the same way the torrent-search row treats them. BiglyBT (Play page) filters the files inside a torrent, and ADM (Play page) searches and sorts the files inside a torrent; neither is a search-result filter. NewPipe (README) searches videos and playlists and lists no size filter. YTDLnis README lists feeding search queries from a text file, no size filter.
 
 Blocks crypto-mining scripts and upgrades to HTTPS: only 1DM+ and ADM have a general browser. Their full Play descriptions (URLs above) list an adblock browser, tabs, history, bookmarks and a media downloader, and mention neither mining scripts nor HTTPS. Seal and YTDLnis use a browser only to sign in for cookies (README) and FDM says it is not a browser (existing note), so all three are No. LibreTorrent, BiglyBT, NewPipe and Flud pages list no browser. This is "not listed", not a statement that the app does not do it.
 

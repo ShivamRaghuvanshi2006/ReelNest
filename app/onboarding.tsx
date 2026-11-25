@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BackHandler, Platform, StyleSheet, Text, View } from 'react-native';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { Banner, Button, ListRow, Screen } from '../components/ui';
 import { PixelIcon, PixelIconName } from '../components/PixelIcon';
 import { BrandMark } from '../components/onboarding/BrandMark';
 import { ProgressSquares } from '../components/onboarding/ProgressSquares';
 import { StepLayout } from '../components/onboarding/StepLayout';
 import { StepSlide } from '../components/onboarding/StepSlide';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { useSettings } from '../context/SettingsContext';
 import { useTheme } from '../context/ThemeContext';
 import { ThemeColors, radius, spacing, type } from '../constants/theme';
@@ -21,7 +21,7 @@ type StepId = 'welcome' | 'notifications' | 'folder' | 'background' | 'mobileDat
 const API_LEVEL = typeof Platform.Version === 'number' ? Platform.Version : parseInt(String(Platform.Version), 10) || 0;
 const NEEDS_NOTIFICATION_STEP = Platform.OS !== 'android' || API_LEVEL >= 33;
 const NEEDS_LEGACY_STORAGE = Platform.OS === 'android' && API_LEVEL <= 28;
-const DEFAULT_FOLDER_LABEL = 'Download/Maglev';
+const DEFAULT_FOLDER_LABEL = 'Download/ReelNest';
 
 const STEPS: StepId[] = NEEDS_NOTIFICATION_STEP
   ? ['welcome', 'notifications', 'folder', 'background', 'mobileData']
@@ -41,7 +41,7 @@ export default function OnboardingScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { settings, updateSettings } = useSettings();
-  const { storageStatus, permissionStatus, refreshPermissions } = useMaglevEngine();
+  const { storageStatus, permissionStatus, refreshPermissions } = useReelNestEngine();
   const [index, setIndex] = useState(0);
   // Which way the last move went, so the next step slides in from the right side.
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -94,7 +94,7 @@ export default function OnboardingScreen() {
   const allowNotifications = useCallback(async () => {
     setBusy(true);
     try {
-      const res = await maglevEngine.requestNotifications();
+      const res = await reelnestEngine.requestNotifications();
       await refreshPermissions();
       if (res.ok) haptic('done');
     } finally {
@@ -106,7 +106,7 @@ export default function OnboardingScreen() {
   const chooseFolder = useCallback(async () => {
     setBusy(true);
     try {
-      const res = await maglevEngine.pickDownloadFolder();
+      const res = await reelnestEngine.pickDownloadFolder();
       if ('cancelled' in res) return;
       updateSettings({ downloadFolder: { uri: res.uri, displayName: res.displayName, mode: res.mode } });
       setFolderNote(null);
@@ -120,7 +120,7 @@ export default function OnboardingScreen() {
     if (NEEDS_LEGACY_STORAGE && permissionStatus?.legacyStorage !== 'granted') {
       setBusy(true);
       try {
-        const res = await maglevEngine.requestLegacyStorage();
+        const res = await reelnestEngine.requestLegacyStorage();
         const status = await refreshPermissions();
         if (!res.ok || status.legacyStorage === 'denied') {
           setFolderNote(notices.inline.storageRefused);
@@ -136,7 +136,7 @@ export default function OnboardingScreen() {
   const allowBackground = useCallback(async () => {
     setBusy(true);
     try {
-      await maglevEngine.openBatterySettings();
+      await reelnestEngine.openBatterySettings();
       await refreshPermissions();
     } finally {
       setBusy(false);

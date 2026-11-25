@@ -25,11 +25,11 @@ function check(name, fn) {
 }
 
 const found = read('components/browser/FoundDownload.tsx');
-const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-const fetchRs = read('native/maglev-core/src/http_dl/stream/fetch.rs');
-const driver = read('native/maglev-core/src/http_dl/driver.rs');
-const run = read('native/maglev-core/src/http_dl/driver/stream_run.rs');
-const sidecar = read('native/maglev-core/src/http_dl/sidecar.rs');
+const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+const fetchRs = read('native/reelnest-core/src/http_dl/stream/fetch.rs');
+const driver = read('native/reelnest-core/src/http_dl/driver.rs');
+const run = read('native/reelnest-core/src/http_dl/driver/stream_run.rs');
+const sidecar = read('native/reelnest-core/src/http_dl/sidecar.rs');
 const contract = require('./lib/privateDocs').readPrivateDoc('NATIVE_CONTRACT.md');
 
 check('the app sends Referer, Origin, User-Agent and per-host cookies', () => {

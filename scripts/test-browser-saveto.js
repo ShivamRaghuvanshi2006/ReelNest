@@ -16,7 +16,7 @@ const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
 
 async function main() {
   const s = await import('../components/browser/saveTo.ts');
-  const R = '/storage/emulated/0/Download/Maglev';
+  const R = '/storage/emulated/0/Download/ReelNest';
 
   console.log('subfolderName');
   check('a plain name stays', s.subfolderName('Films') === 'Films');
@@ -39,12 +39,12 @@ async function main() {
   const choice = read('components/browser/SaveToChoice.tsx');
   check('the download sheet uses the one-download choice', /<SaveToChoice/.test(sheet) && !/<SaveToRow/.test(sheet));
   check('startDownload gets the folder', /startDownload\(t\.url,[^;]*folder/.test(sheet));
-  check('the choice never calls the folder picker', !/pickDownloadFolder/.test(choice) && !/maglevEngine/.test(choice));
+  check('the choice never calls the folder picker', !/pickDownloadFolder/.test(choice) && !/reelnestEngine/.test(choice));
   check('the sheet never changes the engine target', !/pickDownloadFolder|setStorage|setDownloadFolder/.test(sheet));
   check('the default is to pass no folder', /folder\s*\?\s*\{\s*folder\s*\}|\.\.\.\(folder/.test(sheet));
-  const host = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
+  const host = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
   check('native: a given folder is used as is, the active target only fills a missing one', /opts\["folder"\] == null/.test(host));
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
   check('native: pickDownloadFolder is the call that changes the target', /pickDownloadFolder\(\)/.test(bridge));
   const copy = await import('../constants/copy.ts');
   check('copy exists', typeof copy.saveTo === 'object');

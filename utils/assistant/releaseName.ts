@@ -637,7 +637,7 @@ export type LanguageWant = KnownLanguage | 'multi' | string;
 
 /**
  * The user's free text ("Hindi", "hin", "pt-BR", "dual audio", "latino") to a known language, "multi", or the
- * plain lowercased word for a language Maglev doesn't list ("malayalam"). Null for empty or unusable text.
+ * plain lowercased word for a language ReelNest doesn't list ("malayalam"). Null for empty or unusable text.
  */
 export function normalizeLanguage(text: unknown): LanguageWant | null {
   if (typeof text !== 'string') return null;
@@ -663,7 +663,7 @@ export interface LanguageInfo {
   subtitleLanguages: KnownLanguage[];
   /** MSubs, Multi-Sub: subtitles in several languages, none named. */
   multiSubs: boolean;
-  /** Lowercased words that sit where release tags go, for matching a language Maglev doesn't list. */
+  /** Lowercased words that sit where release tags go, for matching a language ReelNest doesn't list. */
   tagWords: string[];
 }
 

@@ -6,7 +6,7 @@ import { absUrl, cells, firstMagnet, parseBinarySize, tableRows } from './nicheT
 
 export const ID = 'oxtorrent';
 
-// Maglev category -> OxTorrent category slug.
+// ReelNest category -> OxTorrent category slug.
 const SLUG: Partial<Record<Category, string>> = {
   apps: 'logiciels',
   books: 'ebook',
@@ -16,7 +16,7 @@ const SLUG: Partial<Record<Category, string>> = {
   tv: 'series',
 };
 
-// The icon class on each row ("Logiciels", "Ebook"...) -> Maglev category.
+// The icon class on each row ("Logiciels", "Ebook"...) -> ReelNest category.
 const BY_ICON: Record<string, Category> = {
   ebook: 'books',
   films: 'movies',

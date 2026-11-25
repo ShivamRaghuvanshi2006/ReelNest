@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { getCookies, sanitizeFileName, type DownloadOptions, type UrlProbe } from 'maglev-engine';
+import { getCookies, sanitizeFileName, type DownloadOptions, type UrlProbe } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { formatBytes } from '../../constants/format';
 import { haptic } from '../../constants/haptics';
@@ -70,7 +70,7 @@ export async function downloadHeaders(t: Pick<DownloadTarget, 'url' | 'pageUrl' 
 export function FoundDownloadSheet({ target, onClose, onView }: { target: DownloadTarget | null; onClose: () => void; /** Opens the new download in Transfers (the View action on the notice). */ onView?: (id: string) => void }) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { probeUrl, startDownload, showNotice, onMeteredNetwork } = useMaglevEngine();
+  const { probeUrl, startDownload, showNotice, onMeteredNetwork } = useReelNestEngine();
   const { settings } = useSettings();
   const last = useRef<DownloadTarget | null>(target);
   if (target) last.current = target;

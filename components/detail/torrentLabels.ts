@@ -1,4 +1,4 @@
-import type { PausedBy, TorrentState } from 'maglev-engine';
+import type { PausedBy, TorrentState } from 'reelnest-engine';
 import type { ThemeColors } from '../../constants/theme';
 import { formatSpeed } from '../../constants/format';
 import { fileKind } from '../../utils/fileKind';
@@ -83,7 +83,7 @@ export interface MoveFailure {
 export function moveFailure(code: string, message?: string): MoveFailure {
   switch (code) {
     case 'PERMISSION':
-      return { text: "Maglev can't write to that folder. Pick another one.", pickAgain: true };
+      return { text: "ReelNest can't write to that folder. Pick another one.", pickAgain: true };
     case 'DISK_FULL':
       return { text: 'Not enough free storage there. Free some space or pick another folder.', pickAgain: true };
     case 'NOT_FOUND':

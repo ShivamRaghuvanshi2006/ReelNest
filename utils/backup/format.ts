@@ -2,24 +2,24 @@
  * Backup file format (docs/contracts-0.19/backup.md). Pure TypeScript, no React or expo imports,
  * so node tests run it directly.
  */
-import type { MaglevSettings } from '../../modules/maglev-engine/src/MaglevSettings.types.ts';
+import type { ReelNestSettings } from '../../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 import type { StatsSection } from '../stats/store.ts';
 
-export const BACKUP_FORMAT = 'maglev-backup';
+export const BACKUP_FORMAT = 'reelnest-backup';
 export const BACKUP_VERSION = 1;
-export const BACKUP_EXTENSION = '.maglev-backup.json';
+export const BACKUP_EXTENSION = '.reelnest-backup.json';
 
 /** The kv keys a backup carries, and which restore part each belongs to. */
 export const PREF_KEYS = {
-  search: 'maglev.search.prefs.v2',
-  feeds: 'maglev.feeds.list.v1',
-  feedAutomation: 'maglev.feeds.automation.v1',
-  schedule: 'maglev.schedule.v1',
-  tabs: 'maglev.tabs.prefs.v1',
-  browser: 'maglev.browser.prefs.v1',
+  search: 'reelnest.search.prefs.v2',
+  feeds: 'reelnest.feeds.list.v1',
+  feedAutomation: 'reelnest.feeds.automation.v1',
+  schedule: 'reelnest.schedule.v1',
+  tabs: 'reelnest.tabs.prefs.v1',
+  browser: 'reelnest.browser.prefs.v1',
   // Bookmarks are the user's own choices, so they travel. Browsing history is never in a backup.
-  bookmarks: 'maglev.browser.bookmarks.v1',
-  assistant: 'maglev.assistant.prefs.v1',
+  bookmarks: 'reelnest.browser.bookmarks.v1',
+  assistant: 'reelnest.assistant.prefs.v1',
 } as const;
 export type PrefKey = (typeof PREF_KEYS)[keyof typeof PREF_KEYS];
 export const PREF_KEY_LIST: readonly PrefKey[] = Object.values(PREF_KEYS);
@@ -66,7 +66,7 @@ export interface Backup {
   v: number;
   app: string;
   created: number;
-  settings: MaglevSettings | null;
+  settings: ReelNestSettings | null;
   prefs: Partial<Record<PrefKey, unknown>>;
   torrents: BackupTorrent[];
   downloads: BackupDownload[];
@@ -134,8 +134,8 @@ export function scrubSecrets<T>(value: T, key = ''): T {
  * Values that only make sense on the phone that wrote them. They are removed on export, and on import the
  * current phone's values win. Also drops the proxy login.
  */
-export function stripDeviceBound(settings: MaglevSettings): MaglevSettings {
-  const s = JSON.parse(JSON.stringify(settings)) as MaglevSettings;
+export function stripDeviceBound(settings: ReelNestSettings): ReelNestSettings {
+  const s = JSON.parse(JSON.stringify(settings)) as ReelNestSettings;
   s.downloadFolder = null;
   const storage = s.storage as unknown as Record<string, unknown>;
   delete storage.customSafUri;
@@ -153,8 +153,8 @@ export function stripDeviceBound(settings: MaglevSettings): MaglevSettings {
 }
 
 /** The imported settings with the current phone's device-bound values put back. */
-export function mergeDeviceBound(imported: MaglevSettings, current: MaglevSettings): MaglevSettings {
-  const out = JSON.parse(JSON.stringify(imported)) as MaglevSettings;
+export function mergeDeviceBound(imported: ReelNestSettings, current: ReelNestSettings): ReelNestSettings {
+  const out = JSON.parse(JSON.stringify(imported)) as ReelNestSettings;
   out.downloadFolder = current.downloadFolder;
   const o = out as unknown as Record<string, Record<string, unknown>>;
   const c = current as unknown as Record<string, Record<string, unknown>>;

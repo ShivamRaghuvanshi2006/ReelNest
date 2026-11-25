@@ -66,7 +66,7 @@ export function ModelPicker({
     });
     const source = list ? (tab === 'free' ? list.free : list.paid) : [];
     const out: Row[] = [];
-    if (tab === 'free') out.push({ id: AUTO_MODEL.id, name: AUTO_MODEL.name, detail: 'Maglev lets OpenRouter pick a free model · Uses tools' });
+    if (tab === 'free') out.push({ id: AUTO_MODEL.id, name: AUTO_MODEL.name, detail: 'ReelNest lets OpenRouter pick a free model · Uses tools' });
     for (const m of source) out.push(toRow(m));
     const found = q ? out.filter((r) => r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)) : out;
     // A typed model id that is not on the list can still be used.

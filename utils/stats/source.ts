@@ -3,7 +3,7 @@
  * it note it here, keyed by what the engine later reports: a torrent's info hash, or a link's address without query.
  * A small capped map in the kv store. An add that nobody noted has source null: unknown stays unknown.
  */
-import { normalizeInfoHash } from '../../modules/maglev-engine/src/magnet.ts';
+import { normalizeInfoHash } from '../../modules/reelnest-engine/src/magnet.ts';
 import type { StatsKind } from './types.ts';
 
 export interface Origin {
@@ -11,7 +11,7 @@ export interface Origin {
   category: string | null;
 }
 
-const ORIGIN_KEY = 'maglev.stats.origins.v1';
+const ORIGIN_KEY = 'reelnest.stats.origins.v1';
 const MAX_ORIGINS = 500;
 
 const NONE: Origin = { source: null, category: null };

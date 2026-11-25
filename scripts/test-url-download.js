@@ -16,9 +16,9 @@ function check(name, cond, extra) {
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 async function main() {
-  const link = await import('../modules/maglev-engine/src/downloadLink.ts');
+  const link = await import('../modules/reelnest-engine/src/downloadLink.ts');
   const copy = await import('../utils/downloadCopy.ts');
-  const { MockDownloads, mockSizeFor } = await import('../modules/maglev-engine/src/MaglevMockDownloads.ts');
+  const { MockDownloads, mockSizeFor } = await import('../modules/reelnest-engine/src/ReelNestMockDownloads.ts');
 
   // ---- links ----
   console.log('links');
@@ -80,7 +80,7 @@ async function main() {
   check('auth needs sign-in label', copy.downloadStatus(d({ state: 'needs_link', error: { code: 'AUTH_REQUIRED', message: '' } })).lead === 'Needs sign-in · Paste new link');
   check('not a file offers Remove, not Retry', kinds(err('NOT_A_FILE')) === 'remove');
   check('checksum offers Remove, not Retry', kinds(err('CHECKSUM_MISMATCH')) === 'remove');
-  check('permission offers Pick folder again then Retry', kinds(err('PERMISSION')) === 'pickFolder,retry' && copy.downloadStatus(err('PERMISSION')).lead === "Maglev can't write to that folder.");
+  check('permission offers Pick folder again then Retry', kinds(err('PERMISSION')) === 'pickFolder,retry' && copy.downloadStatus(err('PERMISSION')).lead === "ReelNest can't write to that folder.");
   check('EACCES is permission', kinds(err('EACCES')) === 'pickFolder,retry');
   check('network offers Retry', kinds(err('NETWORK')) === 'retry');
   check('5xx offers Retry, 404 offers Remove', kinds(err('HTTP_STATUS', { httpStatus: 503 })) === 'retry' && kinds(err('HTTP_STATUS', { httpStatus: 404 })) === 'remove' && kinds(err('HTTP_STATUS', { httpStatus: 429 })) === 'retry');
@@ -89,7 +89,7 @@ async function main() {
   check('folder gone pause offers Pick folder again', copy.downloadStatus(d({ state: 'paused', pausedBy: 'storage_unavailable' })).lead === 'Folder not available' && copy.downloadStatus(d({ state: 'paused', pausedBy: 'storage_unavailable' })).tone === 'danger' && /SD card/.test(copy.downloadStatus(d({ state: 'paused', pausedBy: 'storage_unavailable' })).text) && kinds(d({ state: 'paused', pausedBy: 'storage_unavailable' })) === 'pickFolder');
   check('folder gone error', copy.downloadStatus(err('STORAGE_UNAVAILABLE')).lead === 'Folder not available' && /SD card/.test(copy.downloadStatus(err('STORAGE_UNAVAILABLE')).text) && kinds(err('STORAGE_UNAVAILABLE')) === 'pickFolder');
   check('too big for the card', copy.downloadStatus(err('FILE_TOO_LARGE')).lead === "This file is bigger than the card's format allows (4 GB). Use phone storage." && kinds(err('FILE_TOO_LARGE')) === 'pickFolder');
-  check('local redirect is blocked, Remove only', copy.downloadStatus(err('LOCAL_REDIRECT')).lead === 'A redirect tried to send Maglev to a device on your network, so it stopped.' && kinds(err('LOCAL_REDIRECT')) === 'remove');
+  check('local redirect is blocked, Remove only', copy.downloadStatus(err('LOCAL_REDIRECT')).lead === 'A redirect tried to send ReelNest to a device on your network, so it stopped.' && kinds(err('LOCAL_REDIRECT')) === 'remove');
   check('policy block opens settings', copy.downloadStatus(err('BLOCKED')).lead === 'Blocked by your Wi-Fi-only or VPN setting.' && kinds(err('BLOCKED')) === 'openNetworkSettings,retry');
   check('wifi pause offers mobile data and the setting', kinds(d({ state: 'paused', pausedBy: 'wifi_only' })) === 'resumeAnyway,openNetworkSettings' && copy.downloadActions(d({ state: 'paused', pausedBy: 'wifi_only' }))[1].route === '/settings/network');
   check('battery pause offers Resume anyway', copy.downloadAction(d({ state: 'paused', pausedBy: 'battery' }))?.label === 'Resume anyway');
@@ -119,7 +119,7 @@ async function main() {
   check('share marker opens only with a link', link.isShareOpen({ url: 'https://x/a', from: 'share' }) && !link.isShareOpen({ url: 'https://x/a' }) && !link.isShareOpen({ from: 'share' }) && !link.isShareOpen({ url: 'https://x/a', from: 'other' }));
   for (const forged of [
     '/add-download?url=https%3A%2F%2Fevil.test%2Fa&from=share',
-    'maglev://add-download?url=https%3A%2F%2Fevil.test%2Fa&from=share',
+    'reelnest://add-download?url=https%3A%2F%2Fevil.test%2Fa&from=share',
     '/add-download?from=share&url=x',
     '/add-download?url=x&%66rom=share',
     '/add-download?url=x&FROM=share',
@@ -136,7 +136,7 @@ async function main() {
   console.log('simulator');
   let blocked = null;
   let changes = 0;
-  const m = new MockDownloads({ blockedReason: () => blocked, folder: () => '/storage/Download/Maglev', changed: () => changes++ });
+  const m = new MockDownloads({ blockedReason: () => blocked, folder: () => '/storage/Download/ReelNest', changed: () => changes++ });
   const find = (id) => m.snapshots().find((s) => s.id === id);
   const run = (n) => { for (let i = 0; i < n; i++) m.step(1); };
 

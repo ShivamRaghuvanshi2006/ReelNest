@@ -1,6 +1,6 @@
 /**
  * Local stats schema (docs/NATIVE_CONTRACT.md section 34.2). Pure: the database is injected.
- * Its own file (`maglev-stats.db`): the browser history wipe deletes `maglev-history.db`, and a wipe must never take stats with it.
+ * Its own file (`reelnest-stats.db`): the browser history wipe deletes `reelnest-history.db`, and a wipe must never take stats with it.
  */
 
 export interface StatsDb {
@@ -9,7 +9,7 @@ export interface StatsDb {
   all<T = Record<string, unknown>>(sql: string, params?: (string | number | null)[]): Promise<T[]>;
 }
 
-export const STATS_DB_NAME = 'maglev-stats.db';
+export const STATS_DB_NAME = 'reelnest-stats.db';
 
 /** One entry per schema version, oldest first. Never edit a shipped entry: add a new one. */
 /** A step is SQL, or a function for a change SQL cannot make safely twice (ALTER TABLE ADD COLUMN). */

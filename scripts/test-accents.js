@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Eight accent colours: lime, cyan, pink, orange, violet, blue, amber, mint.
+// Eight accent colours: yellow, cyan, pink, orange, violet, blue, amber, mint.
 // Checks WCAG contrast for every accent in every mode (onAccent on the fill, accent text on the page and
 // on cards), that the four places that list accents agree, that no accent hue sits near danger, and
-// that unknown saved values fall back to lime.
+// that unknown saved values fall back to yellow.
 // Needs Node 22.18+ (runs the TypeScript source directly via type stripping).
 
 process.removeAllListeners('warning');
@@ -21,7 +21,7 @@ function check(name, cond, extra) {
   }
 }
 
-const NAMES = ['lime', 'cyan', 'pink', 'orange', 'violet', 'blue', 'amber', 'mint'];
+const NAMES = ['yellow', 'cyan', 'pink', 'orange', 'violet', 'blue', 'amber', 'mint'];
 const MODES = ['oled', 'dim', 'light'];
 const MIN = 4.5;
 const MIN_HUE_GAP = 20;
@@ -45,7 +45,7 @@ const hueGap = (a, b) => {
 
   console.log('names');
   check('theme has exactly the 8 accents', JSON.stringify(Object.keys(accents).sort()) === JSON.stringify([...NAMES].sort()), Object.keys(accents).join());
-  check('default accent is lime', DEFAULT_ACCENT === 'lime');
+  check('default accent is yellow', DEFAULT_ACCENT === 'yellow');
 
   console.log('contrast (>= 4.5)');
   const rows = [];
@@ -89,9 +89,9 @@ const hueGap = (a, b) => {
   }
 
   console.log('lists agree');
-  const types = read('modules/maglev-engine/src/MaglevSettings.types.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestSettings.types.ts');
   const union = (types.match(/export type AccentName =([^;]+);/) || [])[1] || '';
-  const store = read('modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const store = read('modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   const labels = (read('app/(tabs)/settings.tsx').match(/const ACCENT_LABEL[^=]*=\s*\{([^}]+)\}/) || [])[1] || '';
   const iface = read('app/settings/interface.tsx');
   const swatches = (iface.match(/const ACCENTS[^=]*=\s*\[([\s\S]*?)\n\];/) || [])[1] || '';
@@ -106,11 +106,12 @@ const hueGap = (a, b) => {
   check('swatch target is 44px', /width:\s*(44|touch\.min),\s*\n\s*height:\s*(44|touch\.min)/.test(iface));
 
   console.log('saved values');
-  const { migrateSettings } = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const { migrateSettings } = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   for (const n of NAMES) check(`saved ${n} is kept`, migrateSettings({ appearance: { accent: n } }).appearance.accent === n);
   for (const bad of ['teal', '', 7, null, 'constructor', 'LIME']) {
-    check(`saved ${JSON.stringify(bad)} falls back to lime`, migrateSettings({ appearance: { accent: bad } }).appearance.accent === 'lime');
+    check(`saved ${JSON.stringify(bad)} falls back to yellow`, migrateSettings({ appearance: { accent: bad } }).appearance.accent === 'yellow');
   }
+  check('the old lime value migrates to yellow', migrateSettings({ appearance: { accent: 'lime' } }).appearance.accent === 'yellow');
 
   if (failed) {
     console.error(`\n${failed} check(s) failed`);

@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const kt = (...p) => fs.readFileSync(path.join(root, 'modules/maglev-engine/android/src/main/java/com/maglev/engine', ...p), 'utf8');
-const service = kt('service', 'MaglevTorrentService.kt');
+const kt = (...p) => fs.readFileSync(path.join(root, 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine', ...p), 'utf8');
+const service = kt('service', 'ReelNestTorrentService.kt');
 const host = kt('EngineHost.kt');
-const mod = kt('MaglevEngineModule.kt');
+const mod = kt('ReelNestEngineModule.kt');
 const json = kt('util', 'Json.kt');
 
 // 1. Locks: not held for plain seeding.

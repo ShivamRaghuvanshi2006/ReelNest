@@ -46,7 +46,7 @@ const PixelGlyph = memo(function PixelGlyph({
   );
 });
 
-/** The one icon family for Maglev: pixelarticons, 24x24 grid, filled paths. */
+/** The one icon family for ReelNest: pixelarticons, 24x24 grid, filled paths. */
 export function PixelIcon({ name, size = 24, color, accessibilityLabel }: PixelIconProps) {
   return <PixelGlyph name={name} size={size} color={color} accessibilityLabel={accessibilityLabel} />;
 }

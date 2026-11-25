@@ -1,8 +1,8 @@
 // Expo config plugin: sign release builds with a real key supplied through env vars.
 // Gradle reads the env at build time (not at prebuild), so `expo prebuild` stays secret-free.
-// Without MAGLEV_KEYSTORE_PATH (or when the file is missing) the template's debug signing is kept,
+// Without REELNEST_KEYSTORE_PATH (or when the file is missing) the template's debug signing is kept,
 // so local builds, forks and PRs without secrets still build.
-const MARKER = 'maglev-release-signing';
+const MARKER = 'reelnest-release-signing';
 
 // Appended after the template's own `android {}` block, so its buildTypes override wins.
 // Docs: https://developer.android.com/build/building-cmdline#sign_cmdline
@@ -10,15 +10,15 @@ const MARKER = 'maglev-release-signing';
 // v1 is off: minSdk is 24 (Android 7.0), the release that introduced v2 (https://source.android.com/docs/security/features/apksigning/v2).
 const SIGNING_BLOCK = `
 // ${MARKER}
-def maglevKeystorePath = System.getenv("MAGLEV_KEYSTORE_PATH")
-if (maglevKeystorePath && new File(maglevKeystorePath).exists()) {
+def reelnestKeystorePath = System.getenv("REELNEST_KEYSTORE_PATH")
+if (reelnestKeystorePath && new File(reelnestKeystorePath).exists()) {
     android {
         signingConfigs {
             release {
-                storeFile new File(maglevKeystorePath)
-                storePassword System.getenv("MAGLEV_KEYSTORE_PASSWORD")
-                keyAlias System.getenv("MAGLEV_KEY_ALIAS")
-                keyPassword System.getenv("MAGLEV_KEY_PASSWORD")
+                storeFile new File(reelnestKeystorePath)
+                storePassword System.getenv("REELNEST_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("REELNEST_KEY_ALIAS")
+                keyPassword System.getenv("REELNEST_KEY_PASSWORD")
                 enableV1Signing = false
                 enableV2Signing = true
                 enableV3Signing = true

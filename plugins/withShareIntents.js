@@ -1,10 +1,10 @@
 // Expo config plugin: accept Android share (ACTION_SEND / ACTION_SEND_MULTIPLE) of magnet text and .torrent files.
 // Expo only forwards `intent.data` to JS, and a share carries its payload in extras. So MainActivity
 // rewrites a share intent into a VIEW intent in place (before React reads it); app/+native-intent.tsx
-// then handles it like any other VIEW. The share, magnet and .torrent intent filters are declared in app.json for MainActivity, then moved to the quick share card by applyQuickShareManifest below (docs/contracts-0.19/quick-share.md). Several sources are packed as maglev://share?u=...&u=...
+// then handles it like any other VIEW. The share, magnet and .torrent intent filters are declared in app.json for MainActivity, then moved to the quick share card by applyQuickShareManifest below (docs/contracts-0.19/quick-share.md). Several sources are packed as reelnest://share?u=...&u=...
 // Android docs: https://developer.android.com/training/sharing/receive
-const PACKAGE = 'com.maglev';
-const MARKER = 'MaglevShareIntent.rewrite';
+const PACKAGE = 'com.reelnest';
+const MARKER = 'ReelNestShareIntent.rewrite';
 
 const KOTLIN = `package ${PACKAGE}
 
@@ -13,7 +13,7 @@ import android.net.Uri
 import android.os.Build
 
 /** Rewrites ACTION_SEND / ACTION_SEND_MULTIPLE into ACTION_VIEW so expo-router sees the payload as intent data. */
-object MaglevShareIntent {
+object ReelNestShareIntent {
     private val MAGNET = Regex("magnet:\\\\?[^\\\\s\\"'<>]+", RegexOption.IGNORE_CASE)
     private val TORRENT_URL = Regex("https?://[^\\\\s\\"'<>]+\\\\.torrent(?:\\\\?[^\\\\s\\"'<>]*)?", RegexOption.IGNORE_CASE)
     /** Any other web link in shared text starts a download from a link (NATIVE_CONTRACT 17). Magnets and .torrent links win. */
@@ -32,7 +32,7 @@ object MaglevShareIntent {
         intent.data = if (sources.size == 1) {
             Uri.parse(sources[0])
         } else {
-            Uri.parse("maglev://share?" + sources.joinToString("&") { "u=" + Uri.encode(it) })
+            Uri.parse("reelnest://share?" + sources.joinToString("&") { "u=" + Uri.encode(it) })
         }
     }
 
@@ -74,15 +74,15 @@ function applyMainActivity(src) {
 }
 
 // --- Quick share (docs/contracts-0.19/quick-share.md) ---
-const QUICK_ACTIVITY = 'com.maglev.engine.share.QuickShareActivity';
+const QUICK_ACTIVITY = 'com.reelnest.engine.share.QuickShareActivity';
 const A = 'android.intent.action.';
 const C = 'android.intent.category.';
 /** Shown in the text-selection menu (per-filter label: https://developer.android.com/guide/topics/manifest/intent-filter-element#label). */
-const PROCESS_TEXT_LABEL = 'Download with Maglev';
+const PROCESS_TEXT_LABEL = 'Download with ReelNest';
 const TORRENT_TYPES = ['application/x-bittorrent', 'application/x-torrent'];
 /**
  * Types a browser can attach to an http(s) VIEW. A filter with a mime type matches only an intent that carries a
- * matching data type; a plain link tap has none, so ordinary browsing never reaches Maglev.
+ * matching data type; a plain link tap has none, so ordinary browsing never reaches ReelNest.
  * https://developer.android.com/guide/components/intents-filters#DataTest  No APK on purpose.
  */
 const WEB_MIME_TYPES = [
@@ -169,7 +169,7 @@ function applyQuickShareManifest(manifest) {
     $: {
       'android:name': QUICK_ACTIVITY,
       'android:exported': 'true',
-      'android:theme': '@style/MaglevQuickShare',
+      'android:theme': '@style/ReelNestQuickShare',
       'android:excludeFromRecents': 'true',
       'android:autoRemoveFromRecents': 'true',
       'android:taskAffinity': '',
@@ -202,7 +202,7 @@ function withShareIntents(config) {
     (c) => {
       const dir = path.join(c.modRequest.platformProjectRoot, 'app', 'src', 'main', 'java', ...PACKAGE.split('.'));
       fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(path.join(dir, 'MaglevShareIntent.kt'), KOTLIN);
+      fs.writeFileSync(path.join(dir, 'ReelNestShareIntent.kt'), KOTLIN);
       return c;
     },
   ]);

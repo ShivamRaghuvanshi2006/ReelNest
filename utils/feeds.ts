@@ -22,8 +22,8 @@ export interface FeedItem {
   publishedAt: number | null;
 }
 
-const FEEDS_KEY = 'maglev.feeds.list.v1';
-const SEEN_KEY = 'maglev.feeds.seen.v1';
+const FEEDS_KEY = 'reelnest.feeds.list.v1';
+const SEEN_KEY = 'reelnest.feeds.seen.v1';
 const SEEN_CAP = 300;
 const FETCH_TIMEOUT_MS = 10_000;
 
@@ -79,7 +79,7 @@ export function saveSeen(seen: Record<string, string[]>): void {
   }
 }
 
-const IDS_KEY = 'maglev.feeds.lastids.v1';
+const IDS_KEY = 'reelnest.feeds.lastids.v1';
 let memIds: Record<string, string[]> | null = null;
 
 /** Item ids last fetched for each feed. Lets the tab badge count new items before the network is touched. */

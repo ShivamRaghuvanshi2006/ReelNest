@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { DownloadOptions, FoundItem, StreamProbe } from 'maglev-engine';
+import type { DownloadOptions, FoundItem, StreamProbe } from 'reelnest-engine';
 import { createSizeProber, fetchContentLength, isProbeable, streamEstimate } from '../../utils/foundSize';
 import { downloadHeaders } from './FoundDownload';
 

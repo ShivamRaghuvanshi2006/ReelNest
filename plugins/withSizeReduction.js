@@ -11,13 +11,13 @@ const PROPS = {
   'android.enableMinifyInReleaseBuilds': 'true',
   'android.enableShrinkResourcesInReleaseBuilds': 'true',
 };
-const MARKER = '# maglev-size-reduction';
+const MARKER = '# reelnest-size-reduction';
 
-// consumer-rules.pro in modules/maglev-engine is not wired into the module's gradle, so R8 would
-// otherwise rename the JNI entry points (Java_com_maglev_engine_NativeCore_*) and break the Rust bridge.
+// consumer-rules.pro in modules/reelnest-engine is not wired into the module's gradle, so R8 would
+// otherwise rename the JNI entry points (Java_com_reelnest_engine_NativeCore_*) and break the Rust bridge.
 const KEEP_RULES = `
 ${MARKER}
--keep class com.maglev.engine.** { *; }
+-keep class com.reelnest.engine.** { *; }
 -keepclassmembers class * {
     native <methods>;
 }
@@ -27,7 +27,7 @@ ${MARKER}
 // language/bm/ are Beider-Morse phonetic rule tables, read only by org.apache.commons.codec.language.bm.*,
 // which nothing here or in expo-file-system touches. libzstd-kmp.so is NOT excluded: expo/fetch sends
 // "Accept-Encoding: zstd, br, gzip" and needs it to decode zstd replies (assistant chat).
-const PACKAGING_MARKER = '// maglev-packaging-excludes';
+const PACKAGING_MARKER = '// reelnest-packaging-excludes';
 const PACKAGING_BLOCK = `
     ${PACKAGING_MARKER}
     packaging {

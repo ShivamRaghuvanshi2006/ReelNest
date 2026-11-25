@@ -2,14 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import { Stack, useRouter, type Href } from 'expo-router';
 import Constants from 'expo-constants';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { ThemeColors, spacing, touch, type } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
 import { Button, Dialog, ListRow, PressableScale } from '../../components/ui';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { Card, SettingsPage } from '../../components/settings/SettingsParts';
 import { Wordmark } from '../../components/settings/Wordmark';
-import { MaglevMark } from '../../components/brand/MaglevMark';
+import { ReelNestMark } from '../../components/brand/ReelNestMark';
 import { errorScreenCopy, updateCopy } from '../../constants/copy';
 import { clearCrashLog, copyCrashReport, getCrashLog } from '../../utils/crashLog';
 import { REPO_URL, StarTicket } from '../../components/settings/StarTicket';
@@ -38,7 +38,7 @@ export default function AboutSettings() {
 
   useEffect(() => {
     let alive = true;
-    maglevEngine
+    reelnestEngine
       .version()
       .then((v) => {
         if (!alive) return;
@@ -61,16 +61,16 @@ export default function AboutSettings() {
   };
   const openUpdates = () => router.push('/settings/updates');
 
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const [logWarning, setLogWarning] = useState(false);
   const [sharing, setSharing] = useState(false);
   const shareLog = async () => {
     if (sharing) return;
     setSharing(true);
     try {
-      const made = await maglevEngine.exportDebugLog();
+      const made = await reelnestEngine.exportDebugLog();
       if (!made.ok) throw new Error(made.code);
-      const shared = await maglevEngine.shareDebugLog(made.uri);
+      const shared = await reelnestEngine.shareDebugLog(made.uri);
       if (!shared.ok) throw new Error(shared.code);
     } catch {
       showNotice({ message: aboutExtrasCopy.debugLog.failed });
@@ -84,7 +84,7 @@ export default function AboutSettings() {
     <SettingsPage title="About">
       <Stack.Screen options={{ headerShown: false }} />
       <View style={s.brand}>
-        <MaglevMark height={64} cruising tappable />
+        <ReelNestMark height={64} tappable />
         <Wordmark />
       </View>
       <StarTicket />
@@ -104,7 +104,7 @@ export default function AboutSettings() {
           subtitle="Source code on GitHub"
           icon="github"
           onPress={() => void Linking.openURL(REPO_URL)}
-          accessibilityHint="Opens the Maglev source code on GitHub"
+          accessibilityHint="Opens the ReelNest source code on GitHub"
         />
         <ListRow
           title={aboutExtrasCopy.licence.title}

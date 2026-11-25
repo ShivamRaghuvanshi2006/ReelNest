@@ -101,12 +101,12 @@ check('https: failure and loop', h.isUpgradeFailure('example.com', 'https://exam
 
 // ---- 3. found-files hint ----
 check('hint: due once, with files, tray closed', h.foundHintDue(2, 'idle', false) && !h.foundHintDue(0, 'idle', false) && !h.foundHintDue(2, 'shown', false) && !h.foundHintDue(2, 'done', false) && !h.foundHintDue(2, 'idle', true));
-check('hint: copy is plain', h.foundHintText(1) === 'Maglev found 1 file on this page' && h.foundHintText(4) === 'Maglev found 4 files on this page' && h.FOUND_HINT_MS <= 8000);
+check('hint: copy is plain', h.foundHintText(1) === 'ReelNest found 1 file on this page' && h.foundHintText(4) === 'ReelNest found 4 files on this page' && h.FOUND_HINT_MS <= 8000);
 
 // ---- Kotlin and screen wiring (source checks) ----
 const strip = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-const view = strip(read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/MaglevBrowserView.kt'));
-const store = strip(read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/BlocklistStore.kt'));
+const view = strip(read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/ReelNestBrowserView.kt'));
+const store = strip(read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/BlocklistStore.kt'));
 const screen = read('app/browser.tsx');
 check('kotlin: download event carries tapped, from the rule', /"tapped" to tapped/.test(view) && /DownloadRules\.tapped\(tapAge\(\), dlTapUses, pendingUserNav, /.test(view));
 check('kotlin: Back uses BackRules over a history list and goBackOrForward', /BackRules\.steps\(history\.flags\(\), webView\.copyBackForwardList\(\)\.currentIndex\)/.test(view) && /goBackOrForward\(-steps\)/.test(view));
@@ -123,11 +123,11 @@ check('kotlin: fallback hosts live for the app session (companion set)', /privat
 check('kotlin: the crash rebuild resets history and the upgrade', /history\.clear\(\)[\s\S]{0,80}upgrade = null/.test(view));
 check('screen: an untapped download does not open the save sheet', /if \(!opensSaveSheet\(e\.tapped\)\) \{[\s\S]{0,400}DOWNLOAD_HELD_NOTICE[\s\S]{0,200}return;/.test(screen));
 check('screen: the hint shows once per page and ends with the tray or a timer', /foundHintDue\(found\.length, data\.hint, trayOpen\)/.test(screen) && /FOUND_HINT_MS/.test(screen) && /d\.hint = 'idle'/.test(screen));
-check('event type has tapped', /tapped: boolean;/.test(read('modules/maglev-engine/src/MaglevBrowser.tsx')));
-check('no mock browser engine emits download requests', !/onDownloadRequest|BrowserDownloadRequest/.test(read('modules/maglev-engine/src/MaglevMockEngine.ts')));
+check('event type has tapped', /tapped: boolean;/.test(read('modules/reelnest-engine/src/ReelNestBrowser.tsx')));
+check('no mock browser engine emits download requests', !/onDownloadRequest|BrowserDownloadRequest/.test(read('modules/reelnest-engine/src/ReelNestMockEngine.ts')));
 
 // ---- 4. mining list ----
-const miners = read('modules/maglev-engine/android/src/main/assets/miners.txt');
+const miners = read('modules/reelnest-engine/android/src/main/assets/miners.txt');
 const lines = miners.split('\n');
 const head = lines.filter((l) => l.startsWith('#')).join('\n');
 const domains = lines.filter((l) => l && !l.startsWith('#'));
@@ -137,7 +137,7 @@ check('miners asset: declared count matches, valid unique domains', Number(/Doma
 check('miners asset: well-known CoinHive hosts are listed', domains.includes('coinhiveproxy.com') && domains.includes('authedmine.com'));
 check('store: mining domains join every list, bundled or downloaded, with no new setting', /loadMiners\(context\)/.test(store) && (store.match(/withMiners\(/g) || []).length >= 4 && !/DomainSet\(all\)|DomainSet\(domains\)/.test(store.replace(/private fun withMiners[^\n]*/, '')));
 check('build script exists', fs.existsSync(path.join(ROOT, 'scripts/build-miners.js')));
-check('Kotlin JVM test exists', fs.existsSync(path.join(ROOT, 'modules/maglev-engine/android/src/test/java/com/maglev/engine/browser/BrowserHardeningTest.kt')));
+check('Kotlin JVM test exists', fs.existsSync(path.join(ROOT, 'modules/reelnest-engine/android/src/test/java/com/reelnest/engine/browser/BrowserHardeningTest.kt')));
 
 if (failed) { console.error(`\n${failed} check(s) failed`); process.exit(1); }
 console.log('\ntest-browser-hardening: all checks passed');

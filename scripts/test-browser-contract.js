@@ -10,8 +10,8 @@ const path = require('path');
 const zlib = require('zlib');
 
 const ROOT = path.join(__dirname, '..');
-const ENGINE = 'modules/maglev-engine';
-const BROWSER = `${ENGINE}/android/src/main/java/com/maglev/engine/browser`;
+const ENGINE = 'modules/reelnest-engine';
+const BROWSER = `${ENGINE}/android/src/main/java/com/reelnest/engine/browser`;
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 const stripKotlinComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
@@ -26,9 +26,9 @@ function check(name, fn) {
   }
 }
 
-const view = stripKotlinComments(read(`${BROWSER}/MaglevBrowserView.kt`));
-const mod = stripKotlinComments(read(`${ENGINE}/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt`));
-const ts = read(`${ENGINE}/src/MaglevBrowser.tsx`);
+const view = stripKotlinComments(read(`${BROWSER}/ReelNestBrowserView.kt`));
+const mod = stripKotlinComments(read(`${ENGINE}/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt`));
+const ts = read(`${ENGINE}/src/ReelNestBrowser.tsx`);
 const scan = read(`${BROWSER}/PageScan.kt`);
 
 // Section 24.2
@@ -37,13 +37,13 @@ const COMMANDS = ['goBack', 'goForward', 'reload', 'stop', 'loadUrl', 'scan', 'c
 const PROPS = ['url', 'adBlock', 'allowAdsHosts', 'desktopMode'];
 const MODULE_FUNCTIONS = ['updateBlocklist', 'getBlocklistInfo', 'resetBlocklist', 'clearBrowserData'];
 
-check('view is registered in MaglevEngineModule', () => {
-  assert(/View\(MaglevBrowserView::class\)\s*\{/.test(mod), 'View(MaglevBrowserView::class) missing');
-  assert(/class MaglevBrowserView\([^)]*\)\s*:\s*ExpoView\(/.test(view), 'MaglevBrowserView must extend ExpoView');
+check('view is registered in ReelNestEngineModule', () => {
+  assert(/View\(ReelNestBrowserView::class\)\s*\{/.test(mod), 'View(ReelNestBrowserView::class) missing');
+  assert(/class ReelNestBrowserView\([^)]*\)\s*:\s*ExpoView\(/.test(view), 'ReelNestBrowserView must extend ExpoView');
 });
 
 check('every event is declared natively, dispatched, and typed in the binding', () => {
-  const eventsDecl = /View\(MaglevBrowserView::class\)\s*\{\s*Events\(([^)]*)\)/.exec(mod);
+  const eventsDecl = /View\(ReelNestBrowserView::class\)\s*\{\s*Events\(([^)]*)\)/.exec(mod);
   assert(eventsDecl, 'Events(...) missing in the view definition');
   for (const e of EVENTS) {
     assert(eventsDecl[1].includes(`"${e}"`), `${e} not in Events(...)`);
@@ -74,7 +74,7 @@ check('module functions exist natively and in the binding', () => {
 });
 
 check('binding uses the native view manager and no fake data', () => {
-  assert(/requireNativeViewManager<[^>]*>\('MaglevEngine', 'MaglevBrowserView'\)/.test(ts), 'requireNativeViewManager call');
+  assert(/requireNativeViewManager<[^>]*>\('ReelNestEngine', 'ReelNestBrowserView'\)/.test(ts), 'requireNativeViewManager call');
   assert(/isn't available in this build/.test(ts), 'plain fallback message');
 });
 
@@ -186,7 +186,7 @@ check('bundled blocklist asset: header, valid domains, <= 400 KB gzipped', () =>
 
 check('Kotlin unit tests exist for the pure files', () => {
   for (const t of ['BlocklistTest', 'FoundClassifierTest', 'LocalHostTest']) {
-    assert(fs.existsSync(path.join(ROOT, `${ENGINE}/android/src/test/java/com/maglev/engine/browser/${t}.kt`)), t);
+    assert(fs.existsSync(path.join(ROOT, `${ENGINE}/android/src/test/java/com/reelnest/engine/browser/${t}.kt`)), t);
   }
 });
 

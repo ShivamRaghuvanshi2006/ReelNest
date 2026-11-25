@@ -49,8 +49,8 @@ export interface SearchPrefs {
  */
 export const LATER_DEFAULTS: readonly string[] = ['gutenberg', 'librivox'];
 
-const KEY = 'maglev.search.prefs.v2';
-const LEGACY_RECENTS_KEY = 'maglev.search.recents.v1';
+const KEY = 'reelnest.search.prefs.v2';
+const LEGACY_RECENTS_KEY = 'reelnest.search.recents.v1';
 const MAX_RECENTS = 8;
 
 const CATEGORIES: readonly Category[] = ['all', 'movies', 'tv', 'anime', 'music', 'apps', 'games', 'books', 'other', 'adult'];

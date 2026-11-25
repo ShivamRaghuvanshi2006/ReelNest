@@ -5,7 +5,7 @@ import { decodeEntities, toInt } from '../text.ts';
 
 export const ID = 'tpb';
 
-// Maglev category -> apibay `cat` code. 0 searches everything.
+// ReelNest category -> apibay `cat` code. 0 searches everything.
 const TPB_CODES: Partial<Record<Category, number>> = {
   music: 100,
   movies: 200,

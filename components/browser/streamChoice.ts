@@ -2,7 +2,7 @@
  * Pure choices for the stream sheet (docs/NATIVE_CONTRACT.md section 24.8): quality labels,
  * the preselected quality and audio track, and the selection sent to startDownload.
  */
-import type { StreamAudioTrack, StreamKind, StreamProbe, StreamSelection, StreamVariant } from '../../modules/maglev-engine/src/MaglevEngine.types';
+import type { StreamAudioTrack, StreamKind, StreamProbe, StreamSelection, StreamVariant } from '../../modules/reelnest-engine/src/ReelNestEngine.types';
 import { formatBytes } from '../../constants/format.ts';
 
 /** The tallest variant; without heights, the one with the most bandwidth. Null when there are none. */

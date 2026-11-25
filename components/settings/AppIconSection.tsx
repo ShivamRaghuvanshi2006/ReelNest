@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, touch, type } from '../../constants/theme';
 import { APP_ICONS, DEFAULT_APP_ICON } from '../../constants/appIcons';
@@ -40,7 +40,7 @@ export function AppIconSection() {
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     let alive = true;
-    maglevEngine.getAppIcon().then((id) => alive && setCurrent(id), () => {});
+    reelnestEngine.getAppIcon().then((id) => alive && setCurrent(id), () => {});
     return () => {
       alive = false;
     };
@@ -51,7 +51,7 @@ export function AppIconSection() {
       if (id === current) return;
       const before = current;
       setCurrent(id);
-      maglevEngine.setAppIcon(id).then(
+      reelnestEngine.setAppIcon(id).then(
         (res) => {
           if (res && res.ok === false) setCurrent(before);
         },

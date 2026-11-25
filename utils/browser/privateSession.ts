@@ -2,7 +2,7 @@
  * The process-wide private browsing session (see privateHosts.ts for what it does and cannot do).
  * Real pieces bound here: the kv store, the WebView cookie jar, the cache clear and Search's hosts.
  */
-import { clearBrowserData, clearCookies } from 'maglev-engine';
+import { clearBrowserData, clearCookies } from 'reelnest-engine';
 import { kvGet, kvSet } from '../prefs/kv';
 import { getSearchPrefs } from '../prefs/search';
 import { PROVIDERS } from '../search/aggregate';

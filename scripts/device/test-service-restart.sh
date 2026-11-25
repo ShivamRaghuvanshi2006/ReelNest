@@ -2,9 +2,9 @@
 # C-SVC-3 device check (docs/NATIVE_CONTRACT.md section 11.7): the foreground service must come back after a crash.
 #
 # Usage:
-#   scripts/device/test-service-restart.sh [--serial SERIAL] [--package com.maglev] [--timeout 60]
+#   scripts/device/test-service-restart.sh [--serial SERIAL] [--package com.reelnest] [--timeout 60]
 #
-# Prerequisites: adb on PATH, one device or emulator, a debuggable or `adb shell am crash`-able Maglev build installed.
+# Prerequisites: adb on PATH, one device or emulator, a debuggable or `adb shell am crash`-able ReelNest build installed.
 # Two runs, each prepared by hand:
 #   1. With a torrent DOWNLOADING:            the script crashes the app, then asserts that the service is back and the
 #                                             download moves again (expects exit 0).
@@ -13,7 +13,7 @@
 # Exit codes: 0 pass, 1 assertion failed, 2 usage or adb problem.
 set -euo pipefail
 
-PKG="com.maglev"
+PKG="com.reelnest"
 TIMEOUT=60
 SERIAL=""
 EXPECT_STOPPED=0
@@ -34,7 +34,7 @@ ADB=(adb)
 [ -n "$SERIAL" ] && ADB=(adb -s "$SERIAL")
 "${ADB[@]}" get-state >/dev/null 2>&1 || { echo "No device found (adb get-state failed)" >&2; exit 2; }
 
-SERVICE="MaglevTorrentService"
+SERVICE="ReelNestTorrentService"
 
 service_running() {
   # `dumpsys activity services <pkg>` lists ServiceRecords of the package while they exist.

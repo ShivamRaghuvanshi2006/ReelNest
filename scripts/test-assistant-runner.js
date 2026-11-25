@@ -30,7 +30,7 @@ async function main() {
   const snap = (o) => ({
     id: 'x', name: 'x', state: 'DOWNLOADING', pausedBy: null, finished: false, progressBytes: 0, totalBytes: 1 * GB, uploadedBytes: 0,
     downBps: 0, upBps: 0, peersLive: 0, peersSeen: 0, webSeeds: 0, etaSecs: -1, ratio: 0, seedingSecs: 0, addedAt: 1700000000,
-    outputFolder: '/storage/emulated/0/Download/Maglev/x', error: null, downLimitBps: 0, upLimitBps: 0, moveProgress: null,
+    outputFolder: '/storage/emulated/0/Download/ReelNest/x', error: null, downLimitBps: 0, upLimitBps: 0, moveProgress: null,
     health: null, includedBytes: 1 * GB, resolvingSecs: null, ...o,
   });
   const dfile = (i, path, length, o = {}) => ({
@@ -48,7 +48,7 @@ async function main() {
       downloads: [],
       details: new Map(),
       metadata: new Map(),
-      free: { path: '/storage/emulated/0/Download/Maglev', freeBytes: 50 * GB, totalBytes: 128 * GB, mode: 'direct' },
+      free: { path: '/storage/emulated/0/Download/ReelNest', freeBytes: 50 * GB, totalBytes: 128 * GB, mode: 'direct' },
       providers: new Map([
         ['knaben', { name: 'Knaben' }],
         ['yts', { name: 'YTS' }],
@@ -357,7 +357,7 @@ async function main() {
       check(`"${q}" finds the ubuntu iso`, j.ok && j.data.count === 1, j.data.hidden);
     }
     const game = merged({ name: 'Elden.Ring.v1.12-FitGirl.Repack', infoHash: hash('5'), sizeBytes: 48 * GB, seeders: 900, category: 'games' });
-    const jg = parse(await call(createToolRunner(world({ rows: [game], free: { path: '/storage/emulated/0/Download/Maglev', freeBytes: 200 * GB, totalBytes: 256 * GB, mode: 'direct' } }).deps), 'search_torrents', { query: 'elden ring', category: 'games' }));
+    const jg = parse(await call(createToolRunner(world({ rows: [game], free: { path: '/storage/emulated/0/Download/ReelNest', freeBytes: 200 * GB, totalBytes: 256 * GB, mode: 'direct' } }).deps), 'search_torrents', { query: 'elden ring', category: 'games' }));
     check('"elden ring" finds Elden.Ring.v1.12-FitGirl.Repack', jg.ok && jg.data.count === 1, jg.data.hidden);
   }
 
@@ -447,7 +447,7 @@ async function main() {
 
   console.log('search: all too big, cinema-only');
   {
-    const full = { path: '/storage/emulated/0/Download/Maglev', freeBytes: 3 * GB, totalBytes: 128 * GB, mode: 'direct' };
+    const full = { path: '/storage/emulated/0/Download/ReelNest', freeBytes: 3 * GB, totalBytes: 128 * GB, mode: 'direct' };
     const big = [
       merged({ name: 'Huge.Film.2024.2160p.WEB-DL.x265-GRP', infoHash: hash('1'), sizeBytes: 12 * GB, seeders: 50 }),
       merged({ name: 'Huge.Film.2024.1080p.BluRay.x264-GRP', infoHash: hash('2'), sizeBytes: 6 * GB, seeders: 50 }),
@@ -675,7 +675,7 @@ async function main() {
     const card = await runner.prepareCard('c1', 'propose_add', args);
     check('add card built', !('error' in card), card);
     check('card title, verb label and dismiss', card.title === 'Add torrent?' && /^Add · 2\.1 GB$/.test(card.confirmLabel) && card.dismissLabel === 'Not now', card);
-    check('card facts are computed by the app', card.sourceName === HARBOR_A && !card.facts.includes(HARBOR_A) && card.facts.some((f) => /^Needs 2\.1 GB · .* left after$/.test(f)) && card.facts.some((f) => f === 'Saves to Download/Maglev'), card.facts);
+    check('card facts are computed by the app', card.sourceName === HARBOR_A && !card.facts.includes(HARBOR_A) && card.facts.some((f) => /^Needs 2\.1 GB · .* left after$/.test(f)) && card.facts.some((f) => f === 'Saves to Download/ReelNest'), card.facts);
     check('card facts mention sequential', card.facts.some((f) => /in order/.test(f)));
     check('card is not danger and not risky', card.danger === false && card.risky === false);
     check('model reason goes through the output filter', card.reason.includes('Fits well.') && !card.reason.includes('evil.example'), card.reason);
@@ -813,7 +813,7 @@ async function main() {
       snap({ id: 'tor3', name: 'Done.Film.2020', state: 'SEEDING', finished: true, totalBytes: 2 * GB, progressBytes: 2 * GB, includedBytes: 2 * GB }),
       snap({ id: 'tor4', name: 'Broken.Film', state: 'ERROR', error: { code: 'DISK_FULL', message: 'ENOSPC /storage/emulated/0' }, totalBytes: 2 * GB, progressBytes: 1 * GB, includedBytes: 2 * GB }),
     ];
-    w.downloads = [{ id: 'dl9', urlDisplay: 'https://host/file.iso', name: 'file.iso', state: 'error', pausedBy: null, size: 700 * MB, downloaded: 100 * MB, downBps: 0, eta: -1, segmentsActive: 0, resumable: true, folder: '/storage/emulated/0/Download/Maglev', addedAt: 1, error: { code: 'LINK_EXPIRED', message: 'raw' } }];
+    w.downloads = [{ id: 'dl9', urlDisplay: 'https://host/file.iso', name: 'file.iso', state: 'error', pausedBy: null, size: 700 * MB, downloaded: 100 * MB, downBps: 0, eta: -1, segmentsActive: 0, resumable: true, folder: '/storage/emulated/0/Download/ReelNest', addedAt: 1, error: { code: 'LINK_EXPIRED', message: 'raw' } }];
     w.details.set('tor1', movieDetail());
     w.details.set('tor2', { ...movieDetail(), snapshot: w.torrents[1] });
     w.details.set('tor4', { ...movieDetail(), snapshot: w.torrents[3] });
@@ -1170,7 +1170,7 @@ async function main() {
     const add = w.calls.find((c) => c[0] === 'addTorrent');
     check('the engine gets a rebuilt magnet', add && add[1].startsWith(`magnet:?xt=urn:btih:${hash('8')}&dn=`), add && add[1]);
     check('xs, ws and the stranger tracker are gone', add && !/xs=|ws=|evil/.test(add[1]), add && add[1]);
-    check('the rebuilt magnet keeps Maglev trackers', add && /tr=udp/.test(add[1]));
+    check('the rebuilt magnet keeps ReelNest trackers', add && /tr=udp/.test(add[1]));
   }
   {
     // The card keeps the source's name out of facts.

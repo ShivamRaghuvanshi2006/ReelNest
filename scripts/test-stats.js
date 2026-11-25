@@ -291,7 +291,7 @@ async function main() {
   const BE = await import('../utils/backup/export.ts');
   const BM = await import('../utils/backup/migrate.ts');
   const BI = await import('../utils/backup/import.ts');
-  const baseDeps = { appVersion: '0.26', now: () => 1, settings: (await import('../modules/maglev-engine/src/MaglevSettings.types.ts')).DEFAULT_SETTINGS, readPref: () => undefined, torrents: [], downloads: [], torrentData: async () => null };
+  const baseDeps = { appVersion: '0.26', now: () => 1, settings: (await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts')).DEFAULT_SETTINGS, readPref: () => undefined, torrents: [], downloads: [], torrentData: async () => null };
   const without = await BE.buildBackup(baseDeps);
   check('backup has no stats unless asked', !('stats' in without) && !BE.serializeBackup(without).includes('"stats"'));
   const withStats = await BE.buildBackup({ ...baseDeps, stats: sec });

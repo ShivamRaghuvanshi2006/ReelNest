@@ -139,7 +139,7 @@ export const PRESETS: readonly ProviderPreset[] = [
 ];
 
 const ASSISTANT_PREFS_VERSION = 1;
-export const ASSISTANT_PREFS_KEY = 'maglev.assistant.prefs.v1';
+export const ASSISTANT_PREFS_KEY = 'reelnest.assistant.prefs.v1';
 const MAX_MODEL_LENGTH = 120;
 const KEY_REF_PATTERN = /^[A-Za-z0-9._-]{1,64}$/;
 

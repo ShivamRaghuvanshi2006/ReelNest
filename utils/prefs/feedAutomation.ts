@@ -1,11 +1,11 @@
 import { useSyncExternalStore } from 'react';
 import Storage from 'expo-sqlite/kv-store';
-import { maglevEngine } from 'maglev-engine';
-import type { FeedAutomationConfig, FeedRule } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
+import type { FeedAutomationConfig, FeedRule } from 'reelnest-engine';
 import { loadFeeds } from '../feeds';
 
 /** Contract: docs/NATIVE_CONTRACT.md section 11.6. */
-const KEY = 'maglev.feeds.automation.v1';
+const KEY = 'reelnest.feeds.automation.v1';
 
 export type IntervalMins = 15 | 30 | 60;
 export const INTERVALS: readonly IntervalMins[] = [15, 30, 60];
@@ -72,7 +72,7 @@ function buildNativeConfig(p: FeedAutomationPrefs = getFeedAutomation()): FeedAu
 /** Pushes to Kotlin. Call at app start, on every change here, and after the Feeds tab changes the feed list. */
 export async function syncFeedAutomationToNative(): Promise<void> {
   try {
-    await maglevEngine.setFeedAutomation(buildNativeConfig());
+    await reelnestEngine.setFeedAutomation(buildNativeConfig());
   } catch {
     // Native side unavailable: the next change or app start retries.
   }

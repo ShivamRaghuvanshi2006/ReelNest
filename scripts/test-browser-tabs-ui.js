@@ -27,7 +27,7 @@ const pkg = read('package.json');
 console.log('one view per live tab');
 check('the screen maps liveTabs to TabWebView', /liveTabs\(tabsState\)[\s\S]{0,600}<TabWebView/.test(scr));
 check('each view is keyed by its tab id and gets active={t.id === activeId}', /key=\{t\.id\}/.test(scr) && /active=\{focused && appForeground && t\.id === activeId\}/.test(scr));
-check('the screen no longer mounts MaglevBrowser itself', !/<MaglevBrowser\b/.test(scr));
+check('the screen no longer mounts ReelNestBrowser itself', !/<ReelNestBrowser\b/.test(scr));
 check('the view forwards active to the native view', /active=\{active\}/.test(view));
 check('an inactive view is hidden: opacity 0 and pointerEvents none', /opacity: 0/.test(view) && /pointerEvents=\{active \? 'auto' : 'none'\}/.test(view));
 check('views are stacked with absolute fill', /StyleSheet\.absoluteFill/.test(view));

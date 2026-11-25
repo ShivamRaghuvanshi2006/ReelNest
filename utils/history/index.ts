@@ -4,7 +4,7 @@
  * and listing or editing throws so the screen can show Retry. The browser keeps working.
  */
 import { useSyncExternalStore } from 'react';
-import { setHistoryWipeOnClose } from 'maglev-engine';
+import { setHistoryWipeOnClose } from 'reelnest-engine';
 import { getBrowserPrefs, subscribeBrowserPrefs } from '../prefs/browser';
 import { openHistoryDb } from './db';
 import { createHistoryStore, type HistoryEntry, type HistoryRange, type HistoryStore, type RecordResult, type TabRow } from './store';

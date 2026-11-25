@@ -131,12 +131,12 @@ async function main() {
   check('the store holds exactly 20', store.list().length === 20 && L.MAX_WATCHES === 20, store.list().length);
   const over = store.add({ query: 'One too many', category: 'all' }, NOW);
   check('the 21st is refused with a plain message', over.ok === false && /20/.test(over.error) && store.list().length === 20, over);
-  mem.set('maglev.watch.v1', '{not json');
+  mem.set('reelnest.watch.v1', '{not json');
   check('corrupt storage reads as empty, never throws', createWatchStore(storage).list().length === 0);
-  mem.set('maglev.watch.v1', JSON.stringify([{ id: 'w_1', query: 'Ok', category: 'movies', intervalHours: 99, seen: 'nope' }, { nonsense: true }, null]));
+  mem.set('reelnest.watch.v1', JSON.stringify([{ id: 'w_1', query: 'Ok', category: 'movies', intervalHours: 99, seen: 'nope' }, { nonsense: true }, null]));
   const odd = createWatchStore(storage).list();
   check('bad rows are dropped, bad fields are repaired', odd.length === 1 && odd[0].intervalHours === 6 && Array.isArray(odd[0].seen), odd);
-  mem.set('maglev.watch.v1', JSON.stringify(Array.from({ length: 30 }, (_, i) => ({ id: `w_${i}`, query: `Q${i}`, category: 'all' }))));
+  mem.set('reelnest.watch.v1', JSON.stringify(Array.from({ length: 30 }, (_, i) => ({ id: `w_${i}`, query: `Q${i}`, category: 'all' }))));
   check('a stored list over the cap is cut to 20', createWatchStore(storage).list().length === 20);
 
   console.log('watch: notification text');
@@ -147,8 +147,8 @@ async function main() {
   check('unknown size and sharing are left out, never invented', n2.title === 'Primetime is up' && n2.text === 'New result', n2);
   const n3 = L.watchNotificationText(mk(), row({ name: 'Primetime.2025.1080p.WEB-DL-X', sizeBytes: 3 * GB, seeders: 1 }));
   check('one person sharing', n3.text === '3.0 GB · 1 sharing', n3);
-  check('open link carries query and category', L.openUrl(mk({ query: 'Prime time', category: 'tv' })) === 'maglev://search?q=Prime%20time&c=tv', L.openUrl(mk({ query: 'Prime time', category: 'tv' })));
-  check('download link is the Add screen with the magnet', L.downloadUrl(row({})) === `maglev://add-torrent?source=${encodeURIComponent(`magnet:?xt=urn:btih:${hash('a')}`)}`);
+  check('open link carries query and category', L.openUrl(mk({ query: 'Prime time', category: 'tv' })) === 'reelnest://search?q=Prime%20time&c=tv', L.openUrl(mk({ query: 'Prime time', category: 'tv' })));
+  check('download link is the Add screen with the magnet', L.downloadUrl(row({})) === `reelnest://add-torrent?source=${encodeURIComponent(`magnet:?xt=urn:btih:${hash('a')}`)}`);
   check('no magnet, no download link', L.downloadUrl(row({ magnet: '' })) === undefined);
   check('a stand-in non-magnet string is not a download link', L.downloadUrl(row({ magnet: 'http://x' })) === undefined);
   check('notification id is stable and in range', L.notificationId('w_abc') === L.notificationId('w_abc') && L.notificationId('w_abc') >= 7000 && L.notificationId('w_abc') < 7000 + 65536);
@@ -192,7 +192,7 @@ async function main() {
     w.results = [a, b];
     const r3 = await runWatchCycle({ ...w.deps, now: () => NOW + 7 * H });
     check('a new result notifies once', w.notes.length === 1 && r3.notified === 1, w.notes);
-    check('notification carries text, links and id', w.notes[0].title === 'Primetime 2160p is up' && w.notes[0].text === '12.0 GB · 12 sharing' && w.notes[0].openUrl.startsWith('maglev://search?q=Primetime') && w.notes[0].downloadUrl.startsWith('maglev://add-torrent?source=') && w.notes[0].id === 'w_one', w.notes[0]);
+    check('notification carries text, links and id', w.notes[0].title === 'Primetime 2160p is up' && w.notes[0].text === '12.0 GB · 12 sharing' && w.notes[0].openUrl.startsWith('reelnest://search?q=Primetime') && w.notes[0].downloadUrl.startsWith('reelnest://add-torrent?source=') && w.notes[0].id === 'w_one', w.notes[0]);
     check('lastNewAt and lastNewName are set', w.list[0].lastNewAt === NOW + 7 * H && /Primetime/.test(w.list[0].lastNewName), w.list[0]);
     const r4 = await runWatchCycle({ ...w.deps, now: () => NOW + 14 * H });
     check('the same results never notify twice', w.notes.length === 1 && r4.notified === 0);

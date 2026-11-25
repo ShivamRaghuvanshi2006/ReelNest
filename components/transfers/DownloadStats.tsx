@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import type { DownloadSnapshot } from 'maglev-engine';
+import type { DownloadSnapshot } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { spacing } from '../../constants/theme';
 import { formatBytes, formatEta, formatSpeed } from '../../constants/format';

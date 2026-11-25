@@ -10,7 +10,7 @@
  *   Available | Ready -> Skipped(version)
  *   Any -> Managed
  */
-import type { ManagedBy } from 'maglev-engine';
+import type { ManagedBy } from 'reelnest-engine';
 import type { UpdateInfo } from './check.ts';
 
 export type UpdateMode = 'ask' | 'download' | 'auto';
@@ -54,7 +54,7 @@ export type UpdateEvent =
   /** DownloadFailed returns to Available. */
   | { type: 'dismissFailure' }
   | { type: 'readyRoute'; mode: UpdateMode; safe: boolean }
-  /** The user tapped Install, or Maglev installs on its own after readyRoute. */
+  /** The user tapped Install, or ReelNest installs on its own after readyRoute. */
   | { type: 'install' }
   | { type: 'installStatus'; status: 'started' | 'needs_permission' | 'needs_user' }
   | { type: 'permissionReturned' }

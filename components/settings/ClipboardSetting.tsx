@@ -3,7 +3,7 @@ import { ListRow, Toggle } from '../ui';
 import { clipboardCopy } from '../../constants/clipboardCopy';
 import { useCatchCopiedLinks } from '../../utils/prefs/clipboard';
 
-/** Settings row: offer to download a link that is on the clipboard when Maglev opens. */
+/** Settings row: offer to download a link that is on the clipboard when ReelNest opens. */
 export function ClipboardSetting() {
   const [on, setOn] = useCatchCopiedLinks();
   return (

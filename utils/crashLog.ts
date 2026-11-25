@@ -4,7 +4,7 @@
  */
 import { kvGet, kvSet } from './prefs/kv.ts';
 
-const CRASH_LOG_KEY = 'maglev.crashLog.v1';
+const CRASH_LOG_KEY = 'reelnest.crashLog.v1';
 const MAX_CRASHES = 20;
 const MAX_STACK_CHARS = 4096;
 
@@ -116,7 +116,7 @@ export function recordCrash(
 /** Plain-text report the user can paste into an issue. Already redacted when recorded; redacted again to be safe. */
 export function formatReport(entries: CrashEntry[], env: CrashEnv = envProvider()): string {
   const head = [
-    'Maglev crash report',
+    'ReelNest crash report',
     `App version: ${env.appVersion}`,
     `Android: ${env.androidVersion}`,
     `Device: ${env.deviceModel}`,

@@ -329,7 +329,7 @@ export function diskAdvice(candidates: readonly DiskCandidate[], input: DiskAdvi
       if (RANK[doubled.result] > RANK[plain.result]) {
         push(8, {
           rule: 'R8',
-          text: `Your folder needs double space while downloading because it copies files in when done. Using the default folder (Download/Maglev) halves that. ${v.title} needs ${f(doubled.need)} here and ${f(plain.need)} in the default folder.`,
+          text: `Your folder needs double space while downloading because it copies files in when done. Using the default folder (Download/ReelNest) halves that. ${v.title} needs ${f(doubled.need)} here and ${f(plain.need)} in the default folder.`,
           action: { kind: 'change_folder', to: 'default' },
         });
         break;

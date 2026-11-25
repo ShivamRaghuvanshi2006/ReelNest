@@ -2,7 +2,7 @@ import { Platform, requireOptionalNativeModule } from 'expo-modules-core';
 import type { WatchNotification } from './cycle';
 import type { NetworkState } from './logic';
 
-/** Kotlin `MaglevWatchModule` (modules/maglev-engine/android/.../watch). Null on web or an old build. */
+/** Kotlin `ReelNestWatchModule` (modules/reelnest-engine/android/.../watch). Null on web or an old build. */
 interface NativeWatch {
   getNetwork(): NetworkState;
   notify(n: WatchNotification): boolean;
@@ -13,7 +13,7 @@ let native: NativeWatch | null | undefined;
 function mod(): NativeWatch | null {
   if (native === undefined) {
     try {
-      native = Platform.OS === 'android' ? requireOptionalNativeModule<NativeWatch>('MaglevWatch') : null;
+      native = Platform.OS === 'android' ? requireOptionalNativeModule<NativeWatch>('ReelNestWatch') : null;
     } catch {
       native = null;
     }

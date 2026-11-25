@@ -6,7 +6,7 @@
  * was closed (the foreground service keeps going) are counted when it next looks. A counter that goes down (engine restart,
  * FILE_CHANGED restart) counts as a fresh start: the delta is the new value, never negative.
  */
-import type { DownloadSnapshot, Snapshot } from '../../modules/maglev-engine/src/MaglevEngine.types.ts';
+import type { DownloadSnapshot, Snapshot } from '../../modules/reelnest-engine/src/ReelNestEngine.types.ts';
 import { dayKey } from './time.ts';
 import type { DayCounts, StatsKind, StatsRecord } from './types.ts';
 import { zeroDay } from './types.ts';

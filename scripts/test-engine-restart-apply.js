@@ -27,22 +27,22 @@ function body(src, re) {
   return src.slice(start);
 }
 
-const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
-const host = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
-const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-const nativeCore = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/NativeCore.kt');
-const jni = read('native/maglev-core/src/jni.rs');
-const engine = read('native/maglev-core/src/engine.rs');
-const config = read('native/maglev-core/src/config.rs');
+const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
+const host = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
+const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+const nativeCore = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/NativeCore.kt');
+const jni = read('native/reelnest-core/src/jni.rs');
+const engine = read('native/reelnest-core/src/engine.rs');
+const config = read('native/reelnest-core/src/config.rs');
 
 console.log('TS API and types');
 check('EffectiveConfig extends NativeConfig with restartPending and blocklist',
   /export interface EffectiveConfig extends NativeConfig \{[^}]*restartPending: boolean;[^}]*blocklist: BlocklistStatus;/s.test(types));
 check('BlocklistStatus is { state: off | on | unreadable, rules: number }',
   /export type BlocklistState = 'off' \| 'on' \| 'unreadable';/.test(types) && /export interface BlocklistStatus \{\s*state: BlocklistState;[^}]*rules: number;/s.test(types));
-check('MaglevEngineApi has restartEngine(): Promise<EngineResult>', /restartEngine\(\): Promise<EngineResult>;/.test(types));
+check('ReelNestEngineApi has restartEngine(): Promise<EngineResult>', /restartEngine\(\): Promise<EngineResult>;/.test(types));
 check('getEffectiveConfig returns EffectiveConfig', /getEffectiveConfig\(\): Promise<EngineResult<EffectiveConfig>>;/.test(types));
 check('bridge forwards restartEngine to the native module', /public restartEngine\(\): Promise<EngineResult> \{\s*return this\.route\('restartEngine'\);/.test(bridge));
 check('restartEngine is a read-class method (never auto-restarts on NOT_INITIALIZED)',
@@ -55,7 +55,7 @@ check('mock getEffectiveConfig reports restartPending and blocklist', /restartPe
 console.log('Kotlin wiring');
 check('module exposes AsyncFunction("restartEngine") calling EngineHost.restartEngine', /AsyncFunction\("restartEngine"\)[\s\S]{0,200}EngineHost\.restartEngine\(\)/.test(mod));
 check('NativeCore declares nativeSetNetworkOff and Rust exports it',
-  /external fun nativeSetNetworkOff\(off: Boolean\): String/.test(nativeCore) && /Java_com_maglev_engine_NativeCore_nativeSetNetworkOff/.test(jni));
+  /external fun nativeSetNetworkOff\(off: Boolean\): String/.test(nativeCore) && /Java_com_reelnest_engine_NativeCore_nativeSetNetworkOff/.test(jni));
 const restart = body(host, /fun restartEngine\(\)/);
 check('restartEngine fails with INVALID_STATE while one runs (compare-and-set flag)', /compareAndSet\(false, true\)/.test(restart) && /"INVALID_STATE"/.test(restart) && /restarting\.set\(false\)/.test(restart));
 const cycle = body(host, /private fun cycleSessionLocked\(\)/);

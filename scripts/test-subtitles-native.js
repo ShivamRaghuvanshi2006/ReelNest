@@ -15,7 +15,7 @@ function check(name, cond, extra) {
   }
 }
 const read = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const KT = 'modules/maglev-engine/android/src';
+const KT = 'modules/reelnest-engine/android/src';
 
 // The OpenSubtitles hash, as BigInt: size + LE uint64 sums of the first and last 64 KiB, mod 2^64.
 function movieHash(buf) {
@@ -52,32 +52,32 @@ async function main() {
   const buf = Buffer.alloc(200000);
   for (let i = 0; i < buf.length; i++) buf[i] = (i * 31 + 7) & 255;
   check('JS BigInt hash of the vector', movieHash(buf) === VECTOR_HASH, movieHash(buf));
-  const ktHashTest = read(`${KT}/test/java/com/maglev/engine/subtitles/SubtitleHashTest.kt`);
+  const ktHashTest = read(`${KT}/test/java/com/reelnest/engine/subtitles/SubtitleHashTest.kt`);
   check('Kotlin test asserts the same constant', ktHashTest.includes(`"${VECTOR_HASH}"`));
   check('Kotlin test uses the same pattern', ktHashTest.includes('200000') && ktHashTest.includes('i * 31 + 7'));
 
   // 2. Kotlin source exposes the calls and codes.
-  const mod = read(`${KT}/main/java/com/maglev/engine/MaglevEngineModule.kt`);
+  const mod = read(`${KT}/main/java/com/reelnest/engine/ReelNestEngineModule.kt`);
   for (const fn of ['subtitleHash', 'saveSubtitle', 'unzipSubtitles']) check(`module exposes ${fn}`, mod.includes(`AsyncFunction("${fn}")`));
   check('saveSubtitle takes the replace flag', /AsyncFunction\("saveSubtitle"\) \{[^}]*replace: Boolean/.test(mod));
-  const kt = ['SubtitleHash', 'SubtitleFiles', 'SubtitleZip'].map((f) => read(`${KT}/main/java/com/maglev/engine/subtitles/${f}.kt`)).join('\n');
+  const kt = ['SubtitleHash', 'SubtitleFiles', 'SubtitleZip'].map((f) => read(`${KT}/main/java/com/reelnest/engine/subtitles/${f}.kt`)).join('\n');
   for (const code of ['FILE_TOO_SMALL', 'NOT_FOUND', 'IO', 'NAME_TAKEN', 'VERIFY_FAILED', 'CANT_WRITE', 'NO_SPACE', 'ARCHIVE_UNSAFE']) {
     check(`Kotlin raises ${code}`, kt.includes(`"${code}"`) || (code === 'IO' && mod.includes('"IO"')));
   }
   check('module rejects with the code', mod.includes('promise.reject(e.code'));
-  check('Kotlin has zip and hash unit tests', fs.existsSync(path.join(__dirname, '..', `${KT}/test/java/com/maglev/engine/subtitles/SubtitleZipTest.kt`)));
+  check('Kotlin has zip and hash unit tests', fs.existsSync(path.join(__dirname, '..', `${KT}/test/java/com/reelnest/engine/subtitles/SubtitleZipTest.kt`)));
 
   // 3. Types and bridge.
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
   for (const fn of ['subtitleHash', 'saveSubtitle', 'unzipSubtitles']) {
     check(`API types declare ${fn}`, new RegExp(`\\b${fn}\\(`).test(types));
     check(`bridge implements ${fn}`, new RegExp(`public ${fn}\\(`).test(bridge));
   }
 
   // 4. Mock.
-  const { MaglevMockEngine } = await import('../modules/maglev-engine/src/MaglevMockEngine.ts');
-  const mock = new MaglevMockEngine();
+  const { ReelNestMockEngine } = await import('../modules/reelnest-engine/src/ReelNestMockEngine.ts');
+  const mock = new ReelNestMockEngine();
   const code = async (p) => {
     try {
       await p;
@@ -86,18 +86,18 @@ async function main() {
       return e && e.code;
     }
   };
-  const h1 = await mock.subtitleHash('/storage/emulated/0/Download/Maglev/A/a.mkv');
-  const h2 = await mock.subtitleHash('/storage/emulated/0/Download/Maglev/A/a.mkv');
-  const h3 = await mock.subtitleHash('/storage/emulated/0/Download/Maglev/A/b.mkv');
+  const h1 = await mock.subtitleHash('/storage/emulated/0/Download/ReelNest/A/a.mkv');
+  const h2 = await mock.subtitleHash('/storage/emulated/0/Download/ReelNest/A/a.mkv');
+  const h3 = await mock.subtitleHash('/storage/emulated/0/Download/ReelNest/A/b.mkv');
   check('mock hash is 16 lowercase hex', /^[0-9a-f]{16}$/.test(h1.hash), h1.hash);
   check('mock hash is deterministic', h1.hash === h2.hash && h1.bytes === h2.bytes);
   check('mock hash differs by name', h1.hash !== h3.hash);
   check('mock bytes at least 131072', h1.bytes >= 131072);
   check('mock hash of nothing is NOT_FOUND', (await code(mock.subtitleHash(''))) === 'NOT_FOUND');
 
-  const v = '/storage/emulated/0/Download/Maglev/A/a.mkv';
+  const v = '/storage/emulated/0/Download/ReelNest/A/a.mkv';
   const r1 = await mock.saveSubtitle(v, 'a.en.srt', 'QQ==', false);
-  check('mock save returns a sibling path', r1.path === '/storage/emulated/0/Download/Maglev/A/a.en.srt', r1.path);
+  check('mock save returns a sibling path', r1.path === '/storage/emulated/0/Download/ReelNest/A/a.en.srt', r1.path);
   check('mock save NAME_TAKEN without replace', (await code(mock.saveSubtitle(v, 'a.en.srt', 'QQ==', false))) === 'NAME_TAKEN');
   check('mock save replaces when asked', (await mock.saveSubtitle(v, 'a.en.srt', 'Qg==', true)).path === r1.path);
   for (const bad of ['', '../x.srt', 'a/b.srt', 'x'.repeat(256)]) {

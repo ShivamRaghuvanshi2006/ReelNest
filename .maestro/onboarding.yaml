@@ -1,5 +1,5 @@
 # First launch: onboarding to an empty Transfers screen.
-appId: com.maglev
+appId: com.ReelNest
 name: onboarding
 ---
 - launchApp:

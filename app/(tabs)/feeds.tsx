@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
@@ -44,7 +44,7 @@ export default function FeedsScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
-  const { startTorrent, restartEngine, telemetry, onMeteredNetwork } = useMaglevEngine();
+  const { startTorrent, restartEngine, telemetry, onMeteredNetwork } = useReelNestEngine();
   const { settings } = useSettings();
 
   const [feeds, setFeeds] = useState<Feed[]>(() => loadFeeds());

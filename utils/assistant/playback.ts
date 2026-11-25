@@ -2,7 +2,7 @@
 // (docs/ASSISTANT_DESIGN.md section 9 "On your phone:", D3). Pure TypeScript, never throws.
 // Rule: an unknown probe never gives "smooth".
 import type { ParsedRelease } from './releaseName';
-import type { PlaybackSupport, CodecSupport } from '../../modules/maglev-engine/src/MaglevEngine.types';
+import type { PlaybackSupport, CodecSupport } from '../../modules/reelnest-engine/src/ReelNestEngine.types';
 
 export type PlaybackVerdict = 'smooth' | 'may_stutter' | 'needs_other_player' | 'unknown';
 

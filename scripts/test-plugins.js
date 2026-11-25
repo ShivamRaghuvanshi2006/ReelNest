@@ -14,11 +14,11 @@ assert(get('newArchEnabled').length === 1, 'unrelated props kept');
 assert.deepStrictEqual(applySizeProperties(props), props, 'props not idempotent');
 
 const rules = applyKeepRules('# existing\n-keep class a.B');
-assert(rules.includes('-keep class com.maglev.engine.** { *; }'));
+assert(rules.includes('-keep class com.reelnest.engine.** { *; }'));
 assert(rules.includes('native <methods>'));
 assert(rules.startsWith('# existing\n'));
 assert.strictEqual(applyKeepRules(rules), rules, 'rules not idempotent');
-assert(applyKeepRules('').includes('com.maglev.engine'));
+assert(applyKeepRules('').includes('com.reelnest.engine'));
 // --- backup rules (exclude session/ from Auto Backup) ---
 {
   const { fullBackupXml, dataExtractionXml, applyBackupAttributes } = require('../plugins/withBackupRules');
@@ -30,8 +30,8 @@ assert(applyKeepRules('').includes('com.maglev.engine'));
   const transfer = /<device-transfer>([\s\S]*?)<\/device-transfer>/.exec(ext)[1];
   for (const part of [cloud, transfer]) assert(part.includes('path="session/"'), 'data extraction excludes session/ in both sections');
   const app = applyBackupAttributes({ $: { 'android:allowBackup': 'true' } });
-  assert.strictEqual(app.$['android:fullBackupContent'], '@xml/maglev_backup_rules');
-  assert.strictEqual(app.$['android:dataExtractionRules'], '@xml/maglev_data_extraction_rules');
+  assert.strictEqual(app.$['android:fullBackupContent'], '@xml/reelnest_backup_rules');
+  assert.strictEqual(app.$['android:dataExtractionRules'], '@xml/reelnest_data_extraction_rules');
   assert.strictEqual(app.$['android:allowBackup'], 'true', 'unrelated attributes kept');
   assert.deepStrictEqual(applyBackupAttributes(app), app, 'attributes not idempotent');
 }
@@ -40,11 +40,11 @@ assert(applyKeepRules('').includes('com.maglev.engine'));
 {
   const { applyMainActivity, KOTLIN } = require('../plugins/withShareIntents');
   const tpl =
-    'package com.maglev\n\nimport android.os.Bundle\n\nclass MainActivity : ReactActivity() {\n  override fun onCreate(savedInstanceState: Bundle?) {\n    setTheme(R.style.AppTheme);\n    super.onCreate(null)\n  }\n}\n';
+    'package com.reelnest\n\nimport android.os.Bundle\n\nclass MainActivity : ReactActivity() {\n  override fun onCreate(savedInstanceState: Bundle?) {\n    setTheme(R.style.AppTheme);\n    super.onCreate(null)\n  }\n}\n';
   const out = applyMainActivity(tpl);
   assert(out.includes('import android.content.Intent'));
-  assert(out.includes('override fun onNewIntent(intent: Intent) {\n    MaglevShareIntent.rewrite(intent)\n    super.onNewIntent(intent)'));
-  assert(/onCreate\(savedInstanceState: Bundle\?\) \{\n    MaglevShareIntent\.rewrite\(intent\)\n    setTheme/.test(out), 'rewrite runs before super.onCreate');
+  assert(out.includes('override fun onNewIntent(intent: Intent) {\n    ReelNestShareIntent.rewrite(intent)\n    super.onNewIntent(intent)'));
+  assert(/onCreate\(savedInstanceState: Bundle\?\) \{\n    ReelNestShareIntent\.rewrite\(intent\)\n    setTheme/.test(out), 'rewrite runs before super.onCreate');
   assert.strictEqual(applyMainActivity(out), out, 'MainActivity patch not idempotent');
   assert.throws(() => applyMainActivity('class X'), /onCreate not found/);
   assert(KOTLIN.includes('ACTION_SEND_MULTIPLE') && KOTLIN.includes('magnet:'));
@@ -65,7 +65,7 @@ assert(applyKeepRules('').includes('com.maglev.engine'));
   assert(!xml.includes('src="user"'), 'no user CAs');
   const node = { $: { 'android:allowBackup': 'true', 'android:usesCleartextTraffic': 'false' } };
   assert.strictEqual(applyNetworkSecurityConfig(node), true);
-  assert.strictEqual(node.$['android:networkSecurityConfig'], '@xml/maglev_network_security_config');
+  assert.strictEqual(node.$['android:networkSecurityConfig'], '@xml/reelnest_network_security_config');
   assert.strictEqual(node.$['android:allowBackup'], 'true', 'unrelated attributes kept');
   assert.strictEqual(applyNetworkSecurityConfig(node), true, 'idempotent');
   const other = { $: { 'android:networkSecurityConfig': '@xml/other' } };
@@ -80,10 +80,10 @@ assert(applyKeepRules('').includes('com.maglev.engine'));
   const fixture = 'apply plugin: "com.android.application"\n\nandroid {\n    signingConfigs {\n        debug {\n            storeFile file(\'debug.keystore\')\n        }\n    }\n    buildTypes {\n        release {\n            signingConfig signingConfigs.debug\n        }\n    }\n}\n';
   const out = applyReleaseSigning(fixture);
   assert(out.startsWith(fixture), 'template kept untouched (debug signing stays the fallback)');
-  for (const v of ['MAGLEV_KEYSTORE_PATH', 'MAGLEV_KEYSTORE_PASSWORD', 'MAGLEV_KEY_ALIAS', 'MAGLEV_KEY_PASSWORD']) {
+  for (const v of ['REELNEST_KEYSTORE_PATH', 'REELNEST_KEYSTORE_PASSWORD', 'REELNEST_KEY_ALIAS', 'REELNEST_KEY_PASSWORD']) {
     assert(out.includes(`System.getenv("${v}")`), `reads ${v}`);
   }
-  assert(/if \(maglevKeystorePath && new File\(maglevKeystorePath\)\.exists\(\)\)/.test(out), 'only signs when the keystore file exists');
+  assert(/if \(reelnestKeystorePath && new File\(reelnestKeystorePath\)\.exists\(\)\)/.test(out), 'only signs when the keystore file exists');
   assert(out.includes('signingConfig signingConfigs.release'), 'release build type uses the release config');
   assert(out.includes('enableV1Signing = false') && out.includes('enableV2Signing = true') && out.includes('enableV3Signing = true'), 'v2+v3 on, v1 off');
   assert(!/storePassword\s+["'][^"']+["']/.test(out), 'no literal passwords');

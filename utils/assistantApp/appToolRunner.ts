@@ -2,7 +2,7 @@
  * Binds the real search, prefs and engine modules into the pure tool runner (build step 12).
  * This is the only assistant file that imports the engine and the search stack.
  */
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { loadExtraProviders } from '../../components/search/extra';
 import { providerMap } from '../../components/search/meta';
 import { getSearchPrefs } from '../prefs/search';
@@ -49,8 +49,8 @@ export function createAppToolRunner(): ToolRunner {
       const extra = await loadExtraProviders(getSearchPrefs().torznab);
       return resolveResult(result, signal, extra);
     },
-    engine: maglevEngine,
-    playbackSupport: () => maglevEngine.getPlaybackSupport().catch(() => null),
+    engine: reelnestEngine,
+    playbackSupport: () => reelnestEngine.getPlaybackSupport().catch(() => null),
     now: () => Date.now(),
   });
 }

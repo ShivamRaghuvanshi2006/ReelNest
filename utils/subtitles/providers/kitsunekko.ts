@@ -60,7 +60,7 @@ export function parseSiteDate(s: string | undefined): number | undefined {
 
 /**
  * The files in one folder. Only plain subtitles and zip archives are kept: the site also holds .rar and .7z packs,
- * which Maglev can't open, so those rows never become candidates.
+ * which ReelNest can't open, so those rows never become candidates.
  */
 export function parseDirectory(body: string): KkFile[] {
   if (!/id="flisttable"/i.test(body)) throw new ProviderError('parse', 'Unexpected response');

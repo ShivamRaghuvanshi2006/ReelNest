@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { isDownloadLink, normalizeIncoming, type DownloadSnapshot } from 'maglev-engine';
+import { isDownloadLink, normalizeIncoming, type DownloadSnapshot } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { useEngineActions, useEngineTelemetry } from '../../context/EngineContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';

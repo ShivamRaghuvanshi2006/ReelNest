@@ -15,7 +15,7 @@ export interface Bookmark {
   addedAt: number;
 }
 
-export const BOOKMARKS_KEY = 'maglev.browser.bookmarks.v1';
+export const BOOKMARKS_KEY = 'reelnest.browser.bookmarks.v1';
 export const BOOKMARK_CAP = 500;
 const TITLE_MAX = 200;
 

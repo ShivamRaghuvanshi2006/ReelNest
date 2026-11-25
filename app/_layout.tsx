@@ -26,7 +26,7 @@ installGlobalHandler();
 export { ErrorBoundary } from '../components/ErrorScreen';
 
 /**
- * A cold deep link (share, notification, maglev://) starts the stack at the link's screen. `anchor` puts the
+ * A cold deep link (share, notification, reelnest://) starts the stack at the link's screen. `anchor` puts the
  * tab shell underneath it, so Back lands on Transfers with the tab bar instead of leaving the app.
  * (expo-router build/layoutAnchor.js: `unstable_settings.anchor`; `initialRouteName` is the deprecated name.)
  */

@@ -1,4 +1,4 @@
-Recorded 2026-11-18 from the live sites with the app's own User-Agent (Maglev/0.1.0 (Android)). Search pages are trimmed
+Recorded 2026-11-18 from the live sites with the app's own User-Agent (ReelNest/0.1.0 (Android)). Search pages are trimmed
 to the first rows and the page header is cut; the rows are untouched. Binary downloads are cut to their first 2-3 KB
 (the file magic and the start of the text are real). subsunacs pages are the raw windows-1251 bytes.
 

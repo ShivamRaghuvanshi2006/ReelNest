@@ -1,6 +1,6 @@
 # Removes every transfer (and its files) left on the Transfers list by an earlier flow that failed before its own cleanup.
-# Flows run in one emulator session, and a leftover Sintel makes the next magnet say "Already in Maglev" (no Download button).
-appId: com.maglev
+# Flows run in one emulator session, and a leftover Sintel makes the next magnet say "Already in ReelNest" (no Download button).
+appId: com.ReelNest
 ---
 - tapOn: "Transfers"
 - repeat:

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { Banner } from '../ui';
 import { networkAdvancedCopy as copy } from '../../constants/copy';
 import { UNKNOWN_NETWORK_STATUS, readNetworkStatus, type NetworkStatus } from '../../utils/networkStatus';
@@ -10,13 +10,13 @@ import { UNKNOWN_NETWORK_STATUS, readNetworkStatus, type NetworkStatus } from '.
 /** The downloader's own word on the saved network settings, refreshed on focus and after each change. */
 export function useNetworkStatus() {
   const { settings } = useSettings();
-  const { restartRequired, restartEngine: restartWithSettings, showNotice } = useMaglevEngine();
+  const { restartRequired, restartEngine: restartWithSettings, showNotice } = useReelNestEngine();
   const [status, setStatus] = useState<NetworkStatus>(UNKNOWN_NETWORK_STATUS);
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      setStatus(readNetworkStatus(await maglevEngine.getEffectiveConfig()));
+      setStatus(readNetworkStatus(await reelnestEngine.getEffectiveConfig()));
     } catch {
       setStatus(UNKNOWN_NETWORK_STATUS);
     }
@@ -39,8 +39,8 @@ export function useNetworkStatus() {
     setBusy(true);
     try {
       // The module's own restartEngine (NATIVE_CONTRACT 41) resolves with a result, never throws on failure.
-      if (typeof maglevEngine.restartEngine === 'function') {
-        const res = await maglevEngine.restartEngine();
+      if (typeof reelnestEngine.restartEngine === 'function') {
+        const res = await reelnestEngine.restartEngine();
         if (!res || (res as { ok?: boolean }).ok === false) throw new Error('restart failed');
       } else if (!(await restartWithSettings())) throw new Error('restart failed');
       showNotice({ message: copy.restarted }, 4000);

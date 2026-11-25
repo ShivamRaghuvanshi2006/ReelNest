@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { clearBrowserData } from 'maglev-engine';
+import { clearBrowserData } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { haptic } from '../../constants/haptics';
 import { historyCopy, notices } from '../../constants/copy';
@@ -32,7 +32,7 @@ interface Data {
 export function ClearHistorySheet({ visible, mode, onClose }: { visible: boolean; mode: ClearMode; onClose: () => void }) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const [phase, setPhase] = useState<Phase>('choosing');
   const [range, setRange] = useState<ClearRange | null>(null);
   const [data, setData] = useState<Data>({ history: true, cookies: true, cache: true });

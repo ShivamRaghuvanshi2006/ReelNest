@@ -243,7 +243,7 @@ export const SETTINGS_INDEX: SettingEntry[] = [
     "Subtitle sources",
     "subtitle-sources",
     "Subtitle sources",
-    ["subtitles", "sources", "providers", "opensubtitles", "fingerprint", "imdb", "turned off by maglev", "list updated", "on", "off", "captions"],
+    ["subtitles", "sources", "providers", "opensubtitles", "fingerprint", "imdb", "turned off by reelnest", "list updated", "on", "off", "captions"],
   ),
 
   // Appearance
@@ -781,7 +781,7 @@ export const SETTINGS_INDEX: SettingEntry[] = [
   ),
   e(
     "browser-clear-on-close",
-    "Clear history when Maglev closes",
+    "Clear history when ReelNest closes",
     "browser",
     "Browser",
     [

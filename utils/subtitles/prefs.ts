@@ -1,11 +1,11 @@
 /**
  * Subtitle prefs (docs/NATIVE_CONTRACT.md sections 36.2 and 36.10). Pure helpers over the `subtitles` section of
- * the settings (modules/maglev-engine/src/MaglevSettings.types.ts, UI only: never in toNativeConfig), plus the
+ * the settings (modules/reelnest-engine/src/ReelNestSettings.types.ts, UI only: never in toNativeConfig), plus the
  * per-video state kept in kv `subtitles.state`.
  */
 import { kvGet, kvSet } from '../prefs/kv.ts';
 import { defaultLanguages } from './languages.ts';
-import type { SubtitleSettings } from '../../modules/maglev-engine/src/MaglevSettings.types.ts';
+import type { SubtitleSettings } from '../../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 
 export type { SubtitleSettings };
 export type HearingPref = SubtitleSettings['hearingImpaired'];

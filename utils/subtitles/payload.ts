@@ -88,7 +88,7 @@ function sameEpisode(name: string, w: MemberWanted): boolean {
 /**
  * Picks the member to save, in order: the same season and episode when known; the closest release name; the largest
  * member. When the members belong to several episodes and none can be told to be this one, nobody guesses: the
- * answer is `ambiguous_pack` ("This file has subtitles for several episodes and Maglev can't tell which one is yours.").
+ * answer is `ambiguous_pack` ("This file has subtitles for several episodes and ReelNest can't tell which one is yours.").
  */
 export function pickZipMember(members: readonly ZipMember[], wanted: MemberWanted): MemberChoice {
   const subs = members.filter((m) => SUBTITLE_EXT.test(m.name) && !/(^|[\\/])(__macosx|\.)/i.test(m.name) && m.bytes.length > 0);

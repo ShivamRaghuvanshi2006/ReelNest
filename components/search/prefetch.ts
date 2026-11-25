@@ -6,7 +6,7 @@
 // - results are kept by info hash for the session (a torrent's file list never changes);
 // - a failed read is not cached and is not tried again for a while;
 // - the Add screen takes a finished or running read with take(); a taken read is never cancelled here.
-import type { EngineResult, Metadata } from 'maglev-engine';
+import type { EngineResult, Metadata } from 'reelnest-engine';
 
 export type MetadataResult = EngineResult<Metadata>;
 

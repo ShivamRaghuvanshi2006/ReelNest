@@ -2,17 +2,17 @@ import React, { useCallback, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Screen, EmptyBlock } from '../components/ui';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { useTheme } from '../context/ThemeContext';
 import { ThemeColors } from '../constants/theme';
 import { empty } from '../constants/copy';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { START_ENGINE_LABEL, engineFailureAction } from '../utils/addErrorNotice';
 
 export default function EngineErrorScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { engineStatus, retryEngine } = useMaglevEngine();
+  const { engineStatus, retryEngine } = useReelNestEngine();
   const failure = engineFailureAction(engineStatus.kind === 'unavailable' ? engineStatus.code : undefined);
   const message = engineStatus.kind === 'starting'
     ? 'The downloader took too long to start.'
@@ -35,7 +35,7 @@ export default function EngineErrorScreen() {
   const primaryPress = useCallback(async () => {
     if (failure.action === 'pickFolder') {
       try {
-        await maglevEngine.pickDownloadFolder();
+        await reelnestEngine.pickDownloadFolder();
       } catch {
         // The picker failed; starting again below still reports the real reason.
       }

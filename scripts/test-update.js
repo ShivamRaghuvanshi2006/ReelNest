@@ -21,15 +21,15 @@ function check(name, cond, extra) {
 
 const SHA = 'a'.repeat(64);
 const asset = (tag, abi, over = {}) => ({
-  name: `Maglev-${tag}-${abi}.apk`,
-  browser_download_url: `https://github.com/Kaos599/Maglev/releases/download/${tag}/Maglev-${tag}-${abi}.apk`,
+  name: `ReelNest-${tag}-${abi}.apk`,
+  browser_download_url: `https://github.com/ShivamRaghuvanshi2006/ReelNest/releases/download/${tag}/ReelNest-${tag}-${abi}.apk`,
   digest: `sha256:${SHA}`,
   size: 12345,
   ...over,
 });
 const release = (tag, over = {}) => ({
   tag_name: tag,
-  html_url: `https://github.com/Kaos599/Maglev/releases/tag/${tag}`,
+  html_url: `https://github.com/ShivamRaghuvanshi2006/ReelNest/releases/tag/${tag}`,
   body: '## What\'s new\n- one',
   draft: false,
   prerelease: false,
@@ -88,7 +88,7 @@ const release = (tag, over = {}) => ({
   };
   const inst = { version: '0.21', versionCode: 214 };
   const got = await c.checkForUpdate(okFetch(release('v0.22')), inst);
-  check('request is GET releases/latest with the right headers only', calls[0].url === 'https://api.github.com/repos/Kaos599/Maglev/releases/latest' && calls[0].init.headers.Accept === 'application/vnd.github+json' && calls[0].init.headers['User-Agent'] === 'Maglev/0.21' && Object.keys(calls[0].init.headers).length === 2 && !('Authorization' in calls[0].init.headers));
+  check('request is GET releases/latest with the right headers only', calls[0].url === 'https://api.github.com/repos/ShivamRaghuvanshi2006/ReelNest/releases/latest' && calls[0].init.headers.Accept === 'application/vnd.github+json' && calls[0].init.headers['User-Agent'] === 'ReelNest/0.21' && Object.keys(calls[0].init.headers).length === 2 && !('Authorization' in calls[0].init.headers));
   check('parsed result', got && got.version === '0.22');
   check('the request omits credentials, so no github.com cookies go out', calls[0].init.credentials === 'omit');
   check('up to date gives null', (await c.checkForUpdate(okFetch(release('v0.21')), inst)) === null);
@@ -173,7 +173,7 @@ const release = (tag, over = {}) => ({
   console.log('\n[managed]');
   for (const by of ['accrescent', 'store']) check(`managed by ${by} is never due`, !m.autoCheckDue({ now: NOW, lastCheckAt: null, autoCheck: true, managedBy: by }));
   const copy = fs0.readFileSync(require('path').join(__dirname, '../constants/copy.ts'), 'utf8');
-  check('About copy for Accrescent and other stores', /'Updates come from Accrescent\.'/.test(copy) && /'Updates come from the app store you installed Maglev from\.'/.test(copy));
+  check('About copy for Accrescent and other stores', /'Updates come from Accrescent\.'/.test(copy) && /'Updates come from the app store you installed ReelNest from\.'/.test(copy));
   for (const by of ['fdroid', 'obtainium', 'play']) check(`Any -> Managed(${by})`, [m.initialState, run(found), run(ready), tapped].every((s) => { const x = m.reduce(s, { type: 'managed', by }); return x.kind === 'managed' && x.by === by; }));
   const managed = m.reduce(m.initialState, { type: 'managed', by: 'play' });
   check('Managed is final: no check, download or install', ['check', 'download', 'install', 'wifi'].every((t) => m.reduce(managed, { type: t }) === managed) && m.reduce(managed, { type: 'route', mode: 'auto', unmetered: true }) === managed);
@@ -195,10 +195,10 @@ const release = (tag, over = {}) => ({
   check('upload in the last 60 s is not safe, older is', !r.safeToInstall(facts({ lastUploadAt: NOW - 59_000 })) && r.safeToInstall(facts({ lastUploadAt: NOW - 61_000 })));
   check('a running plain or stream download is not safe', ['downloading', 'resolving', 'verifying'].every((state) => !r.safeToInstall(facts({ downloads: [{ state }] }))));
   check('an open player screen is not safe', !r.safeToInstall(facts({ playerOpen: true })) && r.safeToInstall(facts({ playerOpen: false })));
-  // The telemetry event carries plain and stream downloads in `downloads` (TelemetryEvent in MaglevEngine.types.ts,
+  // The telemetry event carries plain and stream downloads in `downloads` (TelemetryEvent in ReelNestEngine.types.ts,
   // read by EngineContext and by utils/update/index.ts, which feeds `e.downloads` to safeToInstall).
   const fs = require('fs');
-  const types = fs.readFileSync(require('path').join(__dirname, '../modules/maglev-engine/src/MaglevEngine.types.ts'), 'utf8');
+  const types = fs.readFileSync(require('path').join(__dirname, '../modules/reelnest-engine/src/ReelNestEngine.types.ts'), 'utf8');
   const idx = fs.readFileSync(require('path').join(__dirname, '../utils/update/index.ts'), 'utf8');
   check('telemetry carries plain and stream downloads in `downloads`, and the updater reads that field', /interface TelemetryEvent \{[^}]*downloads\?: DownloadSnapshot\[\]/s.test(types) && /downloads: e\.downloads \?\? \[\]/.test(idx) && /safeToInstall\(\{[^}]*\.\.\.telemetry/.test(idx));
   check('every running download state blocks an install', ['resolving', 'downloading', 'verifying'].every((state) => !r.safeToInstall(facts({ downloads: [{ state }] }))));
@@ -209,7 +209,7 @@ const release = (tag, over = {}) => ({
   check('defaults: download mode, auto check on', d.updateMode === 'download' && d.updateAutoCheck === true && d.lastCheckAt === null && d.skippedVersion === null && d.pending === null);
   check('junk falls back to defaults', JSON.stringify(prefs.normalizeUpdatePrefs({ updateMode: 'x', updateAutoCheck: 'no', lastCheckAt: 'now', skippedVersion: 3, pending: 7 })) === JSON.stringify({ ...d, updateAutoCheck: true }));
   check('modes and the toggle are kept', prefs.normalizeUpdatePrefs({ updateMode: 'auto', updateAutoCheck: false }).updateMode === 'auto' && prefs.normalizeUpdatePrefs({ updateAutoCheck: false }).updateAutoCheck === false);
-  check('showHighlights defaults on, only false turns it off, and toNativeConfig never reads it', d.showHighlights === true && prefs.normalizeUpdatePrefs({ showHighlights: 'no' }).showHighlights === true && prefs.normalizeUpdatePrefs({ showHighlights: false }).showHighlights === false && !/showHighlights/.test(fs.readFileSync(require('path').join(__dirname, '../modules/maglev-engine/src/toNativeConfig.ts'), 'utf8')));
+  check('showHighlights defaults on, only false turns it off, and toNativeConfig never reads it', d.showHighlights === true && prefs.normalizeUpdatePrefs({ showHighlights: 'no' }).showHighlights === true && prefs.normalizeUpdatePrefs({ showHighlights: false }).showHighlights === false && !/showHighlights/.test(fs.readFileSync(require('path').join(__dirname, '../modules/reelnest-engine/src/toNativeConfig.ts'), 'utf8')));
   const pend = prefs.normalizeUpdatePrefs({ pending: { info, path: '/x.apk' } }).pending;
   check('a pending update survives normalizing', pend && pend.path === '/x.apk' && pend.info.sha256 === SHA && pend.info.version === '0.22');
   check('a pending update without a good hash is dropped', prefs.normalizeUpdatePrefs({ pending: { info: { ...info, sha256: 'zz' }, path: '/x.apk' } }).pending === null);
@@ -219,7 +219,7 @@ const release = (tag, over = {}) => ({
 
   console.log('\n[report a bug]');
   const url = c.buildIssueUrl({ version: '0.21', android: '14', device: 'Google Pixel 8 & Co/x?' });
-  check('opens the bug form with every value encoded', url === 'https://github.com/Kaos599/Maglev/issues/new?template=bug.yml&version=0.21&android=14&device=Google%20Pixel%208%20%26%20Co%2Fx%3F');
+  check('opens the bug form with every value encoded', url === 'https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/new?template=bug.yml&version=0.21&android=14&device=Google%20Pixel%208%20%26%20Co%2Fx%3F');
   check('a hostile value cannot add a parameter', !/[?&]evil=/.test(c.buildIssueUrl({ version: '1&evil=1', android: '#', device: '"><b>' })) && c.buildIssueUrl({ version: '1&evil=1', android: '#', device: 'a' }).includes('version=1%26evil%3D1'));
 
   check('device name does not repeat the maker', c.deviceLabel('motorola', 'motorola edge 60 pro') === 'motorola edge 60 pro' && c.deviceLabel('Google', 'Pixel 8') === 'Google Pixel 8' && c.deviceLabel('samsung', 'SM-S918B') === 'samsung SM-S918B' && c.deviceLabel(undefined, 'X1') === 'X1' && c.deviceLabel('OnePlus', '') === 'OnePlus');

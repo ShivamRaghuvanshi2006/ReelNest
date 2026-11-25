@@ -13,7 +13,7 @@ export interface TransferSort {
 const DEFAULT_SORT: TransferSort = { key: 'added', dir: 'desc' };
 export const SORT_KEYS: readonly SortKey[] = ['name', 'progress', 'downSpeed', 'upSpeed', 'eta', 'size', 'added', 'ratio'];
 
-const STORAGE_KEY = 'maglev.transfers.sort';
+const STORAGE_KEY = 'reelnest.transfers.sort';
 
 interface SyncKv {
   getItemSync(key: string): string | null;

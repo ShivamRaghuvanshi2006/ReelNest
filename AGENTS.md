@@ -1,6 +1,6 @@
 # AGENTS.md: Operating Guide for AI Agents and Engineers
 
-> **Project:** Maglev, an Android app that downloads videos from web pages, ordinary links and torrents
+> **Project:** ReelNest, an Android app that downloads videos from web pages, ordinary links and torrents
 > **Stack:** React Native 0.88 + Expo SDK 58 (expo-router, Hermes, new arch) · Kotlin Expo Module · Rust (`librqbit` 9.x)
 > **Integration branch:** `dev` · **Releases:** `main` (tags)
 > **Rule 0:** Zero bloat, zero jargon, pure utility. **Rule 1:** Nothing is "done" until a contract proves it on real code.
@@ -9,19 +9,20 @@
 
 ## 1. Identity
 
-Maglev replaces a torrent client (LibreTorrent, Flud) and a separate download manager on a phone: torrents, ordinary links and the videos on a web page, in one app. It should feel minimal, quick and playful, with a retro feel that stays modern and readable for a general audience.
+ReelNest replaces a torrent client (LibreTorrent, Flud) and a separate download manager on a phone: torrents, ordinary links and the videos on a web page, in one app. It should feel minimal, quick and playful, with a retro feel that stays modern and readable for a general audience.
 
 | Token | Value | Use |
 |---|---|---|
-| Void | `#05070A` | OLED background |
-| Card / border | `#0D1117` / `#1F2937` | Surfaces with a 1px hairline border, no shadows |
-| Accent | `#CCFF00` (lime) | Primary actions, active state, done |
+| Void | `#171e19` | OLED background (deep charcoal) |
+| Card / border | `#1e2522` / `#2d3630` | Surfaces with a 1px hairline border, no soft shadows |
+| Accent | `#ffe17c` (yellow) | Primary actions, active state, done |
 | Accent 2 | `#00E5FF` (cyan) | Downloading, inbound speed |
 | Danger | `#FF4D79` | Destructive actions, errors |
-| Muted | `#8B949E` | Telemetry, paused |
-| App icon | `#0B2A30` (deep teal) tile, pixel maglev train (lime `#A5FB48` body, cyan `#01E5EF` speed lines and rails) | Geometry and cruise sprite frames in `scripts/build-logo.py` → `assets/brand/maglev-mark.svg`, `maglev-icon.svg`, `readme-header.svg` (animated), `components/brand/markPaths.ts` (rendered by `components/brand/MaglevMark.tsx`); rasters from `node scripts/generate-icons.js`. |
+| Muted | `#9CA3AF` | Telemetry, paused |
+| Sage | `#b7c6c2` | Secondary brand tint, supporting UI |
+| App icon | `#171e19` (charcoal) tile, neo-brutalist film reel + R mark (yellow `#ffe17c`, sage `#b7c6c2`, white, black hard shadow) | Geometry in `scripts/build-reelnest-assets.py` → `assets/brand/reelnest-mark.svg`, `reelnest-icon.svg`, `reelnest-wordmark.svg`, `readme-header.svg`, `components/brand/ReelNestMark.tsx`; rasters from the same script. |
 
-Colours are reached through `useTheme()` and never written as hex outside `constants/`. The user picks one of three font styles in Settings → Interface (`fontStyle`, default **Clean**, UI only, applies live; table in `constants/fontStyles.ts`). **Clean**: Inter Bold headings, Inter Medium/SemiBold for filenames and telemetry (`tabular-nums`). **Retro**: Silkscreen headings, Space Mono filenames and telemetry. **Mono**: Space Mono Bold headings, Space Mono filenames and telemetry. Copy is always Inter, and the MAGLEV wordmark is always Silkscreen (`type.brand`, used by `HeaderBar` only). Use `type.heading`, `type.mono`, `type.body` and never a font file name. **Never use `fontFamily: 'monospace'`.** The full guide for new screens is [DESIGN.md](DESIGN.md). Use one icon family only: **Pixelarticons** (MIT), rendered through `components/PixelIcon.tsx` from `components/icons.generated.ts` (`node scripts/gen-icons.js`). Default size is 24px.
+Colours are reached through `useTheme()` and never written as hex outside `constants/` (brand artwork reads `constants/brand.ts`). The user picks one of three font styles in Settings → Interface (`fontStyle`, default **Clean**, UI only, applies live; table in `constants/fontStyles.ts`). **Clean**: Cabinet Grotesk headings, Inter Medium/SemiBold for filenames and telemetry (`tabular-nums`). **Retro**: Silkscreen headings, Space Mono filenames and telemetry. **Mono**: Space Mono Bold headings, Space Mono filenames and telemetry. Copy is always Inter, and the REELNEST wordmark is always Cabinet Grotesk (`type.brand`, used by `HeaderBar` only). Use `type.heading`, `type.mono`, `type.body` and never a font file name. **Never use `fontFamily: 'monospace'`.** The full guide for new screens is [DESIGN.md](DESIGN.md). Use one icon family only: **Pixelarticons** (MIT), rendered through `components/PixelIcon.tsx` from `components/icons.generated.ts` (`node scripts/gen-icons.js`). Default size is 24px.
 
 ---
 
@@ -33,15 +34,17 @@ components/              UI components and PixelIcons
 constants/               design tokens, theme palettes, haptics
 context/                 EngineContext, SettingsContext
 utils/                   permissions, formatting
-modules/maglev-engine/
-  src/                   TS bridge (MaglevNativeBridge), mock engine (dev/web only), settings store, toNativeConfig
-  android/               Kotlin: NativeCore (JNI), MaglevEngineModule, foreground service, storage, governance
-native/maglev-core/      Rust: librqbit session, scheduler (pure), JNI exports, stream server
+modules/reelnest-engine/
+  src/                   TS bridge (ReelNestNativeBridge), mock engine (dev/web only), settings store, toNativeConfig
+  android/               Kotlin: NativeCore (JNI), ReelNestEngineModule, foreground service, storage, governance
+native/reelnest-core/      Rust: librqbit session, scheduler (pure), JNI exports, stream server
 plugins/                 Expo config plugins (ABI splits)
 scripts/                 contract tests (test-p3-reality-contracts.js, test-abi-splits.js)
 docs/                    the law (see §3)
 .github/workflows/       ci.yml (every push), release-apk.yml (tags), _rust-android.yml (reusable)
 ```
+
+`modules/reelnest-engine/`, `native/reelnest-core/`, `com.reelnest`, `libreelnest_core`, the `reelnestEngine` import and the Kotlin class names are internal build identifiers. They stay as they are so existing installs can update and the native boundary keeps working. User-visible branding never uses them.
 
 ---
 
@@ -62,7 +65,7 @@ docs/                    the law (see §3)
 
 These rules exist because Phase 1 was once marked "complete" while the engine was a simulator.
 
-1. **No simulation in release builds.** The mock engine (`MaglevMockEngine.ts`) runs only under `__DEV__` or on web. If the native engine fails to load in release, the app shows "The downloader didn't start". It never shows fake data.
+1. **No simulation in release builds.** The mock engine (`ReelNestMockEngine.ts`) runs only under `__DEV__` or on web. If the native engine fails to load in release, the app shows "The downloader didn't start". It never shows fake data.
 2. **No fabricated values in the bridge.** No hardcoded files, peers, trackers, sizes or speeds. Unknown is shown as unknown (for example `eta: -1`, shown as "—").
 3. **Contracts are the definition of done.** `npm run test:contracts` exits 1 while any P0 fails. A ledger or roadmap entry may say "Done" only with a green CI run and the passing contract IDs.
 4. **CI is the compiler.** Rust and Gradle are never installed locally. CI rejects a `.so` under 3 MB, a `.so` without librqbit symbols, or a `.so` without 16 KB page alignment.
@@ -89,7 +92,7 @@ Work containing any of the following is rejected:
 
 ## 6. Android platform rules
 
-- **Storage:** default to `Download/Maglev`, which is visible in file managers. A custom folder goes through the SAF picker, using direct POSIX writes when possible and otherwise staging plus copy-on-complete. Never request `MANAGE_EXTERNAL_STORAGE` in the Play build.
+- **Storage:** default to `Download/ReelNest`, which is visible in file managers. A custom folder goes through the SAF picker, using direct POSIX writes when possible and otherwise staging plus copy-on-complete. Never request `MANAGE_EXTERNAL_STORAGE` in the Play build.
 - **Permissions** are requested during onboarding, each with a reason screen. `POST_NOTIFICATIONS` is requested on API 33+. Battery optimization goes through the system settings intent. Every denial must have a recovery path.
 - **Foreground service:** type `specialUse` on API 34+ (no 6-hour cap) and `dataSync` below it. A future Play build flips back to `dataSync` and its `onTimeout` handling. The service runs only while a torrent is downloading or seeding, restarts headless after process death (`NATIVE_CONTRACT.md` §8), and offers Pause all / Resume all / Shut down. On API 36+ the notification is a promoted Live Update while downloading (§10.4).
 - **Release APKs:** universal, arm64-v8a, armeabi-v7a and x86_64, all from one build (`plugins/withAbiSplits.js`). No x86.
@@ -102,7 +105,7 @@ Work containing any of the following is rejected:
 - **Versions are `<major>.<minor>`** (for example 0.1, 0.2, 1.0). Bump with `npm run version:minor` or `npm run version:major`, which writes `app.json` (version and `android.versionCode = major*1000 + minor`) and mirrors `package.json` as `x.y.0`. Release tags are `v<major>.<minor>-beta` during the beta and `v<major>.<minor>` after; the release workflow refuses a tag that doesn't match `app.json`.
 - Use Conventional Commits: `feat|fix|refactor|test|docs|ci(<scope>): …`. Keep commits atomic.
 - After a merge, append to `LEDGER.md`: date, task IDs, commit, CI run URL, and the contract IDs that turned green.
-- **Release signing:** `plugins/withReleaseSigning.js` signs release builds (v2+v3) from repo secrets `MAGLEV_KEYSTORE_B64`, `MAGLEV_KEYSTORE_PASSWORD`, `MAGLEV_KEY_ALIAS`, `MAGLEV_KEY_PASSWORD`. Without them the build falls back to debug signing, so forks and PRs still build. CI fails a push to `main` or a tag if any APK still carries the Android debug certificate (other branches warn). With the secrets, main and tags also produce a signed bundletool APK set, uploaded as artifact `accrescent-apks` and attached to the release as `Maglev-<tag>.apks`. Owner steps: `docs/RELEASE_SIGNING.md`.
+- **Release signing:** `plugins/withReleaseSigning.js` signs release builds (v2+v3) from repo secrets `REELNEST_KEYSTORE_B64`, `REELNEST_KEYSTORE_PASSWORD`, `REELNEST_KEY_ALIAS`, `REELNEST_KEY_PASSWORD`. Without them the build falls back to debug signing, so forks and PRs still build. CI fails a push to `main` or a tag if any APK still carries the Android debug certificate (other branches warn). With the secrets, main and tags also produce a signed bundletool APK set, uploaded as artifact `accrescent-apks` and attached to the release as `ReelNest-<tag>.apks`. Owner steps: `docs/RELEASE_SIGNING.md`.
 
 ---
 

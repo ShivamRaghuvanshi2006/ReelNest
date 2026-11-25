@@ -1,5 +1,5 @@
 /**
- * Maglev Phase 3 — Reality Contracts (red-phase TDD suite)
+ * ReelNest Phase 3 — Reality Contracts (red-phase TDD suite)
  *
  * These contracts describe what a REAL, shippable torrent client must satisfy.
  * They are expected to FAIL until the corresponding work lands.
@@ -122,7 +122,7 @@ function tryRequire(rel) {
 contract('C-ENG-1', 'P0',
   'Given the Rust core, When engine.rs is inspected, Then it uses librqbit and has no simulator markers',
   () => {
-    const rel = 'native/maglev-core/src/engine.rs';
+    const rel = 'native/reelnest-core/src/engine.rs';
     assert(exists(rel), `${rel} exists`);
     const src = code(rel);
     assert(/\buse\s+librqbit\b/.test(src), 'engine.rs contains `use librqbit` in code');
@@ -134,17 +134,17 @@ contract('C-ENG-1', 'P0',
 contract('C-ENG-2', 'P0',
   'Given the shipped arm64 .so, When its size and strings are inspected, Then it is >= 3 MB and embeds librqbit/dht code',
   () => {
-    const dir = 'modules/maglev-engine/android/src/main/jniLibs';
+    const dir = 'modules/reelnest-engine/android/src/main/jniLibs';
     // Binaries are never committed (AGENTS.md §4.5). With no local build, the CI gate in
     // .github/workflows/_rust-android.yml enforces the same rule on every push.
-    if (!exists(`${dir}/arm64-v8a/libmaglev_core.so`)) {
+    if (!exists(`${dir}/arm64-v8a/libreelnest_core.so`)) {
       skip('no local .so (gitignored); enforced by CI _rust-android size/reality/16KB gate');
       return;
     }
     const check = (abi, strict) => {
-      const rel = `${dir}/${abi}/libmaglev_core.so`;
+      const rel = `${dir}/${abi}/libreelnest_core.so`;
       const report = strict ? assert : (c, m) => { if (!c) warn(m); };
-      report(exists(rel), `${abi}/libmaglev_core.so exists`);
+      report(exists(rel), `${abi}/libreelnest_core.so exists`);
       if (!exists(rel)) return;
       const buf = fs.readFileSync(abs(rel));
       report(buf.length >= 3 * 1024 * 1024, `${abi} .so size ${(buf.length / 1048576).toFixed(2)} MB >= 3 MB`);
@@ -159,8 +159,8 @@ contract('C-ENG-2', 'P0',
 contract('C-ENG-3', 'P0',
   'Given a release build, When the native engine is missing, Then the bridge surfaces ENGINE_UNAVAILABLE instead of silently using the mock',
   () => {
-    const bridge = code('modules/maglev-engine/src/MaglevNativeBridge.ts');
-    assert(bridge.length > 0, 'MaglevNativeBridge.ts exists');
+    const bridge = code('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+    assert(bridge.length > 0, 'ReelNestNativeBridge.ts exists');
     assert(/\b__DEV__\b/.test(bridge), 'bridge references __DEV__ guard');
     assert(/ENGINE_UNAVAILABLE|engineUnavailable/.test(bridge), 'bridge defines an ENGINE_UNAVAILABLE / engineUnavailable error state');
     // Every line mentioning mockEngine must sit within 6 lines after a __DEV__ reference.
@@ -180,9 +180,9 @@ contract('C-ENG-3', 'P0',
 contract('C-PERSIST-1', 'P0',
   'Given settings changes, When the app restarts on Hermes, Then values survive (no localStorage; real storage dep present)',
   () => {
-    const store = code('modules/maglev-engine/src/MaglevSettingsStore.ts');
-    assert(store.length > 0, 'MaglevSettingsStore.ts exists');
-    assert(!/\blocalStorage\b/.test(store), 'MaglevSettingsStore.ts does not use localStorage');
+    const store = code('modules/reelnest-engine/src/ReelNestSettingsStore.ts');
+    assert(store.length > 0, 'ReelNestSettingsStore.ts exists');
+    assert(!/\blocalStorage\b/.test(store), 'ReelNestSettingsStore.ts does not use localStorage');
     const p = pkg();
     const deps = { ...(p.dependencies || {}), ...(p.devDependencies || {}) };
     const ok = ['react-native-mmkv', '@react-native-async-storage/async-storage', 'expo-sqlite'].filter((d) => deps[d]);
@@ -192,7 +192,7 @@ contract('C-PERSIST-1', 'P0',
 contract('C-PERSIST-2', 'P0',
   'Given a running session, When the app is killed, Then librqbit session persistence restores torrents',
   () => {
-    const files = walk('native/maglev-core/src', ['.rs']);
+    const files = walk('native/reelnest-core/src', ['.rs']);
     assert(files.length > 0, 'Rust sources found');
     const hit = files.filter((f) => /persistence|SessionPersistenceConfig|fastresume/i.test(code(f)));
     assert(hit.length > 0, `Rust code references session persistence (${hit.join(', ') || 'no file'})`);
@@ -201,49 +201,49 @@ contract('C-PERSIST-2', 'P0',
 contract('C-SVC-1', 'P0',
   'Given the foreground service, When started on Android 14+, Then it has channel, onCreate/onStartCommand/onTimeout, a typed manifest entry, and a start call',
   () => {
-    const svcFiles = walk('modules/maglev-engine/android/src', ['.kt']).filter((f) => /MaglevTorrentService\.kt$/.test(f));
-    assert(svcFiles.length === 1, 'MaglevTorrentService.kt exists');
+    const svcFiles = walk('modules/reelnest-engine/android/src', ['.kt']).filter((f) => /ReelNestTorrentService\.kt$/.test(f));
+    assert(svcFiles.length === 1, 'ReelNestTorrentService.kt exists');
     const svc = svcFiles[0] ? code(svcFiles[0]) : '';
     assert(/override\s+fun\s+onStartCommand/.test(svc), 'service overrides onStartCommand');
     assert(/override\s+fun\s+onCreate/.test(svc), 'service overrides onCreate');
     // Channel creation may live in a helper in the service package, but onCreate must reach it.
-    const svcPkg = walk('modules/maglev-engine/android/src', ['.kt']).filter((f) => /\/service\//.test(f)).map(code).join('\n');
+    const svcPkg = walk('modules/reelnest-engine/android/src', ['.kt']).filter((f) => /[\\/]service[\\/]/.test(f)).map(code).join('\n');
     const onCreateBody = (/override\s+fun\s+onCreate\s*\(\)\s*\{([\s\S]*?)\n    \}/.exec(svc) || [])[1] || '';
     assert(/createNotificationChannel/.test(svcPkg) && /(createNotificationChannel|ensureChannels)/.test(onCreateBody),
       'service onCreate creates notification channels (directly or via service-package helper)');
     assert(/\bonTimeout\b/.test(svc), 'service implements onTimeout (Android 15 FGS timeout)');
-    const manifest = read('modules/maglev-engine/android/src/main/AndroidManifest.xml');
-    const svcTag = /<service\b[^>]*MaglevTorrentService[^>]*>/s.exec(manifest);
-    assert(!!svcTag && /foregroundServiceType/.test(svcTag[0]), 'manifest declares MaglevTorrentService with foregroundServiceType');
-    const kt = walk('modules/maglev-engine/android/src', ['.kt']);
+    const manifest = read('modules/reelnest-engine/android/src/main/AndroidManifest.xml');
+    const svcTag = /<service\b[^>]*ReelNestTorrentService[^>]*>/s.exec(manifest);
+    assert(!!svcTag && /foregroundServiceType/.test(svcTag[0]), 'manifest declares ReelNestTorrentService with foregroundServiceType');
+    const kt = walk('modules/reelnest-engine/android/src', ['.kt']);
     assert(kt.some((f) => /startForegroundService\(/.test(code(f))), 'some Kotlin file calls startForegroundService(');
   });
 
 contract('C-SVC-2', 'P0',
   'Given a notification action, When "Pause all" is tapped, Then the service handles it and JS receives onNotificationAction (NATIVE_CONTRACT §6)',
   () => {
-    const svcFiles = walk('modules/maglev-engine/android/src', ['.kt']).filter((f) => /MaglevTorrentService\.kt$/.test(f));
+    const svcFiles = walk('modules/reelnest-engine/android/src', ['.kt']).filter((f) => /ReelNestTorrentService\.kt$/.test(f));
     const svc = svcFiles[0] ? code(svcFiles[0]) : '';
     const idx = svc.search(/onStartCommand/);
     assert(idx >= 0 && /ACTION_PAUSE_ALL/.test(svc.slice(idx)), 'ACTION_PAUSE_ALL is handled after onStartCommand');
-    const ts = walkMany(['app', 'context', 'modules/maglev-engine/src'], TS_EXT);
+    const ts = walkMany(['app', 'context', 'modules/reelnest-engine/src'], TS_EXT);
     assert(ts.some((f) => /onNotificationAction/.test(code(f))), 'TS subscribes to onNotificationAction');
-    const kt = walk('modules/maglev-engine/android/src', ['.kt']).map(code).join('\n');
+    const kt = walk('modules/reelnest-engine/android/src', ['.kt']).map(code).join('\n');
     assert(/"onNotificationAction"/.test(kt) && /pause_all/.test(kt), 'Kotlin emits onNotificationAction with pause_all');
   });
 
 contract('C-SVC-3', 'P0',
   'Given active transfers, When Android kills the process, Then the service restarts headless from persisted state, without a 6 h cap, and never resurrects user-stopped transfers',
   () => {
-    const kt = walk('modules/maglev-engine/android/src', ['.kt']).map(code).join('\n');
-    const manifest = read('modules/maglev-engine/android/src/main/AndroidManifest.xml');
+    const kt = walk('modules/reelnest-engine/android/src', ['.kt']).map(code).join('\n');
+    const manifest = read('modules/reelnest-engine/android/src/main/AndroidManifest.xml');
     assert(/START_STICKY/.test(kt), 'service can return START_STICKY');
     assert(/specialUse/.test(manifest) && /PROPERTY_SPECIAL_USE_FGS_SUBTYPE/.test(manifest), 'manifest declares specialUse type with subtype property');
     assert(/FOREGROUND_SERVICE_SPECIAL_USE/.test(manifest), 'FOREGROUND_SERVICE_SPECIAL_USE permission declared');
     assert(/FOREGROUND_SERVICE_TYPE_SPECIAL_USE/.test(kt) && /UPSIDE_DOWN_CAKE|>=\s*34/.test(kt), 'specialUse used only on API 34+');
     assert(/getSharedPreferences[\s\S]{0,4000}(governance|wifiOnly|wifi_only)/i.test(kt), 'governance rules persisted natively');
     assert(/backgroundKills/.test(kt), 'background kill count exposed to JS');
-    const ts = walkMany(['modules/maglev-engine/src'], TS_EXT).map(code).join('\n');
+    const ts = walkMany(['modules/reelnest-engine/src'], TS_EXT).map(code).join('\n');
     assert(/backgroundKills/.test(ts), 'TS types include backgroundKills');
   });
 
@@ -260,7 +260,7 @@ contract('C-PERM-1', 'P0',
     const offenders = [];
     for (const f of walkMany(APP_DIRS, TS_EXT)) {
       const src = code(f);
-      const re = /(?:const|let|var)\s+(\w+)\s*=\s*await\s+requestMaglevPermissions\(/g;
+      const re = /(?:const|let|var)\s+(\w+)\s*=\s*await\s+requestReelNestPermissions\(/g;
       let m;
       while ((m = re.exec(src))) {
         if (new RegExp(`if\\s*\\(\\s*!\\s*${m[1]}\\s*\\)`).test(src)) offenders.push(`${f} (${m[1]})`);
@@ -276,7 +276,7 @@ contract('C-PERM-2', 'P0',
     try { appPerms = (JSON.parse(read('app.json')).expo || {}).android.permissions || []; } catch {}
     const inAppJson = appPerms.includes('REQUEST_IGNORE_BATTERY_OPTIMIZATIONS') ||
       appPerms.includes('android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS');
-    const inManifest = /REQUEST_IGNORE_BATTERY_OPTIMIZATIONS/.test(read('modules/maglev-engine/android/src/main/AndroidManifest.xml'));
+    const inManifest = /REQUEST_IGNORE_BATTERY_OPTIMIZATIONS/.test(read('modules/reelnest-engine/android/src/main/AndroidManifest.xml'));
     assert(inAppJson || inManifest, 'REQUEST_IGNORE_BATTERY_OPTIMIZATIONS declared in app.json or module manifest');
   });
 
@@ -290,7 +290,7 @@ contract('C-SAF-1', 'P0',
   });
 
 contract('C-INTENT-1', 'P0',
-  'Given a magnet: link is tapped elsewhere, When Maglev opens, Then the URL is consumed and the add sheet opens',
+  'Given a magnet: link is tapped elsewhere, When ReelNest opens, Then the URL is consumed and the add sheet opens',
   () => {
     const files = walkMany(['app', 'context'], TS_EXT);
     const re = /Linking\.getInitialURL|\buseURL\b|\buseLinkingURL\b/;
@@ -303,7 +303,7 @@ contract('C-SET-1', 'P0',
   'Given a settings change, When it is applied, Then a snake_case mapping reaches the Rust config struct',
   () => {
     const keys = ['wifi_only', 'max_active_downloads', 'encryption', 'dht'];
-    const sources = ['modules/maglev-engine/src/MaglevNativeBridge.ts', 'modules/maglev-engine/src/toNativeConfig.ts'];
+    const sources = ['modules/reelnest-engine/src/ReelNestNativeBridge.ts', 'modules/reelnest-engine/src/toNativeConfig.ts'];
     const best = sources.map((s) => ({ s, src: code(s) })).filter((x) => x.src);
     const ok = best.some((x) => keys.every((k) => new RegExp(`\\b${k}\\b`).test(x.src)));
     const missing = keys.filter((k) => !best.some((x) => new RegExp(`\\b${k}\\b`).test(x.src)));
@@ -316,7 +316,7 @@ const HASH = 'a'.repeat(39) + 'b';
 let engineCache;
 function getEngine() {
   if (engineCache !== undefined) return engineCache;
-  const mod = tryRequire('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const mod = tryRequire('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   engineCache = mod.__error ? { error: mod.__error } : { engine: mod.mockEngine };
   return engineCache;
 }
@@ -335,7 +335,7 @@ contract('C-DUP-1', 'P1',
   'Given a torrent already added, When the same magnet is added again, Then it is rejected/flagged as duplicate and the count is unchanged',
   () => {
     const { engine, error } = getEngine();
-    if (!engine) return skip(`cannot load MaglevMockEngine.ts: ${error && error.message}`);
+    if (!engine) return skip(`cannot load ReelNestMockEngine.ts: ${error && error.message}`);
     const magnet = `magnet:?xt=urn:btih:${HASH}&dn=x`;
     let first, second, before, after;
     try {
@@ -357,7 +357,7 @@ contract('C-MAG-1', 'P1',
   'Given malformed input, When it is added as a magnet, Then the engine rejects it',
   () => {
     const { engine, error } = getEngine();
-    if (!engine) return skip(`cannot load MaglevMockEngine.ts: ${error && error.message}`);
+    if (!engine) return skip(`cannot load ReelNestMockEngine.ts: ${error && error.message}`);
     for (const bad of ['magnet:?dn=nohash', 'https://example.com']) {
       const o = outcome(() => engine.startTorrent(bad, '/tmp/bad', false));
       assert(rejected(o), `"${bad}" rejected (got ${o.error ? 'throw' : JSON.stringify(o.value)})`);
@@ -367,7 +367,7 @@ contract('C-MAG-1', 'P1',
 contract('C-APK-1', 'P1',
   'Given a release APK, When ABIs and fonts are counted, Then it ships only needed ABIs (or splits) and <= 7 font faces (Clean adds Inter Medium and Bold to the five Retro faces, about 0.7 MB)',
   () => {
-    const gradle = code('modules/maglev-engine/android/build.gradle');
+    const gradle = code('modules/reelnest-engine/android/build.gradle');
     const m = /abiFilters\s*([^\n]*)/.exec(gradle);
     const heavy = m ? /x86_64|armeabi-v7a/.test(m[1]) : false;
     const cfg = ['app.json', 'eas.json', 'gradle.properties'].map(read).join('\n');
@@ -495,8 +495,8 @@ contract('C-SEARCH-1', 'P1', 'Search engine files exist and the search contract 
 });
 
 contract('C-W3-1', 'P1', 'Wave 3 JS side: file priority, reannounce, free space, Live Updates (NATIVE_CONTRACT 10.1-10.5)', () => {
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-  const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+  const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   const add = read('app/add-torrent.tsx') + read('components/add/SpaceStrip.tsx');
   const detail = read('app/torrent/[id].tsx') + read('components/detail/TorrentMoreSheet.tsx') + read('components/detail/PrioritySheet.tsx');
   const iface = read('app/settings/notifications.tsx');
@@ -524,9 +524,9 @@ contract('C-NAV-1', 'P0', 'A hidden tab sets href:null without tabBarButton', ()
 
 // The assistant's logic stays pure and testable in node: only the tool runner may reach the engine or React Native.
 contract('C-PORT-1', 'P1', 'A busy listening port falls back to a free port with a warning (issue #76, NATIVE_CONTRACT 9)', () => {
-  const src = code('native/maglev-core/src/engine.rs');
+  const src = code('native/reelnest-core/src/engine.rs');
   const doc = read('docs/NATIVE_CONTRACT.md');
-  const msg = 'Port {port} is used by another app, so Maglev picked a free port for now. Change it in Settings > Network > Incoming port if you need a fixed one.';
+  const msg = 'Port {port} is used by another app, so ReelNest picked a free port for now. Change it in Settings > Network > Incoming port if you need a fixed one.';
   assert(src.includes(msg), 'engine.rs holds the exact warning text');
   if (doc) assert(doc.includes(msg.replace('{port}', '<n>')), 'NATIVE_CONTRACT.md holds the same text');
   else skip('docs/ not present (CI has no private docs)');
@@ -537,7 +537,7 @@ contract('C-PORT-1', 'P1', 'A busy listening port falls back to a free port with
   assert(/Pick another port in Settings/.test(src), 'the old error stays for when the retry also fails');
   // The service usually starts the engine before JS (headless start at launch), so JS init takes the
   // already-running path. Kotlin must hand the start warning to that path too (found on a phone test).
-  const host = code('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
+  const host = code('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
   assert(/startWarning\s*=\s*\(res\["config_warning"\]/.test(host), 'startEngine keeps Rust config_warning');
   assert(/out\["alreadyRunning"\]\s*=\s*true[\s\S]{0,120}startWarning\?\.let\s*\{\s*out\["config_warning"\]/.test(host), 'already-running init returns the kept warning');
   assert(/fun shutdownEngineLocked\(\)[\s\S]{0,120}startWarning\s*=\s*null/.test(host), 'shutdown clears the kept warning');
@@ -548,7 +548,7 @@ contract('C-ASSIST-8', 'P1', 'Assistant modules import neither react-native nor 
   if (files.length === 0) return skip('no assistant modules yet');
   for (const f of files) {
     const src = code(f);
-    const bad = /from\s+['"](react-native|react|maglev-engine|expo-[\w-]+)['"]|require\(\s*['"](react-native|maglev-engine)['"]/.exec(src);
+    const bad = /from\s+['"](react-native|react|reelnest-engine|expo-[\w-]+)['"]|require\(\s*['"](react-native|reelnest-engine)['"]/.exec(src);
     assert(!bad, `${f} is pure (found import of ${bad ? bad[1] || bad[2] : ''})`);
   }
 });
@@ -557,7 +557,7 @@ contract('C-ASSIST-8', 'P1', 'Assistant modules import neither react-native nor 
 
 function main() {
   console.log('\n======================================================');
-  console.log('   MAGLEV PHASE 3 — REALITY CONTRACTS (red-phase TDD)  ');
+  console.log('   REELNEST PHASE 3 — REALITY CONTRACTS (red-phase TDD)  ');
   console.log('======================================================');
   const results = [];
   for (const c of contracts) {

@@ -105,7 +105,7 @@ async function main() {
 
   console.log('attribution');
   const h = M.attributionHeaders('openrouter');
-  check('OpenRouter gets the referer and title', h['HTTP-Referer'] === 'https://github.com/Kaos599/Maglev' && h['X-Title'] === 'Maglev');
+  check('OpenRouter gets the referer and title', h['HTTP-Referer'] === 'https://github.com/ShivamRaghuvanshi2006/ReelNest' && h['X-Title'] === 'ReelNest');
   for (const id of ['openai', 'anthropic', 'groq', 'gemini', 'custom']) check(`${id} gets nothing`, Object.keys(M.attributionHeaders(id)).length === 0);
 
   if (failed) {

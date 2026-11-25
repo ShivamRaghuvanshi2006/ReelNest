@@ -15,7 +15,7 @@
 // be the worse mistake. Light users see one dark frame, then the light UI.
 // The value is read from constants/theme.ts (palettes.oled.bg) so there is one source of truth.
 // Docs: https://developer.android.com/develop/ui/views/launch/splash-screen#set-theme
-const COLOR_NAME = 'maglev_window_background';
+const COLOR_NAME = 'reelnest_window_background';
 const COLOR_REF = '@color/' + COLOR_NAME;
 const TEMPLATE_SPLASH_COLOR = 'splashscreen_background';
 const APP_THEME = { name: 'AppTheme', parent: 'Theme.AppCompat.DayNight.NoActionBar' };

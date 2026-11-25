@@ -6,7 +6,7 @@ import { LANGUAGES, defaultLanguages, languageName, phoneLocale, type LanguageIn
 import { effectiveLanguages, withLanguageAt } from './subtitles/prefs.ts';
 import { listTurnedOff, providerEnabled, type ListOverrides } from './subtitles/providers/index.ts';
 import type { SubtitleProvider } from './subtitles/types.ts';
-import type { SubtitleSettings } from '../modules/maglev-engine/src/MaglevSettings.types.ts';
+import type { SubtitleSettings } from '../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 
 /**
  * Whether this build carries an OpenSubtitles.com app key (`OPENSUBTITLES_API_KEY`, section 36.1). The app has no

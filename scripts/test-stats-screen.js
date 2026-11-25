@@ -227,7 +227,7 @@ async function main() {
   check('caption: past month last year', F.rangeCaption(I.rangeOf('month', N('2025-10-03')), today) === 'downloaded in October 2025');
   check('period phrase', F.periodPhrase(mo, today) === 'this month' && F.periodPhrase(I.rangeOf('week', N('2026-11-03')), today) === 'that week');
   check('category label', F.categoryLabel('tv') === 'TV' && F.categoryLabel('movies') === 'Movies');
-  check('source label groups search providers', F.sourceLabel('x1337') === 'search' && F.sourceLabel('link') === 'links' && F.sourceLabel('share') === 'shared to Maglev');
+  check('source label groups search providers', F.sourceLabel('x1337') === 'search' && F.sourceLabel('link') === 'links' && F.sourceLabel('share') === 'shared to ReelNest');
   check('readout of a bucket', F.bucketReadout({ downloaded: 9 * GB, finished: 3, failed: 1, cancelled: 0, future: false }) === '9.0 GB · 3 finished · 1 failed');
   check('readout of an empty bucket', F.bucketReadout({ downloaded: 0, finished: 0, failed: 0, cancelled: 0, future: false }) === 'Nothing downloaded');
   check('readout of a future bucket', F.bucketReadout({ downloaded: 0, finished: 0, failed: 0, cancelled: 0, future: true }) === 'Not here yet');

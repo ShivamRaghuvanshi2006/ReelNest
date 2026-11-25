@@ -19,7 +19,7 @@ export interface ListPrefs {
   blocklistDefault: string[];
 }
 
-const KEY = 'maglev.lists.prefs.v1';
+const KEY = 'reelnest.lists.prefs.v1';
 
 export function defaultListPrefs(): ListPrefs {
   return { sourcesFile: null, appliedSerial: 0, lastListCheckAt: null, listsAutoCheck: true, blocklistDefault: [DEFAULT_BLOCKLIST_URL] };

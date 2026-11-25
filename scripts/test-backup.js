@@ -21,13 +21,13 @@ async function main() {
   const M = await import('../utils/backup/migrate.ts');
   const E = await import('../utils/backup/export.ts');
   const I = await import('../utils/backup/import.ts');
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const { parseMagnet } = await import('../modules/maglev-engine/src/magnet.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const { parseMagnet } = await import('../modules/reelnest-engine/src/magnet.ts');
 
   const H1 = 'a'.repeat(40);
   const H2 = 'b'.repeat(40);
   const H3 = 'c'.repeat(40);
-  const FOLDER = '/storage/emulated/0/Download/Maglev';
+  const FOLDER = '/storage/emulated/0/Download/ReelNest';
   const snap = (id, over = {}) => ({
     id, name: `Name ${id.slice(0, 2)}`, state: 'DOWNLOADING', pausedBy: null, finished: false, progressBytes: 0, totalBytes: 0,
     uploadedBytes: 0, downBps: 0, upBps: 0, peersLive: 0, peersSeen: 0, webSeeds: 0, etaSecs: -1, ratio: 0, seedingSecs: 0,
@@ -45,16 +45,16 @@ async function main() {
   settings.storage.customSafUri = 'content://tree/x';
 
   const prefs = {
-    'maglev.search.prefs.v2': {
+    'reelnest.search.prefs.v2': {
       enabled: ['piratebay', 'torznab:abc'], torznab: [{ id: 'abc', name: 'Mine', url: 'https://t.example/api?apikey=SECRET1&t=search', categories: [] }],
       recents: ['private query'], clearances: [{ host: 'x' }],
     },
-    'maglev.feeds.list.v1': [{ id: 'f1', name: 'Feed', url: 'https://feed.example/rss?passkey=SECRET2&x=1' }],
-    'maglev.assistant.prefs.v1': { presetId: 'openrouter', baseUrl: 'https://openrouter.ai/api/v1', model: 'm', keyRef: 'assistant.openrouter', tokensUsed: { input: 5, output: 6 }, enabled: true, apiKey: 'sk-LEAK' },
-    'maglev.schedule.v1': { enabled: true, rules: [] },
-    'maglev.tabs.prefs.v1': { order: ['index'], hidden: [] },
-    'maglev.browser.bookmarks.v1': [{ id: 'bm-1', url: 'https://a.example/x', title: 'A', host: 'a.example', addedAt: 5 }, { id: 'bm-2', url: 'https://b.example/', title: 'B', host: 'b.example', addedAt: 6 }],
-    'maglev.browser.history.v1': [{ url: 'https://secret.example/' }],
+    'reelnest.feeds.list.v1': [{ id: 'f1', name: 'Feed', url: 'https://feed.example/rss?passkey=SECRET2&x=1' }],
+    'reelnest.assistant.prefs.v1': { presetId: 'openrouter', baseUrl: 'https://openrouter.ai/api/v1', model: 'm', keyRef: 'assistant.openrouter', tokensUsed: { input: 5, output: 6 }, enabled: true, apiKey: 'sk-LEAK' },
+    'reelnest.schedule.v1': { enabled: true, rules: [] },
+    'reelnest.tabs.prefs.v1': { order: ['index'], hidden: [] },
+    'reelnest.browser.bookmarks.v1': [{ id: 'bm-1', url: 'https://a.example/x', title: 'A', host: 'a.example', addedAt: 5 }, { id: 'bm-2', url: 'https://b.example/', title: 'B', host: 'b.example', addedAt: 6 }],
+    'reelnest.browser.history.v1': [{ url: 'https://secret.example/' }],
   };
   const deps = {
     appVersion: '0.19', now: () => 1763000000000, settings, readPref: (k) => prefs[k],
@@ -71,7 +71,7 @@ async function main() {
   const parsed = M.parseBackup(text);
   check('round trip: parse ok', parsed.ok === true);
   const b = parsed.backup;
-  check('envelope: format and version', b.format === 'maglev-backup' && b.v === 1 && b.app === '0.19' && b.created === 1763000000000);
+  check('envelope: format and version', b.format === 'reelnest-backup' && b.v === 1 && b.app === '0.19' && b.created === 1763000000000);
   check('round trip: three torrents', b.torrents.length === 3);
   check('round trip: skipped needs_link and non-http downloads', b.downloads.length === 1 && b.downloads[0].url === 'https://host.example/a/file.zip');
   const t1 = b.torrents.find((t) => t.infoHash === H1);
@@ -85,7 +85,7 @@ async function main() {
   const dlp = (state, pausedBy) => E.downloadToBackup({ id: 'd9', urlDisplay: 'https://a.example/f.zip', name: 'f.zip', state, pausedBy, size: 1, downloaded: 0, downBps: 0, eta: -1, segmentsActive: 0, resumable: true, folder: '/x', addedAt: 1, error: null });
   check('link download: user pause is kept, rule pauses (storage_full, wifi_only) export as not paused', dlp('paused', 'user').paused === true && dlp('paused', 'storage_full').paused === false && dlp('paused', 'wifi_only').paused === false && dlp('paused', null).paused === true && dlp('downloading', null).paused === false);
   check('torrentData failure does not stop the export', (await E.buildBackup({ ...deps, torrentData: async () => { throw new Error('x'); } })).torrents.length === 3);
-  check('file name', E.backupFileName(Date.UTC(2026, 10, 13)) === 'maglev-2026-11-13.maglev-backup.json');
+  check('file name', E.backupFileName(Date.UTC(2026, 10, 13)) === 'reelnest-2026-11-13.reelnest-backup.json');
 
   // ---- Secrets ------------------------------------------------------------------------------
   const keyLike = (obj, trail = '') => {
@@ -104,36 +104,36 @@ async function main() {
     check(`file never contains "${leak}"`, !text.includes(leak));
   }
   check('torznab URL keeps its non-secret query', text.includes('t.example/api?t=search'));
-  check('assistant prefs keep provider choice', b.prefs['maglev.assistant.prefs.v1'].model === 'm' && b.prefs['maglev.assistant.prefs.v1'].enabled === true);
+  check('assistant prefs keep provider choice', b.prefs['reelnest.assistant.prefs.v1'].model === 'm' && b.prefs['reelnest.assistant.prefs.v1'].enabled === true);
   check('device-bound settings are out of the file', b.settings.downloadFolder === null && b.settings.storage.customSafUri === undefined);
   check('scrubUrl drops credentials and secret params', F.scrubUrl('https://u:p@h.example/x?token=1&a=2') === 'https://h.example/x?a=2');
 
   // ---- Version and shape --------------------------------------------------------------------
-  const future = M.parseBackup(JSON.stringify({ format: 'maglev-backup', v: 2 }));
-  check('future version is refused with a plain message', !future.ok && future.reason === 'too_new' && /newer Maglev/.test(future.message));
-  for (const [name, input] of [['not JSON', 'nope{'], ['wrong format', '{"format":"x","v":1}'], ['no version', '{"format":"maglev-backup"}'], ['v0', '{"format":"maglev-backup","v":0}'], ['an array', '[]'], ['null', 'null']]) {
+  const future = M.parseBackup(JSON.stringify({ format: 'reelnest-backup', v: 2 }));
+  check('future version is refused with a plain message', !future.ok && future.reason === 'too_new' && /newer ReelNest/.test(future.message));
+  for (const [name, input] of [['not JSON', 'nope{'], ['wrong format', '{"format":"x","v":1}'], ['no version', '{"format":"reelnest-backup"}'], ['v0', '{"format":"reelnest-backup","v":0}'], ['an array', '[]'], ['null', 'null']]) {
     const r = M.parseBackup(input);
-    check(`refuses ${name}`, !r.ok && r.reason === 'not_backup' && r.message === "That isn't a Maglev backup.");
+    check(`refuses ${name}`, !r.ok && r.reason === 'not_backup' && r.message === "That isn't a ReelNest backup.");
   }
-  const sparse = M.parseBackup(JSON.stringify({ format: 'maglev-backup', v: 1, torrents: [{ infoHash: 'zz' }, null, 5, { infoHash: H1.toUpperCase(), name: 'N', onlyFiles: [2, 'x', -1, 2, 0] }], downloads: [{ url: 'file:///x' }, { url: 'https://a.example/f' }] }));
+  const sparse = M.parseBackup(JSON.stringify({ format: 'reelnest-backup', v: 1, torrents: [{ infoHash: 'zz' }, null, 5, { infoHash: H1.toUpperCase(), name: 'N', onlyFiles: [2, 'x', -1, 2, 0] }], downloads: [{ url: 'file:///x' }, { url: 'https://a.example/f' }] }));
   check('bad entries are dropped, good ones normalised', sparse.ok && sparse.backup.torrents.length === 1 && sparse.backup.torrents[0].infoHash === H1 && JSON.stringify(sparse.backup.torrents[0].onlyFiles) === '[0,2]' && sparse.backup.downloads.length === 1);
   check('missing parts are empty, not errors', sparse.ok && sparse.backup.settings === null && Object.keys(sparse.backup.prefs).length === 0);
 
   // ---- Settings go through the store's migrate ----------------------------------------------
-  const old = M.parseBackup(JSON.stringify({ format: 'maglev-backup', v: 1, settings: { version: 1, settings: { appearance: { fontStyle: 'bogus' }, bandwidth: { maxActiveDownloads: 'many' } } } }));
+  const old = M.parseBackup(JSON.stringify({ format: 'reelnest-backup', v: 1, settings: { version: 1, settings: { appearance: { fontStyle: 'bogus' }, bandwidth: { maxActiveDownloads: 'many' } } } }));
   check('old or broken settings are migrated to the current schema', old.ok && old.backup.settings.appearance.fontStyle === 'clean' && old.backup.settings.bandwidth.maxActiveDownloads === DEFAULT_SETTINGS.bandwidth.maxActiveDownloads && old.backup.settings.power && old.backup.settings.network.proxy);
   const merged = F.mergeDeviceBound(b.settings, settings);
   check("import keeps this phone's folder and proxy login", merged.downloadFolder.uri === 'content://tree/x' && merged.network.proxy.password === 'hunter2' && merged.storage.customSafUri === 'content://tree/x');
   check('import does not change onboarding state', F.mergeDeviceBound({ ...b.settings, onboarded: true }, { ...settings, onboarded: false }).onboarded === false);
 
   // ---- Bookmarks ----------------------------------------------------------------------------
-  const bms = b.prefs['maglev.browser.bookmarks.v1'];
+  const bms = b.prefs['reelnest.browser.bookmarks.v1'];
   check('bookmarks are exported and survive the round trip', Array.isArray(bms) && bms.length === 2 && bms[0].url === 'https://a.example/x');
-  check('bookmarks belong to the settings part', F.PART_PREFS.settings.includes('maglev.browser.bookmarks.v1'));
-  check('browsing history is never exported', !text.includes('secret.example') && !('maglev.browser.history.v1' in b.prefs));
+  check('bookmarks belong to the settings part', F.PART_PREFS.settings.includes('reelnest.browser.bookmarks.v1'));
+  check('browsing history is never exported', !text.includes('secret.example') && !('reelnest.browser.history.v1' in b.prefs));
   check('preview counts bookmarks', F.previewCounts(b).bookmarks === 2 && /2 bookmarks/.test(F.previewSentence(F.previewCounts(b))));
-  const noBm = M.parseBackup(JSON.stringify({ format: 'maglev-backup', v: 1, prefs: { 'maglev.tabs.prefs.v1': { order: [] } } }));
-  check('an older backup without bookmarks parses and previews fine', noBm.ok && noBm.backup.prefs['maglev.browser.bookmarks.v1'] === undefined && F.previewCounts(noBm.backup).bookmarks === 0);
+  const noBm = M.parseBackup(JSON.stringify({ format: 'reelnest-backup', v: 1, prefs: { 'reelnest.tabs.prefs.v1': { order: [] } } }));
+  check('an older backup without bookmarks parses and previews fine', noBm.ok && noBm.backup.prefs['reelnest.browser.bookmarks.v1'] === undefined && F.previewCounts(noBm.backup).bookmarks === 0);
 
   // ---- Preview ------------------------------------------------------------------------------
   const p = F.previewCounts(b);
@@ -172,7 +172,7 @@ async function main() {
   check('existing folder is used', calls.find((c) => c[0] === 'addTorrent' && c[1].includes(H1))[2].outputFolder === FOLDER);
   check('folder fallback is counted for the note', r.defaultFolderCount === 2, String(r.defaultFolderCount));
   check('added torrents are rechecked', calls.filter((c) => c[0] === 'recheck').length === 2);
-  check('settings and prefs applied', r.settingsApplied && applied.settings.downloadFolder.uri === 'content://tree/x' && applied.prefs.includes('maglev.search.prefs.v2') && applied.prefs.includes('maglev.tabs.prefs.v1'));
+  check('settings and prefs applied', r.settingsApplied && applied.settings.downloadFolder.uri === 'content://tree/x' && applied.prefs.includes('reelnest.search.prefs.v2') && applied.prefs.includes('reelnest.tabs.prefs.v1'));
   const started = await I.startAdded(r, engine);
   check('Start all resumes only what was added', started === 3 && calls.filter((c) => c[0] === 'resume').map((c) => c[1]).sort().join() === [H1, H3].sort().join());
 

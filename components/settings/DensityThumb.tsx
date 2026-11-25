@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import type { TelemetryDensity } from 'maglev-engine';
+import type { TelemetryDensity } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors } from '../../constants/theme';
 

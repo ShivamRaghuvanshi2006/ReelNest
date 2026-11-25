@@ -177,7 +177,7 @@ REELNEST_WORDMARK_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 
 # Write SVGs
 for p in [
     os.path.join(ASSETS_BRAND, "reelnest-mark.svg"),
-    os.path.join(ASSETS_BRAND, "maglev-mark.svg"),
+    os.path.join(ASSETS_BRAND, "reelnest-mark.svg"),
     os.path.join(SITE_ASSETS, "mark.svg"),
     os.path.join(SITE, "favicon.svg")
 ]:
@@ -186,21 +186,21 @@ for p in [
 
 for p in [
     os.path.join(ASSETS_BRAND, "reelnest-mark-mono.svg"),
-    os.path.join(ASSETS_BRAND, "maglev-mark-mono.svg")
+    os.path.join(ASSETS_BRAND, "reelnest-mark-mono.svg")
 ]:
     with open(p, "w", encoding="utf-8") as f:
         f.write(REELNEST_MARK_MONO_SVG)
 
 for p in [
     os.path.join(ASSETS_BRAND, "reelnest-icon.svg"),
-    os.path.join(ASSETS_BRAND, "maglev-icon.svg")
+    os.path.join(ASSETS_BRAND, "reelnest-icon.svg")
 ]:
     with open(p, "w", encoding="utf-8") as f:
         f.write(REELNEST_ICON_SVG)
 
 for p in [
     os.path.join(ASSETS_BRAND, "reelnest-wordmark.svg"),
-    os.path.join(ASSETS_BRAND, "maglev-wordmark.svg"),
+    os.path.join(ASSETS_BRAND, "reelnest-wordmark.svg"),
     os.path.join(SITE_ASSETS, "wordmark.svg")
 ]:
     with open(p, "w", encoding="utf-8") as f:

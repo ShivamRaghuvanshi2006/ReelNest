@@ -1,8 +1,8 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { reelnestEngine } from 'reelnest-engine';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ListRow } from '../../components/ui';
 import { Card, SettingsPage } from '../../components/settings/SettingsParts';
 
@@ -10,7 +10,7 @@ import { Card, SettingsPage } from '../../components/settings/SettingsParts';
 const LIVE_UPDATES_API = 36;
 
 export default function NotificationSettings() {
-  const { permissionStatus, openLiveUpdateSettings } = useMaglevEngine();
+  const { permissionStatus, openLiveUpdateSettings } = useReelNestEngine();
   const showLiveUpdates = Platform.OS === 'android' && Number(Platform.Version) >= LIVE_UPDATES_API;
   const liveUpdatesOn = permissionStatus?.liveUpdates === 'granted';
 
@@ -22,7 +22,7 @@ export default function NotificationSettings() {
           <ListRow
             title="Finished-download alerts"
             subtitle="Choose sound and banners in Android settings."
-            onPress={() => void maglevEngine.openNotificationSettings('completed')}
+            onPress={() => void reelnestEngine.openNotificationSettings('completed')}
             accessibilityHint="Opens Android settings"
           />
         </Card>

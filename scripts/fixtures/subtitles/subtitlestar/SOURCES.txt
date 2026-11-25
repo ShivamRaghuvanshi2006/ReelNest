@@ -1,4 +1,4 @@
-Fetched live with curl (generic Maglev User-Agent, no cookies) on 2026-11-18.
+Fetched live with curl (generic ReelNest User-Agent, no cookies) on 2026-11-18.
 search_inception.html https://subtitlestar.com/?s=Inception&post_type=post, first four result articles kept
 detail_inception.html the Inception 2010 page; title, year, IMDb link and the download links kept
 detail_series.html    https://subtitlestar.com/persian-subtitles-cruel-intentions/ ; same parts kept

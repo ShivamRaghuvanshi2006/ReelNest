@@ -1,17 +1,17 @@
 // Expo config plugin: per-ABI APK splits (+ universal) for release builds.
 // Needed because `expo prebuild --clean` regenerates android/ on every CI run.
 const ABIS = ['armeabi-v7a', 'arm64-v8a', 'x86_64'];
-const MARKER = 'maglev-abi-splits';
+const MARKER = 'reelnest-abi-splits';
 
 /**
- * ABIs to build. MAGLEV_ABIS (comma list) narrows it; CI sets arm64-v8a on everyday
+ * ABIs to build. REELNEST_ABIS (comma list) narrows it; CI sets arm64-v8a on everyday
  * pushes to skip two thirds of the native compile. Unset means all three (releases).
  */
 function resolveAbis(value) {
   const list = String(value ?? '').split(',').map((s) => s.trim()).filter(Boolean);
   if (list.length === 0) return ABIS.slice();
   for (const abi of list) {
-    if (!ABIS.includes(abi)) throw new Error(`withAbiSplits: unknown ABI "${abi}" in MAGLEV_ABIS`);
+    if (!ABIS.includes(abi)) throw new Error(`withAbiSplits: unknown ABI "${abi}" in REELNEST_ABIS`);
   }
   return list;
 }
@@ -77,7 +77,7 @@ function applyArchitectures(props, abis = ABIS) {
 
 function withAbiSplits(config) {
   const { withAppBuildGradle, withGradleProperties } = require('expo/config-plugins');
-  const abis = resolveAbis(process.env.MAGLEV_ABIS);
+  const abis = resolveAbis(process.env.REELNEST_ABIS);
   config = withAppBuildGradle(config, (c) => {
     c.modResults.contents = applyAbiSplits(c.modResults.contents, abis);
     return c;

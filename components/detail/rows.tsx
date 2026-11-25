@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { DetailPeer, DetailTracker } from 'maglev-engine';
+import type { DetailPeer, DetailTracker } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { formatSpeed } from '../../constants/format';

@@ -10,7 +10,7 @@ export interface StatsPrefs {
   mobileLimitMb: number | null;
 }
 
-const STATS_PREFS_KEY = 'maglev.stats.prefs.v1';
+const STATS_PREFS_KEY = 'reelnest.stats.prefs.v1';
 const defaultStatsPrefs = (): StatsPrefs => ({ keepStats: true, mobileLimitMb: null });
 
 /** Tolerant parse: unknown or missing fields fall back to defaults. */

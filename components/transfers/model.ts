@@ -1,4 +1,4 @@
-import type { DownloadSnapshot, TorrentTelemetry } from 'maglev-engine';
+import type { DownloadSnapshot, TorrentTelemetry } from 'reelnest-engine';
 import type { SortKey, TransferSort } from '../../utils/prefs/transfers';
 import { formatBytes, formatCompactAmount, formatSpeed } from '../../constants/format.ts';
 import { resolvingLine } from '../detail/fileHealthMachine.ts';

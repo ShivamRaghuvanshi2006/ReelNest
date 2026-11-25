@@ -4,7 +4,7 @@
 import { kvGet, kvSet } from './kv.ts';
 import { defaultStarState, withFirstSeen, type StarState } from '../star.ts';
 
-const KEY = 'maglev.star.prefs.v1';
+const KEY = 'reelnest.star.prefs.v1';
 
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null);
 

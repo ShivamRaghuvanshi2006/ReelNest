@@ -1,5 +1,5 @@
 import React from 'react';
-import { AUTO_RETRY_DELAYS, type AutoRetryDelayMin } from 'maglev-engine';
+import { AUTO_RETRY_DELAYS, type AutoRetryDelayMin } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import { ListRow, Toggle } from '../ui';
 import { Caption, Card, ChipGroup } from './SettingsParts';

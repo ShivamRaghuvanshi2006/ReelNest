@@ -2,7 +2,7 @@
  * Pure logic for the found-files tray (docs/NATIVE_CONTRACT.md section 24.3): merge, count, filter, sort.
  * Items arrive in the order they were found, so a higher index is newer.
  */
-import type { FoundItem, FoundKind } from '../../modules/maglev-engine/src/MaglevBrowser';
+import type { FoundItem, FoundKind } from '../../modules/reelnest-engine/src/ReelNestBrowser';
 import { formatBytes } from '../../constants/format.ts';
 import { hostOf } from '../../utils/browserUrl.ts';
 

@@ -1,4 +1,4 @@
-import { maglevEngine, type NativePermissionStatus } from 'maglev-engine';
+import { reelnestEngine, type NativePermissionStatus } from 'reelnest-engine';
 
 /**
  * Typed permission status built on the engine module's getPermissionStatus
@@ -25,18 +25,18 @@ function toStatus(native: NativePermissionStatus): PermissionStatus {
 }
 
 /** Prompts for whatever is missing (notifications, legacy storage) and returns the re-read status. */
-export async function requestMaglevPermissions(): Promise<PermissionStatus> {
-  const before = await maglevEngine.getPermissionStatus();
+export async function requestReelNestPermissions(): Promise<PermissionStatus> {
+  const before = await reelnestEngine.getPermissionStatus();
   if (before.notifications !== 'granted') {
-    await maglevEngine.requestNotifications();
+    await reelnestEngine.requestNotifications();
   }
   if (before.legacyStorage === 'denied') {
-    await maglevEngine.requestLegacyStorage();
+    await reelnestEngine.requestLegacyStorage();
   }
-  return toStatus(await maglevEngine.getPermissionStatus());
+  return toStatus(await reelnestEngine.getPermissionStatus());
 }
 
 /** Opens the system battery optimization screen so downloads survive Doze. */
 export async function openBatterySettings(): Promise<void> {
-  await maglevEngine.openBatterySettings();
+  await reelnestEngine.openBatterySettings();
 }

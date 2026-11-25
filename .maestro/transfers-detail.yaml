@@ -1,6 +1,6 @@
 # Open a torrent's detail screen, check its sections, open one file's sheet, then go back.
 # Sections come from app/torrent/[id].tsx:78-83 (TABS: Files, Peers, Trackers, Pieces) and the stat labels at :820-830.
-appId: com.maglev
+appId: com.ReelNest
 name: transfers-detail
 ---
 - runFlow: subflows/onboard-if-needed.yaml

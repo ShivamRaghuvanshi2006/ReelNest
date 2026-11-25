@@ -51,7 +51,7 @@ export interface FileRun {
   fails?: number;
   /** 44.15 D8: a queued or limited run may go again at this time (epoch ms). */
   retryAt?: number;
-  /** 44.15 D11: Maglev saved a subtitle for this video (the sheet or a run), so a taken name means saved. */
+  /** 44.15 D11: ReelNest saved a subtitle for this video (the sheet or a run), so a taken name means saved. */
   saved?: boolean;
   /** The video's path, so deleting the request can clear its stored state (44.15 F6). */
   vp?: string;
@@ -378,7 +378,7 @@ export function canWriteState(entry: Pick<RequestEntry, 'epoch' | 'phase'> | und
   return entry!.phase !== 'skipped' || state === 'saved';
 }
 
-/** D11: a taken name or an existing sidecar means `saved` when Maglev saved one for this video, else `has-already`. */
+/** D11: a taken name or an existing sidecar means `saved` when ReelNest saved one for this video, else `has-already`. */
 export const resolveExisting = (prev: Pick<FileRun, 'saved'>): 'saved' | 'has-already' => (prev.saved ? 'saved' : 'has-already');
 
 /** F11: a video gone from disk keeps an earlier `needs-pick` instead of turning into `none`. */
@@ -410,7 +410,7 @@ export function statePathsToClear(e: Pick<RequestEntry, 'files' | 'vp'> | undefi
 
 const requeue = (r: Pick<FileRun, 'saved' | 'vp' | 'bytes'>): FileRun => ({ phase: 'queued', tries: 0, saved: r.saved, vp: r.vp, ...(r.bytes ? { bytes: r.bytes } : {}) });
 
-/** F10: a removed hash re-added within the grace starts again: runs go back to `queued`; `skipped` and what Maglev saved are kept. */
+/** F10: a removed hash re-added within the grace starts again: runs go back to `queued`; `skipped` and what ReelNest saved are kept. */
 export function resetEntryForReturn(e: RequestEntry): RequestEntry {
   if (e.phase === 'skipped') return e;
   const { fails: _f, retryAt: _r, ...rest } = e;
@@ -671,7 +671,7 @@ export function resetRequest(key: string): void {
 
 /**
  * 44.15 D11: the sheet saved a subtitle for this video. The request becomes `saved` (for a pack, that episode's run),
- * and the run remembers that Maglev saved one, so a taken name later is `saved`, not `has-already`.
+ * and the run remembers that ReelNest saved one, so a taken name later is `saved`, not `has-already`.
  */
 export function markSaved(key: string, fileKey?: string | null): void {
   const cur = load();

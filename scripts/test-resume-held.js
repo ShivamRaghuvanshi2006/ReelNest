@@ -81,13 +81,13 @@ const row = (o = {}) => ({
   const more = read('components/detail/TorrentMoreSheet.tsx');
   check('the ⋮ menu hides Resume when held', /heldByFiles && !running \? null/.test(more));
   check('the detail page passes the hold to the menu and hides the header Resume', /heldByFiles=\{heldByFiles\}/.test(read('app/torrent/[id].tsx')) && /MOVING' \|\| heldByFiles \? null/.test(read('app/torrent/[id].tsx')));
-  const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
+  const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
   const ra = kt.slice(kt.indexOf('fun resumeAll()'), kt.indexOf('fun resumeAll()') + 1200);
   check('Kotlin resumeAll (app and notification) skips file-health holds', /heldByFiles/.test(ra) && /files_changed/.test(ra) && /files_missing/.test(ra) && /!heldByFiles/.test(ra));
 
   console.log('[47.1 / 47.2 Rust source]');
-  const fh = read('native/maglev-core/src/file_health.rs');
-  const eng = read('native/maglev-core/src/engine.rs');
+  const fh = read('native/reelnest-core/src/file_health.rs');
+  const eng = read('native/reelnest-core/src/engine.rs');
   check('classify_file compares size only', /Some\(s\) if finished && s\.size != now\.size => FileState::Changed/.test(fh));
   check('judge_files refreshes the snapshot mtimes', /refresh_mtimes\(&probes, stats\.finished, snap\)/.test(eng));
   check('recheck_async settles before the planner: waits for the check, snapshots, clears', /settle_after_check\(id, hash\)/.test(eng) && /wait_until_initialized/.test(eng) && /settle_recheck\(m, finished\)/.test(eng));

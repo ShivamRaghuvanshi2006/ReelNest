@@ -54,7 +54,7 @@ async function main() {
   const scr = read('app/browser.tsx');
   const tray = read('components/browser/FoundTray.tsx');
   const sheet = read('components/browser/FoundDownload.tsx');
-  check('the screen reads the downloads list', /downloads/.test(scr) && /useMaglevEngine\(\)/.test(scr));
+  check('the screen reads the downloads list', /downloads/.test(scr) && /useReelNestEngine\(\)/.test(scr));
   check('the screen computes the matches and the summary', /matchTransfers\(/.test(scr) && /activeSummary\(/.test(scr));
   check('the footer chip opens Transfers', /activeLabel\(/.test(scr) && /router\.(push|navigate)\(/.test(scr));
   check('the chip is at least 44 px and labelled', /accessibilityLabel=\{[^}]*download/i.test(scr));

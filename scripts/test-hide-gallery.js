@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-const KT = 'modules/maglev-engine/android/src/main/java/com/maglev/engine/';
+const KT = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/';
 
 let failed = 0;
 function check(name, cond, extra) {
@@ -18,9 +18,9 @@ function check(name, cond, extra) {
 }
 
 async function main() {
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const { migrateSettings } = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
-  const { toGovernance, toNativeConfig } = await import('../modules/maglev-engine/src/toNativeConfig.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const { migrateSettings } = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
+  const { toGovernance, toNativeConfig } = await import('../modules/reelnest-engine/src/toNativeConfig.ts');
 
   console.log('setting');
   check('default is off', DEFAULT_SETTINGS.storage.hideFromGallery === false);
@@ -32,11 +32,11 @@ async function main() {
   check('not sent to Rust', !('hide_from_gallery' in toNativeConfig(on)));
 
   console.log('mock echo');
-  const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   check('mock setGovernance keeps hideFromGallery', /hideFromGallery/.test(mock));
 
   console.log('Kotlin');
-  const prefs = read(KT + 'MaglevEngineModule.kt');
+  const prefs = read(KT + 'ReelNestEngineModule.kt');
   check('module saves it from setGovernance', /GalleryHide\.save\(/.test(prefs));
   const gh = read(KT + 'storage/GalleryHide.kt');
   check('writes an empty .nomedia', /\.nomedia/.test(gh) && /createNewFile\(\)/.test(gh));
@@ -48,12 +48,12 @@ async function main() {
   check('scanPaths skips when hidden', /private fun scanPaths[\s\S]{0,400}GalleryHide\.hidden\(c\)/.test(host));
   check('torrent export scan skips when hidden', /GalleryHide\.hidden\(c\)[\s\S]{0,200}application\/x-bittorrent|if \(!GalleryHide\.hidden\(c\)\)[\s\S]{0,300}x-bittorrent/.test(host));
   check('checked at engine start', /startEngine[\s\S]{0,2500}GalleryHide\.apply\(/.test(host));
-  check('checked when the folder changes', /GalleryHide\.apply\(/.test(read(KT + 'MaglevEngineModule.kt')) || /GalleryHide\.apply\(/.test(read(KT + 'storage/StorageManager.kt')));
+  check('checked when the folder changes', /GalleryHide\.apply\(/.test(read(KT + 'ReelNestEngineModule.kt')) || /GalleryHide\.apply\(/.test(read(KT + 'storage/StorageManager.kt')));
 
   console.log('UI');
   const ui = read('app/settings/storage.tsx');
   check('row title', /Hide from gallery/.test(ui));
-  check('subtitle', /Photos and video apps won't list Maglev's downloads\. Your files stay in the folder\./.test(ui));
+  check('subtitle', /Photos and video apps won't list ReelNest's downloads\. Your files stay in the folder\./.test(ui));
   check('caption says only new files change', /new files/i.test(ui));
   check('toggle writes settings.storage.hideFromGallery', /hideFromGallery: v/.test(ui));
   {

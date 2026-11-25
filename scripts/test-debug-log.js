@@ -15,15 +15,15 @@ function check(name, cond) {
   }
 }
 
-const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
-const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-const host = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
-const log = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/DebugLog.kt');
-const paths = read('modules/maglev-engine/android/src/main/res/xml/file_paths.xml');
-const rustLog = read('native/maglev-core/src/android_log.rs');
-const rustJni = read('native/maglev-core/src/jni.rs');
+const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
+const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+const host = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
+const log = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/DebugLog.kt');
+const paths = read('modules/reelnest-engine/android/src/main/res/xml/file_paths.xml');
+const rustLog = read('native/reelnest-core/src/android_log.rs');
+const rustJni = read('native/reelnest-core/src/jni.rs');
 const about = read('app/settings/about.tsx');
 const copy = read('constants/aboutCopy.ts');
 const index = read('utils/settingsIndex.ts');
@@ -47,7 +47,7 @@ check('size is capped near 2 MB and the text is redacted', /MAX_BYTES = 2 \* 102
 check('redactor covers query, Cookie, Authorization and sk- keys', /\\\?\[\^\\s"'<>\]\*/.test(log) && /Cookie/.test(log) && /Authorization/.test(log) && /sk-/.test(log));
 check('config secrets are removed by key name', /password\|passwd\|cookie\|api_\?key/.test(log));
 check('FileProvider has a cache-path for debug/', /<cache-path name="debug_log" path="debug\/" \/>/.test(paths));
-check('Rust logs info and above to logcat tag MaglevCore', /TAG: &str = "MaglevCore"/.test(rustLog) && /<= Level::INFO/.test(rustLog) && /__android_log_write/.test(rustLog));
+check('Rust logs info and above to logcat tag ReelNestCore', /TAG: &str = "ReelNestCore"/.test(rustLog) && /<= Level::INFO/.test(rustLog) && /__android_log_write/.test(rustLog));
 check('logcat writer is android-only (host tests still build)', /#\[cfg\(target_os = "android"\)\]\s*fn write_logcat/.test(rustLog) && /#\[cfg\(not\(target_os = "android"\)\)\]/.test(rustLog));
 check('nativeInit installs it once', /crate::android_log::init\(\)/.test(rustJni));
 

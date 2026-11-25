@@ -17,7 +17,7 @@ const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
 async function main() {
   const { shareBrowserRoute } = await import('../utils/browser/shareRoute.ts');
   const { browserIntentRoute } = await import('../utils/browserUrl.ts');
-  const r = browserIntentRoute('maglev://browser?url=' + encodeURIComponent('https://example.com/a?b=1'));
+  const r = browserIntentRoute('reelnest://browser?url=' + encodeURIComponent('https://example.com/a?b=1'));
   check('card route is the stack route', r.startsWith('/browser?prefill='));
   check('tab shown: /browse with same params', shareBrowserRoute(r, true) === r.replace('/browser', '/browse'));
   check('tab hidden: stack route kept', shareBrowserRoute(r, false) === r);
@@ -34,8 +34,8 @@ async function main() {
   const add = read('app/add-download.tsx');
   check('add-download never router.replace("/")', !/router\.replace\('\/'\)/.test(add));
   check('add-download goes home with dismissTo', (add.match(/router\.dismissTo\('\/'\)/g) || []).length >= 3);
-  const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/share/QuickShareActivity.kt');
-  check('card still sends maglev://browser (routing is decided in JS)', kt.includes('maglev://browser?url='));
+  const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/share/QuickShareActivity.kt');
+  check('card still sends reelnest://browser (routing is decided in JS)', kt.includes('reelnest://browser?url='));
   process.exit(failed ? 1 : 0);
 }
 main();

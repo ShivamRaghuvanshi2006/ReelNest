@@ -81,7 +81,7 @@ function check(name, cond) {
   console.log('[when the row shows]');
   const vid = (path, progressBytes, length = 1000) => ({ path, length, progressBytes, included: true, priority: 'normal', index: 0 });
   const avail = { master: true, sourcesOn: 1 };
-  const t = { finished: false, folder: '/storage/emulated/0/Download/Maglev' };
+  const t = { finished: false, folder: '/storage/emulated/0/Download/ReelNest' };
   let f = M.torrentRowFacts(t, [vid('Film.mkv', 10)], avail, false);
   check('one video with bytes: shows, started, opens the sheet', f.show && f.started && f.canOpenSheet && f.file.path === 'Film.mkv');
   f = M.torrentRowFacts(t, [vid('Film.mkv', 0)], avail, false);
@@ -91,7 +91,7 @@ function check(name, cond) {
   check('no video: no row', !M.torrentRowFacts(t, [vid('album.flac', 10)], avail, false).show);
   check('master off: no row', !M.torrentRowFacts(t, [vid('Film.mkv', 10)], { master: false, sourcesOn: 1 }, false).show);
   check('no source on: no row', !M.torrentRowFacts(t, [vid('Film.mkv', 10)], { master: true, sourcesOn: 0 }, false).show);
-  const d = { state: 'downloading', name: 'Clip.mp4', folder: '/storage/emulated/0/Download/Maglev', downloaded: 500 };
+  const d = { state: 'downloading', name: 'Clip.mp4', folder: '/storage/emulated/0/Download/ReelNest', downloaded: 500 };
   check('link page: a video with bytes shows and opens', M.downloadRowFacts(d, avail).show && M.downloadRowFacts(d, avail).canOpenSheet);
   check('link page: not started shows, disabled', M.downloadRowFacts({ ...d, downloaded: 0 }, avail).show && !M.downloadRowFacts({ ...d, downloaded: 0 }, avail).started);
   check('link page: not a video, switch off, joining stream: no row', !M.downloadRowFacts({ ...d, name: 'a.zip' }, avail).show && !M.downloadRowFacts(d, { master: false, sourcesOn: 1 }).show && !M.downloadRowFacts({ ...d, muxNeeded: true }, avail).show);

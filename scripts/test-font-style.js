@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Font style setting (Settings > Interface > Font): Clean (default), Retro, Mono.
 // Checks the persisted pref, that every style maps every semantic font slot to a font loaded in
-// app/_layout.tsx, that the MAGLEV wordmark is always Silkscreen, that switching is live through the
+// app/_layout.tsx, that the REELNEST wordmark is always Cabinet Grotesk, that switching is live through the
 // shared `type` tokens, mono slot widths, and the copy.
 // Needs Node 22.18+ (runs the TypeScript source directly via type stripping).
 
@@ -34,8 +34,8 @@ function walk(dir, out = []) {
 async function main() {
   const FS = await import('../constants/fontStyles.ts');
   const T = await import('../constants/theme.ts');
-  const S = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const Store = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const S = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const Store = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   const copy = await import('../constants/copy.ts');
 
   // ---- the pref
@@ -51,11 +51,11 @@ async function main() {
   check('an older payload without the field gets clean', Store.migrateSettings({ version: 3, settings: { appearance: { mode: 'dim' } } }).appearance.fontStyle === 'clean');
   check('an older payload keeps its other appearance fields', Store.migrateSettings({ version: 3, settings: { appearance: { mode: 'dim' } } }).appearance.mode === 'dim');
   check('an unknown saved style becomes clean', Store.migrateSettings({ settings: { appearance: { fontStyle: 'comic' } } }).appearance.fontStyle === 'clean');
-  const store = Store.MaglevSettingsStore.getInstance();
+  const store = Store.ReelNestSettingsStore.getInstance();
   store.updateSettings((prev) => ({ appearance: { ...prev.appearance, fontStyle: 'retro' } }));
   check('updateSettings stores the style and keeps the rest', store.getSettings().appearance.fontStyle === 'retro' && store.getSettings().appearance.accent === S.DEFAULT_SETTINGS.appearance.accent);
-  check('the settings type lists the same styles', /export type FontStyle = 'clean' \| 'retro' \| 'mono';/.test(read('modules/maglev-engine/src/MaglevSettings.types.ts')));
-  const nativeCfg = read('modules/maglev-engine/src/toNativeConfig.ts');
+  check('the settings type lists the same styles', /export type FontStyle = 'clean' \| 'retro' \| 'mono';/.test(read('modules/reelnest-engine/src/ReelNestSettings.types.ts')));
+  const nativeCfg = read('modules/reelnest-engine/src/toNativeConfig.ts');
   check('the style is UI only: toNativeConfig never reads it', !/fontStyle/.test(nativeCfg));
   const contractDoc = require('./lib/privateDocs').readPrivateDoc('NATIVE_CONTRACT.md');
   if (contractDoc !== null) check('the style is UI only: Rust and Kotlin never see it', !/fontStyle/.test(contractDoc));
@@ -77,12 +77,12 @@ async function main() {
     const map = FS.fontFamilies[style];
     check(`${style}: has every slot`, FS.FONT_SLOTS.every((s) => typeof map[s] === 'string'), Object.keys(map).join(','));
     check(`${style}: every slot is a loaded font`, FS.FONT_SLOTS.every((s) => loaded.has(map[s])), FS.FONT_SLOTS.filter((s) => !loaded.has(map[s])).map((s) => map[s]).join(','));
-    check(`${style}: the wordmark is Silkscreen`, map.brand === 'Silkscreen');
+    check(`${style}: the wordmark is Cabinet Grotesk`, map.brand === 'CabinetGrotesk');
   }
   const F = FS.fontFamilies;
-  check('clean: headings are Inter Bold', F.clean.heading === 'InterBold');
+  check('clean: headings are Cabinet Grotesk', F.clean.heading === 'CabinetGrotesk');
   check('clean: names and numbers are Inter Medium, not Space Mono', F.clean.mono === 'InterMedium' && F.clean.monoBold === 'InterSemiBold');
-  check('clean: Silkscreen only on the wordmark', FS.FONT_SLOTS.filter((s) => F.clean[s] === 'Silkscreen').join() === 'brand');
+  check('clean: no Silkscreen anywhere', FS.FONT_SLOTS.filter((s) => F.clean[s] === 'Silkscreen').length === 0);
   check('retro: today\'s look', F.retro.heading === 'Silkscreen' && F.retro.mono === 'SpaceMono' && F.retro.monoBold === 'SpaceMonoBold' && F.retro.body === 'Inter' && F.retro.bodyStrong === 'InterSemiBold');
   check('mono: Space Mono Bold headings, Space Mono numbers', F.mono.heading === 'SpaceMonoBold' && F.mono.mono === 'SpaceMono' && F.mono.monoBold === 'SpaceMonoBold');
   check('body copy is Inter in every style', FS.FONT_STYLES.every((s) => F[s].body === 'Inter' && F[s].bodyStrong === 'InterSemiBold'));
@@ -93,22 +93,22 @@ async function main() {
   check('retro switches type.mono', T.type.mono.fontFamily === 'SpaceMono' && T.type.heading.fontFamily === 'Silkscreen' && T.fontFamily.monoBold === 'SpaceMonoBold');
   check('type.mono keeps tabular-nums', T.type.mono.fontVariant[0] === 'tabular-nums' && T.type.monoBold.fontVariant[0] === 'tabular-nums');
   T.setActiveFontStyle('mono');
-  check('mono switches type.heading', T.type.heading.fontFamily === 'SpaceMonoBold' && T.type.brand.fontFamily === 'Silkscreen');
+  check('mono switches type.heading', T.type.heading.fontFamily === 'SpaceMonoBold' && T.type.brand.fontFamily === 'CabinetGrotesk');
   T.setActiveFontStyle('nonsense');
-  check('a bad style value leaves clean', T.getActiveFontStyle() === 'clean' && T.type.heading.fontFamily === 'InterBold');
-  check('the wordmark token is Silkscreen in every style', FS.FONT_STYLES.every((s) => { T.setActiveFontStyle(s); return T.type.brand.fontFamily === 'Silkscreen'; }));
+  check('a bad style value leaves clean', T.getActiveFontStyle() === 'clean' && T.type.heading.fontFamily === 'CabinetGrotesk');
+  check('the wordmark token is Cabinet Grotesk in every style', FS.FONT_STYLES.every((s) => { T.setActiveFontStyle(s); return T.type.brand.fontFamily === 'CabinetGrotesk'; }));
   T.setActiveFontStyle('clean');
 
   const ctx = read('context/ThemeContext.tsx');
   check('ThemeContext applies the pref and rebuilds colours so memoised styles refresh', /setActiveFontStyle\(/.test(ctx) && /fontStyle/.test(ctx));
   check('ThemeContext exposes fontStyle', /fontStyle: FontStyleName/.test(ctx));
 
-  // ---- the wordmark stays Silkscreen: only the header wordmark uses type.brand
+  // ---- the wordmark stays Cabinet Grotesk: only the header, About wordmark and the two stamped cards use type.brand
   const brandUsers = walk('app').concat(walk('components')).filter((f) => /type\.brand|fontFamily\.brand|family\.brand/.test(read(f)));
-  // 0.15: the GitHub star ticket in About is a second approved user of the Silkscreen brand face (ticket stamp text).
-  // 0.28: the NEW | version badge on the new-feature highlight is a third approved user (Silkscreen plate).
-  check('only HeaderBar and the star ticket use the brand (wordmark) font (components/HeaderBar.tsx, components/highlight/Station.tsx, components/settings/StarTicket.tsx)', brandUsers.sort().join() === 'components/HeaderBar.tsx,components/highlight/Station.tsx,components/settings/StarTicket.tsx', brandUsers.join(', '));
-  check('no file hardcodes the Silkscreen name outside constants and _layout', walk('app').concat(walk('components'), walk('context'), walk('utils')).every((f) => !/'Silkscreen'/.test(read(f))));
+  // 0.15: the GitHub star ticket in About is a second approved user of the brand face (ticket stamp text).
+  // 0.28: the NEW | version badge on the new-feature highlight is a third approved user (stamped plate).
+  check('the header, About wordmark and two stamped cards use the brand (wordmark) font', brandUsers.sort().join() === 'components/HeaderBar.tsx,components/highlight/Station.tsx,components/settings/StarTicket.tsx,components/settings/Wordmark.tsx', brandUsers.join(', '));
+  check('no file hardcodes a font family name outside constants and _layout', walk('app').concat(walk('components'), walk('context'), walk('utils')).every((f) => !/['"](Silkscreen|SpaceMono|SpaceMonoBold|CabinetGrotesk|Inter|InterMedium|InterSemiBold|InterBold)['"]/.test(read(f))));
   check('screen titles use the heading slot', /type\.heading/.test(read('components/ui/Screen.tsx')));
 
   // ---- never the system monospace

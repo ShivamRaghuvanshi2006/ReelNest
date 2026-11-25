@@ -76,7 +76,7 @@ export function searchKeepHosts(input: {
   return [...new Set(all.map(hostOf).filter(Boolean))];
 }
 
-export const PRIVATE_HOSTS_KEY = 'maglev.browser.privateHosts.v1';
+export const PRIVATE_HOSTS_KEY = 'reelnest.browser.privateHosts.v1';
 
 export type PrivateSessionDeps = {
   kvGet(key: string): string | null;

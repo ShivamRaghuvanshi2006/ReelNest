@@ -30,7 +30,7 @@ const stubs = {
       getAllAsync: async (sql, params = []) => d.prepare(sql).all(...params),
     };
   }`,
-  'maglev-engine': `export const setHistoryWipeOnClose = async (v) => { globalThis.__wipeCalls.push(v); };`,
+  'reelnest-engine': `export const setHistoryWipeOnClose = async (v) => { globalThis.__wipeCalls.push(v); };`,
   react: `export const useSyncExternalStore = () => 0;`,
 };
 require('node:module').registerHooks({
@@ -371,17 +371,17 @@ async function main() {
   }
 
   console.log('Kotlin and bridge (static)');
-  const kt = 'modules/maglev-engine/android/src/main/java/com/maglev/engine/';
+  const kt = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/';
   const wipe = read(kt + 'browser/HistoryWipe.kt');
-  const svc = read(kt + 'service/MaglevTorrentService.kt');
-  const mod = read(kt + 'MaglevEngineModule.kt');
+  const svc = read(kt + 'service/ReelNestTorrentService.kt');
+  const mod = read(kt + 'ReelNestEngineModule.kt');
   const data = read(kt + 'browser/BrowserData.kt');
-  const view = read(kt + 'browser/MaglevBrowserView.kt');
-  const wrapper = read('modules/maglev-engine/src/MaglevBrowser.tsx');
+  const view = read(kt + 'browser/ReelNestBrowserView.kt');
+  const wrapper = read('modules/reelnest-engine/src/ReelNestBrowser.tsx');
   check('HistoryWipe deletes from pages', /DELETE FROM pages/.test(wipe));
   check('HistoryWipe opens read-write without creating', /OPEN_READWRITE/.test(wipe) && !/CREATE_IF_NECESSARY/.test(wipe));
-  check('HistoryWipe uses the expo-sqlite folder and file name', /"SQLite"/.test(wipe) && /maglev-history\.db/.test(wipe));
-  check('HistoryWipe keeps the flag in maglev.history / wipeOnClose', /maglev\.history/.test(wipe) && /wipeOnClose/.test(wipe));
+  check('HistoryWipe uses the expo-sqlite folder and file name', /"SQLite"/.test(wipe) && /reelnest-history\.db/.test(wipe));
+  check('HistoryWipe keeps the flag in reelnest.history / wipeOnClose', /reelnest\.history/.test(wipe) && /wipeOnClose/.test(wipe));
   check('HistoryWipe exposes wipeIfArmed(context)', /fun wipeIfArmed\(context: Context\)/.test(wipe));
   check('HistoryWipe ignores errors', /catch \(_: Throwable\)|catch \(_: Exception\)/.test(wipe));
   check('service onTaskRemoved calls wipeIfArmed', /override fun onTaskRemoved[\s\S]*?HistoryWipe\.wipeIfArmed/.test(svc));
@@ -389,7 +389,7 @@ async function main() {
   check('module registers setHistoryWipeOnClose', /AsyncFunction\("setHistoryWipeOnClose"\)/.test(mod));
   check('module wipes when the activity is finishing', /OnActivityDestroys[\s\S]{0,200}isFinishing[\s\S]{0,200}HistoryWipe/.test(mod));
   check('clearBrowserData takes options', /AsyncFunction\("clearBrowserData"\)\s*\{\s*options:/.test(mod));
-  check('view clearData takes options', /AsyncFunction\("clearData"\)\s*\{\s*view: MaglevBrowserView,\s*options/.test(mod));
+  check('view clearData takes options', /AsyncFunction\("clearData"\)\s*\{\s*view: ReelNestBrowserView,\s*options/.test(mod));
   check('BrowserData.clear takes cookies and cache flags', /cookies: Boolean/.test(data) && /cache: Boolean/.test(data));
   check('BrowserData no longer clears history', !/clearHistory\(/.test(data));
   check('the view can clear its back/forward list', /fun clearHistoryList\(|fun clearNavigationHistory\(/.test(view) && /clearHistory\(\)/.test(view));

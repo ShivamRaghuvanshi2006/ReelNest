@@ -2,7 +2,7 @@
 /**
  * 0.18 bug contracts.
  *  1. Cold-start share: an engine call made while a start is in flight (or announced by expectStart) waits for it
- *     (up to MaglevEngineBridge.startWaitMs). A call made before any start still fails fast. No mock fallback in a
+ *     (up to ReelNestEngineBridge.startWaitMs). A call made before any start still fails fast. No mock fallback in a
  *     release build.
  *  2. runPendingMuxes is covered by the JVM test (see scripts section at the end for the static link).
  *
@@ -54,9 +54,9 @@ globalThis.__DEV__ = false; // release: no simulator
 globalThis.__fake = { Platform: { OS: 'android' }, native };
 
 (async () => {
-  const { MaglevEngineBridge } = await import('../modules/maglev-engine/src/MaglevNativeBridge.ts');
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  MaglevEngineBridge.startWaitMs = 300;
+  const { ReelNestEngineBridge } = await import('../modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  ReelNestEngineBridge.startWaitMs = 300;
   const reset = () => {
     calls.length = 0;
     initGate = null;
@@ -66,7 +66,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   // A. before any start: fail fast
   reset();
   {
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     const t = Date.now();
     const r = await b.resolveMetadata('magnet:?xt=urn:btih:x', 1000);
     check('A: call before any start fails fast with NOT_INITIALIZED', !r.ok && r.code === 'NOT_INITIALIZED' && Date.now() - t < 100, r);
@@ -77,7 +77,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   reset();
   {
     initGate = gate();
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     const starting = b.start(DEFAULT_SETTINGS);
     const pending = b.resolveMetadata('magnet:?xt=urn:btih:x', 1000);
     await sleep(30);
@@ -91,7 +91,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   // C. expectStart() then a later start(): the call waits through the gap (cached boot defers the start one frame)
   reset();
   {
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     b.expectStart();
     const pending = b.resolveMetadata('magnet:?xt=urn:btih:x', 1000);
     await sleep(30);
@@ -105,7 +105,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   reset();
   {
     initGate = gate();
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     void b.start(DEFAULT_SETTINGS);
     const t = Date.now();
     const r = await b.resolveMetadata('magnet:?xt=urn:btih:x', 1000);
@@ -117,7 +117,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   // E. announced but never started: times out
   reset();
   {
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     b.expectStart();
     const t = Date.now();
     const r = await b.resolveMetadata('x', 1000);
@@ -129,7 +129,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   {
     initResult = { ok: false, code: 'ENGINE_UNAVAILABLE', message: 'no lib' };
     initGate = gate();
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     const starting = b.start(DEFAULT_SETTINGS);
     const pending = b.resolveMetadata('x', 1000);
     initGate.resolve();
@@ -141,7 +141,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   // G. already running: no extra wait
   reset();
   {
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     await b.start(DEFAULT_SETTINGS);
     const t = Date.now();
     const r = await b.resolveMetadata('x', 1000);
@@ -150,7 +150,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
 
   // H. wiring
   const ctx = fs.readFileSync(path.join(root, 'context/EngineContext.tsx'), 'utf8');
-  check('H: EngineProvider announces the start on its first render', /maglevEngine\.expectStart\(\)/.test(ctx));
+  check('H: EngineProvider announces the start on its first render', /reelnestEngine\.expectStart\(\)/.test(ctx));
 
   if (failed) {
     console.log(`\n${failed} failed`);

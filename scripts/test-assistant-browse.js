@@ -309,7 +309,7 @@ async function main() {
         async resume() { return { ok: true }; },
         async removeFiles() { return { ok: true, freedBytes: 0 }; },
         async delete() { return { ok: true }; },
-        async getFreeSpace() { return { ok: true, path: '/storage/emulated/0/Download/Maglev', freeBytes: w.free, totalBytes: 128 * GB, mode: 'direct' }; },
+        async getFreeSpace() { return { ok: true, path: '/storage/emulated/0/Download/ReelNest', freeBytes: w.free, totalBytes: 128 * GB, mode: 'direct' }; },
         async pauseDownload() { return { ok: true }; },
         async resumeDownload() { return { ok: true }; },
         async removeDownload() { return { ok: true }; },

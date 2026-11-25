@@ -16,7 +16,7 @@ export async function commitFollow(target: FollowTarget, autoDownload: boolean):
     try {
       await fetchFeed(plan.feed.url);
     } catch {
-      return { ok: false, message: `Maglev can't reach ${hostOf(plan.feed.url)} right now. Check your connection and try again.` };
+      return { ok: false, message: `ReelNest can't reach ${hostOf(plan.feed.url)} right now. Check your connection and try again.` };
     }
   }
   // Feeds first: updateFeedAutomation pushes both lists to the background checker.

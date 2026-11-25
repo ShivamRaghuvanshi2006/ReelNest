@@ -13,12 +13,12 @@ function check(name, cond, extra) {
 }
 
 async function main() {
-  const { MaglevMockEngine } = await import('../modules/maglev-engine/src/MaglevMockEngine.ts');
-  const { toGovernance, GOVERNANCE_REASONS } = await import('../modules/maglev-engine/src/toNativeConfig.ts');
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
+  const { ReelNestMockEngine } = await import('../modules/reelnest-engine/src/ReelNestMockEngine.ts');
+  const { toGovernance, GOVERNANCE_REASONS } = await import('../modules/reelnest-engine/src/toNativeConfig.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
 
   const hash = '0123456789abcdef0123456789abcdef01234567';
-  const engine = new MaglevMockEngine();
+  const engine = new ReelNestMockEngine();
   const first = await engine.addTorrent(`magnet:?xt=urn:btih:${hash}&tr=udp%3A%2F%2Fa.example.com%3A1%2Fannounce`, {});
   check('first add succeeds', first.ok === true);
   const dup = await engine.addTorrent(

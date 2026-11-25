@@ -1,0 +1,23 @@
+{
+  "name": "reelnest-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Custom Expo native module bridge for ReelNest Rust BitTorrent engine",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-module",
+    "bittorrent",
+    "reelnest"
+  ],
+  "author": "ReelNest Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

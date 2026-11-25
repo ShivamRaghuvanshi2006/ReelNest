@@ -2,7 +2,7 @@
  * Stats runtime (docs/NATIVE_CONTRACT.md section 34.2): opens the database once, feeds engine snapshots to the recorder,
  * and offers the store to the Stats screen and to backup. Never throws into callers.
  */
-import type { DownloadSnapshot, Snapshot } from '../../modules/maglev-engine/src/MaglevEngine.types.ts';
+import type { DownloadSnapshot, Snapshot } from '../../modules/reelnest-engine/src/ReelNestEngine.types.ts';
 import { kvGet, kvSet } from '../prefs/kv.ts';
 import { openStatsDb } from './db.ts';
 import { getStatsPrefs } from './prefs.ts';
@@ -10,7 +10,7 @@ import { createRecorder, type Baseline, type LiveCounts } from './recorder.ts';
 import { originTags } from './sourceStore.ts';
 import { createStatsStore, type StatsStore } from './store.ts';
 
-const BASELINE_KEY = 'maglev.stats.baseline.v1';
+const BASELINE_KEY = 'reelnest.stats.baseline.v1';
 
 let storePromise: Promise<StatsStore> | null = null;
 let recorder: ReturnType<typeof createRecorder> | null = null;

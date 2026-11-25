@@ -4,9 +4,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import * as DocumentPicker from 'expo-document-picker';
-import { maglevEngine, isDownloadLink, infoHashToMagnet, parseSource, type FilePriority, type FreeSpace, type Metadata } from 'maglev-engine';
+import { reelnestEngine, isDownloadLink, infoHashToMagnet, parseSource, type FilePriority, type FreeSpace, type Metadata } from 'reelnest-engine';
 import { useTheme } from '../context/ThemeContext';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { ThemeColors, radius, spacing, touch, type } from '../constants/theme';
 import { formatBytes } from '../constants/format';
 import { haptic } from '../constants/haptics';
@@ -43,7 +43,7 @@ interface Folder {
   label: string;
 }
 
-/** Last two path segments ("Download/Maglev"), so long storage paths stay on one line. */
+/** Last two path segments ("Download/ReelNest"), so long storage paths stay on one line. */
 function friendlyFolder(path: string): string {
   const parts = path.replace(/^[a-z]+:\/\//i, '').split(/[\/:]/).filter(Boolean);
   return parts.length > 2 ? parts.slice(-2).join('/') : parts.join('/') || path;
@@ -55,7 +55,7 @@ export default function AddTorrentScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ source?: string; uri?: string; magnet?: string }>();
-  const { telemetry, downloads, defaultStoragePath, showNotice, onMeteredNetwork, restartEngine } = useMaglevEngine();
+  const { telemetry, downloads, defaultStoragePath, showNotice, onMeteredNetwork, restartEngine } = useReelNestEngine();
   const { settings } = useSettings();
 
   const [text, setText] = useState('');
@@ -115,10 +115,10 @@ export default function AddTorrentScreen() {
       try {
         // Search may have read this magnet's file list already (or be reading it): use that read.
         const early = takePrefetchedMetadata(source);
-        res = early ? await early : await maglevEngine.resolveMetadata(source, RESOLVE_TIMEOUT_MS);
+        res = early ? await early : await reelnestEngine.resolveMetadata(source, RESOLVE_TIMEOUT_MS);
         // The background read gives up sooner than this screen; keep looking for the rest of the wait.
         if (early && !res.ok && res.code === 'METADATA_TIMEOUT' && mine === token.current) {
-          res = await maglevEngine.resolveMetadata(source, Math.max(1_000, RESOLVE_TIMEOUT_MS - (Date.now() - began)));
+          res = await reelnestEngine.resolveMetadata(source, Math.max(1_000, RESOLVE_TIMEOUT_MS - (Date.now() - began)));
         }
       } catch (e) {
         if (mine !== token.current) return;
@@ -178,7 +178,7 @@ export default function AddTorrentScreen() {
         return;
       }
       // A plain web link (not a .torrent) is a download from a link: hand it to that flow. The marker lets that
-      // screen run Get info at once, so the user doesn't tap it twice (an outside maglev:// link can't send it).
+      // screen run Get info at once, so the user doesn't tap it twice (an outside reelnest:// link can't send it).
       if (isDownloadLink(input)) {
         router.replace({ pathname: '/add-download', params: { url: input, from: 'add-torrent' } });
         return;
@@ -224,7 +224,7 @@ export default function AddTorrentScreen() {
   useEffect(() => {
     if (!previewHash) return;
     let alive = true;
-    maglevEngine
+    reelnestEngine
       .getFreeSpace()
       .then((res) => {
         if (alive) setFreeSpace(res.ok ? res : null);
@@ -290,7 +290,7 @@ export default function AddTorrentScreen() {
     haptic('tap');
     try {
       // This download only: the default folder is untouched.
-      const res = await pickFolderForThisDownload(() => maglevEngine.pickFolder());
+      const res = await pickFolderForThisDownload(() => reelnestEngine.pickFolder());
       if (res.kind === 'cancelled') return;
       if (res.kind === 'unsupported') {
         setAddError(notices.inline.folderNotDirect);
@@ -332,7 +332,7 @@ export default function AddTorrentScreen() {
         : null;
     let res;
     try {
-      res = await maglevEngine.addTorrent(sourceRef.current, { onlyFiles, filePriorities, paused, outputFolder: folder?.uri ?? null /* null: the default folder; a picked folder is this download only */ });
+      res = await reelnestEngine.addTorrent(sourceRef.current, { onlyFiles, filePriorities, paused, outputFolder: folder?.uri ?? null /* null: the default folder; a picked folder is this download only */ });
     } catch (e) {
       setAddError(e instanceof Error ? e.message : notices.addTorrent.addFailed);
       setPhase(meta ? 'preview' : 'timeout');
@@ -365,14 +365,14 @@ export default function AddTorrentScreen() {
     if (!hash || starting) return;
     setStarting(true);
     try {
-      await maglevEngine.cancelResolve(hash);
+      await reelnestEngine.cancelResolve(hash);
     } catch {
       // The resolve may already have ended; adding still works.
     }
     token.current++; // the pending resolveMetadata result (CANCELLED) is ignored
     let res;
     try {
-      res = await maglevEngine.addTorrent(source, { onlyFiles: null, filePriorities: null, outputFolder: folder?.uri ?? null });
+      res = await reelnestEngine.addTorrent(source, { onlyFiles: null, filePriorities: null, outputFolder: folder?.uri ?? null });
     } catch (e) {
       setStarting(false);
       setAddError(e instanceof Error ? e.message : notices.addTorrent.addFailed);

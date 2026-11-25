@@ -1,4 +1,4 @@
-- The browser keeps a history you can search, with suggestions as you type and clearing by time. It can clear itself when you close Maglev.
+- The browser keeps a history you can search, with suggestions as you type and clearing by time. It can clear itself when you close ReelNest.
 - Pages use the whole screen: Files and the download count float over the page.
 - Ads blocked on a page moved to the ⋮ menu.
 - Download cards in the browser are smaller and match the app's dark style.

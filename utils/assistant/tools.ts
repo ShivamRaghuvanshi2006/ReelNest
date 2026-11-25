@@ -425,7 +425,7 @@ const DESCRIPTIONS: Record<ToolName, string> = {
   propose_change:
     'Propose a change to one download: pause, resume, select_files, remove_files or delete. Nothing changes until the user taps Confirm.',
   watch_title:
-    'Propose watching for a title. Maglev checks in the background and notifies when a new match appears. Nothing starts until the user taps Confirm.',
+    'Propose watching for a title. ReelNest checks in the background and notifies when a new match appears. Nothing starts until the user taps Confirm.',
   ask_user:
     'Ask the user to pick one option. Shows tappable answers. Use it instead of asking a question in text. Then stop and wait.',
   open_screen:

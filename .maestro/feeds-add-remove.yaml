@@ -1,5 +1,5 @@
 # Follow a public-domain RSS feed (archive.org Open Source Movies collection), check items load, then remove it.
-appId: com.maglev
+appId: com.ReelNest
 name: feeds-add-remove
 ---
 - runFlow: subflows/onboard-if-needed.yaml

@@ -73,9 +73,9 @@ function check(name, cond, extra) {
 
   console.log('[12 plain launch]');
   const H = await import('../utils/highlights.ts');
-  const notPlain = ['magnet:?xt=urn:btih:abc', 'content://x/y.torrent', 'file:///sdcard/a.torrent', 'https://example.com/v', 'maglev://torrent/dl_ab12', 'maglev://settings/updates', 'maglev://share?u=x', 'maglev://add-torrent?source=x', 'maglev://from/tile', 'maglev://from/notification', 'maglev://search?q=x', ' maglev://browser?url=x '];
+  const notPlain = ['magnet:?xt=urn:btih:abc', 'content://x/y.torrent', 'file:///sdcard/a.torrent', 'https://example.com/v', 'reelnest://torrent/dl_ab12', 'reelnest://settings/updates', 'reelnest://share?u=x', 'reelnest://add-torrent?source=x', 'reelnest://from/tile', 'reelnest://from/notification', 'reelnest://search?q=x', ' reelnest://browser?url=x '];
   check('notification taps with a link, shares, magnets, files and deep links are not plain', notPlain.every((u) => !H.isPlainLaunch(u)), notPlain.filter((u) => H.isPlainLaunch(u)).join(','));
-  check('a launcher start is plain', [null, undefined, '', '  ', 'maglev://', 'maglev:///', 'MAGLEV://'].every((u) => H.isPlainLaunch(u)));
+  check('a launcher start is plain', [null, undefined, '', '  ', 'reelnest://', 'reelnest:///', 'REELNEST://'].every((u) => H.isPlainLaunch(u)));
   const ni = read('app/+native-intent.tsx');
   const rx = /\.test\(appPath\(raw\)/.exec(ni) ? new RegExp('^\\/?from\\/(tile|notification)\\/?$', 'i') : null;
   check('the tile and notification markers open Transfers (native intent maps them to "/")', !!rx && /from\\\/\(tile\|notification\)/.test(ni) && /return '\/';/.test(ni.slice(ni.indexOf('from\\/(tile|notification)'))) && ['/from/tile', '/from/notification'].every((p) => rx.test(p)));
@@ -105,7 +105,7 @@ function check(name, cond, extra) {
   check('badge text is at least 4.5:1 on the lime fill and on the surface plate, every mode and accent', bad.length === 0, bad.join('; '));
   const st = read('components/highlight/Station.tsx');
   check('the badge text and plates come from tokens', /color: colors\.onAccent/.test(st) && /color: colors\.accentText/.test(st) && /Cross color=\{colors\.surface\}/.test(st) && !/#[0-9a-fA-F]{3,8}\b/.test(st));
-  const mk = read('components/brand/MaglevMark.tsx');
+  const mk = read('components/brand/PixelTrain.tsx');
   check('the train is mono from tokens on light', /\{ body: colors\.text, lines: colors\.textMuted \}/.test(mk));
   const TL = await import('../components/highlight/timeline.ts');
   const TM = (await import('../components/highlight/timing.ts')).HIGHLIGHT_MOTION;

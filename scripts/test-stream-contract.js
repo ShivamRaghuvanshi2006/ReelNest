@@ -25,20 +25,20 @@ function check(name, fn) {
   }
 }
 
-const KT = 'modules/maglev-engine/android/src/main/java/com/maglev/engine';
+const KT = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine';
 const contract = require('./lib/privateDocs').readPrivateDoc('NATIVE_CONTRACT.md');
 const sec = contract === null ? null : contract.slice(contract.indexOf('### 24.8'));
-const jni = read('native/maglev-core/src/jni.rs');
-const errorRs = read('native/maglev-core/src/error.rs');
-const machine = read('native/maglev-core/src/http_dl/machine.rs');
+const jni = read('native/reelnest-core/src/jni.rs');
+const errorRs = read('native/reelnest-core/src/error.rs');
+const machine = read('native/reelnest-core/src/http_dl/machine.rs');
 const nativeCore = stripKotlinComments(read(`${KT}/NativeCore.kt`));
-const mod = stripKotlinComments(read(`${KT}/MaglevEngineModule.kt`));
+const mod = stripKotlinComments(read(`${KT}/ReelNestEngineModule.kt`));
 const host = stripKotlinComments(read(`${KT}/EngineHost.kt`));
 const muxJobs = stripKotlinComments(read(`${KT}/MuxJobs.kt`));
 const muxer = stripKotlinComments(read(`${KT}/storage/StreamMuxer.kt`));
-const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
 const ctx = read('context/EngineContext.tsx');
 const pkg = JSON.parse(read('package.json'));
 
@@ -49,7 +49,7 @@ const CALLS = [
 
 check('JNI names match between jni.rs, NativeCore.kt and the module', () => {
   for (const c of CALLS) {
-    assert(new RegExp(`Java_com_maglev_engine_NativeCore_${c.jni}\\b`).test(jni), `${c.jni} missing in jni.rs`);
+    assert(new RegExp(`Java_com_reelnest_engine_NativeCore_${c.jni}\\b`).test(jni), `${c.jni} missing in jni.rs`);
     assert(c.kotlin.test(nativeCore), `${c.jni} missing or changed in NativeCore.kt`);
   }
   assert(/NativeCore\.nativeProbeStream\(/.test(host), 'EngineHost must call nativeProbeStream');
@@ -65,9 +65,9 @@ check('the contract names the same two calls', () => {
 });
 
 const CODES = [
-  ['STREAM_PROTECTED', 'STREAM_PROTECTED_MSG', "This stream is protected. Maglev can't save it."],
-  ['STREAM_LIVE', 'STREAM_LIVE_MSG', 'This is a live stream. Maglev can only save videos that have an end.'],
-  ['STREAM_UNSUPPORTED', 'STREAM_UNSUPPORTED_MSG', "Maglev can't save this kind of stream yet."],
+  ['STREAM_PROTECTED', 'STREAM_PROTECTED_MSG', "This stream is protected. ReelNest can't save it."],
+  ['STREAM_LIVE', 'STREAM_LIVE_MSG', 'This is a live stream. ReelNest can only save videos that have an end.'],
+  ['STREAM_UNSUPPORTED', 'STREAM_UNSUPPORTED_MSG', "ReelNest can't save this kind of stream yet."],
   ['MUX_FAILED', 'MUX_FAILED_MSG', "Couldn't join the video and audio. Try again."],
 ];
 
@@ -137,16 +137,16 @@ check('the muxer remuxes without re-encoding and writes through a temp file', ()
 });
 
 check('the part and temp names agree between Rust and Kotlin', () => {
-  const rs = read('native/maglev-core/src/http_dl/stream/plan.rs');
-  const driver = read('native/maglev-core/src/http_dl/driver.rs');
+  const rs = read('native/reelnest-core/src/http_dl/stream/plan.rs');
+  const driver = read('native/reelnest-core/src/http_dl/driver.rs');
   assert(/\{name\}\.video\.part/.test(rs) && /\{name\}\.audio\.part/.test(rs), 'Rust part names');
   assert(/"\$name\.video\.part"/.test(muxJobs) && /"\$name\.audio\.part"/.test(muxJobs), 'Kotlin part names');
   assert(driver.includes('".mux.tmp"') && /\.mux\.tmp/.test(muxer), 'temp name on both sides');
 });
 
 check('Rust refuses what the contract refuses and never fetches a key by itself', () => {
-  const hls = read('native/maglev-core/src/http_dl/stream/hls.rs');
-  const dash = read('native/maglev-core/src/http_dl/stream/dash.rs');
+  const hls = read('native/reelnest-core/src/http_dl/stream/hls.rs');
+  const dash = read('native/reelnest-core/src/http_dl/stream/dash.rs');
   assert(/Some\("NONE"\)/.test(hls) && /Some\("AES-128"\)/.test(hls), 'NONE and AES-128 handled');
   assert(/Some\(_\) => Err\(StreamError::Protected\)/.test(hls), 'every other METHOD is protected');
   assert(/KEYFORMAT/.test(hls) && /identity/.test(hls), 'KEYFORMAT must be identity');
@@ -154,28 +154,28 @@ check('Rust refuses what the contract refuses and never fetches a key by itself'
   assert(/ContentProtection/.test(dash) && /StreamError::Protected/.test(dash), 'ContentProtection is protected');
   assert(/"dynamic"/.test(dash) && /StreamError::Live/.test(dash), 'dynamic is live');
   assert(/StreamError::Live/.test(hls), 'no ENDLIST is live');
-  assert(/MAX_PLAYLIST_BYTES: u64 = 2 \* 1024 \* 1024/.test(read('native/maglev-core/src/http_dl/stream/mod.rs')), 'playlist limit 2 MB');
-  assert(/MAX_SEGMENTS: usize = 20_000/.test(read('native/maglev-core/src/http_dl/stream/mod.rs')), '20,000 segments');
-  assert(/MAX_IN_FLIGHT: usize = 3/.test(read('native/maglev-core/src/http_dl/stream/mod.rs')), '3 in flight');
+  assert(/MAX_PLAYLIST_BYTES: u64 = 2 \* 1024 \* 1024/.test(read('native/reelnest-core/src/http_dl/stream/mod.rs')), 'playlist limit 2 MB');
+  assert(/MAX_SEGMENTS: usize = 20_000/.test(read('native/reelnest-core/src/http_dl/stream/mod.rs')), '20,000 segments');
+  assert(/MAX_IN_FLIGHT: usize = 3/.test(read('native/reelnest-core/src/http_dl/stream/mod.rs')), '3 in flight');
 });
 
 check('AES-128: pinned crates, keys in memory only, 16 byte keys, PKCS#7 CBC', () => {
-  const cargo = read('native/maglev-core/Cargo.toml');
+  const cargo = read('native/reelnest-core/Cargo.toml');
   assert(/^aes = "=\d+\.\d+\.\d+"/m.test(cargo) && /^cbc = \{ version = "=\d+\.\d+\.\d+"/m.test(cargo), 'aes and cbc pinned exactly');
   assert(/^roxmltree = "=\d+\.\d+\.\d+"/m.test(cargo), 'roxmltree pinned exactly');
-  const run = read('native/maglev-core/src/http_dl/driver/stream_run.rs');
+  const run = read('native/reelnest-core/src/http_dl/driver/stream_run.rs');
   assert(/v\.len\(\) == 16/.test(run), 'keys must be exactly 16 bytes');
   assert(/HashMap<String, \[u8; 16\]>/.test(run), 'key cache is an in-memory map');
   assert(!/(info|warn|debug|error)!\([^)]*(k\.uri|key)/.test(run), 'keys and key links are never logged');
-  const fetch = read('native/maglev-core/src/http_dl/stream/fetch.rs');
+  const fetch = read('native/reelnest-core/src/http_dl/stream/fetch.rs');
   assert(/Pkcs7/.test(fetch) && /Aes128CbcDec/.test(fetch), 'PKCS#7 CBC decryption');
-  const sidecar = read('native/maglev-core/src/http_dl/sidecar.rs');
+  const sidecar = read('native/reelnest-core/src/http_dl/sidecar.rs');
   assert(!/key|iv\b/i.test(sidecar.slice(sidecar.indexOf('pub struct TrackSide'), sidecar.indexOf('pub struct Sidecar'))), 'no key material in the sidecar');
   if (sec !== null) assert(/AES-128 \(HLS\)/.test(sec), 'contract documents AES-128');
 });
 
 check('segments go through the shared download rules', () => {
-  const run = read('native/maglev-core/src/http_dl/driver/stream_run.rs');
+  const run = read('native/reelnest-core/src/http_dl/driver/stream_run.rs');
   for (const needle of ['stall_step', 'stall_retry', 'after_break', 'transient(', 'pace_delay', 'prepare_for_download', 'free_space', 'client_for_id', 'pin_lan_host']) {
     assert(run.includes(needle), `${needle} must be used by the stream transfer`);
   }
@@ -183,7 +183,7 @@ check('segments go through the shared download rules', () => {
 });
 
 check('the snapshot carries stream and mux_needed', () => {
-  const driver = read('native/maglev-core/src/http_dl/driver.rs');
+  const driver = read('native/reelnest-core/src/http_dl/driver.rs');
   assert(/"stream": r\.stream/.test(driver) && /"segments_done"/.test(driver) && /"segments_total"/.test(driver), 'stream object');
   assert(/"mux_needed":/.test(driver), 'mux_needed');
   assert(/E::Verifying|S::Verifying, E::MuxFailed/.test(machine) || /\(S::Verifying, E::MuxFailed\)/.test(machine), 'MuxFailed row');

@@ -176,7 +176,7 @@ async function main() {
   });
   const upd = await agg.searchAll('matrix', 'movies', { enabled: defaults, waitSeconds: 2 });
   check('movies search: yts called, nyaa not', calls.some((c) => c.url.includes('accel.li')) && !calls.some((c) => c.url.includes('nyaa.si')));
-  check('request carries generic UA and no cookies', calls.every((c) => c.init.headers['User-Agent'] === 'Maglev/0.1.0 (Android)' && !('Cookie' in c.init.headers) && c.init.credentials === 'omit'));
+  check('request carries generic UA and no cookies', calls.every((c) => c.init.headers['User-Agent'] === 'ReelNest/0.1.0 (Android)' && !('Cookie' in c.init.headers) && c.init.credentials === 'omit'));
   check('final update is done with statuses', upd.done && upd.sources.every((s) => s.state === 'done'), JSON.stringify(upd.sources));
   const knCall = calls.find((c) => c.url.includes('knaben'));
   const knBody = JSON.parse(knCall.init.body);
@@ -407,7 +407,7 @@ async function main() {
   };
   let out = await agg.rerunProvider('cftest', 'ubuntu', 'all', { enabled: ['cftest'], extraProviders: [cfProvider()], waitSeconds: 2 });
   check('state: provider with cloudflare field -> challenge', out.status.state === 'challenge' && out.status.message === 'Needs a quick check', out.status.state);
-  check('state: first request uses the generic UA and no cookies', seenUa[0][0].startsWith('Maglev/') && seenUa[0][1] === 'omit', JSON.stringify(seenUa[0]));
+  check('state: first request uses the generic UA and no cookies', seenUa[0][0].startsWith('ReelNest/') && seenUa[0][1] === 'omit', JSON.stringify(seenUa[0]));
   out = await agg.rerunProvider('cftest', 'ubuntu', 'all', { enabled: ['cftest'], extraProviders: [cfProvider({ cloudflare: undefined })], waitSeconds: 2 });
   check('state: provider without cloudflare field stays blocked', out.status.state === 'blocked', out.status.state);
   const sa = await agg.searchAll('ubuntu', 'all', { enabled: ['cftest'], extraProviders: [cfProvider()], waitSeconds: 2 });
@@ -433,7 +433,7 @@ async function main() {
     return new Response('[]', { status: 200, headers: { 'content-type': 'application/json' } });
   };
   await httpMod.httpText('https://other.test/x', { signal: new AbortController().signal, accept: 'application/json' });
-  check('reuse: other hosts keep the generic UA and no cookies', other[0][0].startsWith('Maglev/') && other[0][1] === 'omit', JSON.stringify(other[0]));
+  check('reuse: other hosts keep the generic UA and no cookies', other[0][0].startsWith('ReelNest/') && other[0][1] === 'omit', JSON.stringify(other[0]));
 
   // Expiry and the one-retry rule.
   hits = 0;

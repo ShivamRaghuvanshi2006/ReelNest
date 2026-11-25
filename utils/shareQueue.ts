@@ -1,10 +1,10 @@
 /**
  * Android share (ACTION_SEND / SEND_MULTIPLE) arrives as one VIEW intent, rewritten by the MainActivity
  * patch in plugins/withShareIntents.js. One source is the plain data URI. Several sources are packed as
- * `maglev://share?u=<encoded>&u=<encoded>`. The first goes to the add flow at once; the rest wait here and
+ * `reelnest://share?u=<encoded>&u=<encoded>`. The first goes to the add flow at once; the rest wait here and
  * the Transfers screen opens the next one each time it is focused again.
  */
-const SHARE_PATH = /^(?:maglev:\/\/)?\/?share\?(.*)$/i;
+const SHARE_PATH = /^(?:reelnest:\/\/)?\/?share\?(.*)$/i;
 
 let queue: string[] = [];
 

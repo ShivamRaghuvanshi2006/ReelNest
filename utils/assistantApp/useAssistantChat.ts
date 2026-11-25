@@ -12,7 +12,7 @@ import { createChatStore } from './chatStore.ts';
 import { createStreamFn, type FetchLike } from './client.ts';
 import { setUnseenReply } from './unseenReply.ts';
 import { createChatController, goneTargets, type ChatController } from './chatController.ts';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 
 // The loaded key is tagged with the preset it belongs to; keyFor() returns it only for that preset.
 let loadedKey: TaggedKey | null = null;
@@ -75,7 +75,7 @@ export function useAssistantChat(runner: ToolRunner): AssistantChat {
   }, [controller, focused]);
 
   // R1-3: a card whose download was removed elsewhere expires instead of looking valid until Confirm.
-  const { telemetry, downloads } = useMaglevEngine();
+  const { telemetry, downloads } = useReelNestEngine();
   const seen = useRef(new Set<string>());
   useEffect(() => {
     const live = new Set<string>([...telemetry.torrents.map((t) => t.id), ...downloads.map((d) => `dl:${d.id}`)]);

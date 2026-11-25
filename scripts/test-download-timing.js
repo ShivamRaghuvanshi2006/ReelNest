@@ -27,7 +27,7 @@ const SNAKE = ['active_secs', 'finished_at', 'session_bytes', 'bytes_wifi', 'byt
 async function main() {
   // ---- types ----
   console.log('types');
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
   for (const name of ['TorrentTelemetry', 'Snapshot', 'DownloadSnapshot']) {
     const body = (types.match(new RegExp(`export interface ${name} \\{[\\s\\S]*?\\n\\}`)) || [''])[0];
     for (const f of FIELDS) check(`${name} declares ${f}`, new RegExp(`\\n\\s+${f}\\?: number;`).test(body));
@@ -35,7 +35,7 @@ async function main() {
 
   // ---- bridge pass-through ----
   console.log('bridge');
-  const { camelizeKeys, snapshotToTelemetry } = await import('../modules/maglev-engine/src/snapshotMapping.ts');
+  const { camelizeKeys, snapshotToTelemetry } = await import('../modules/reelnest-engine/src/snapshotMapping.ts');
   const raw = {};
   SNAKE.forEach((k, i) => (raw[k] = i + 1));
   const cam = camelizeKeys(raw);
@@ -52,23 +52,23 @@ async function main() {
 
   // ---- Rust and Kotlin wiring (source checks; CI compiles them) ----
   console.log('native wiring');
-  const types_rs = read('native/maglev-core/src/types.rs');
+  const types_rs = read('native/reelnest-core/src/types.rs');
   for (const k of SNAKE) check(`Rust torrent Snapshot has ${k}`, new RegExp(`pub ${k}: `).test(types_rs));
-  const drv = read('native/maglev-core/src/http_dl/driver.rs');
+  const drv = read('native/reelnest-core/src/http_dl/driver.rs');
   for (const k of SNAKE) check(`Rust download snapshot writes ${k}`, new RegExp(`"${k}": r\\.timing`).test(drv));
   check('Rust: link FILE_CHANGED retry resets the timing', /FileChanged[\s\S]{0,400}timing\.reset\(\)/.test(drv));
   check('Rust: link timing is saved while it runs', /TIMING_SAVE_EVERY/.test(drv));
-  check('Rust: engine tick feeds both torrents and links', /downloads\.account\(elapsed, metered\)/.test(read('native/maglev-core/src/engine.rs')) && /m\.timing\.tick\(elapsed, downloading\)/.test(read('native/maglev-core/src/engine.rs')));
-  check('Rust: torrent timing persists in the meta file', /pub timing: Timing/.test(read('native/maglev-core/src/meta.rs')));
-  check('Rust: JNI exports nativeSetNetworkMetered', /Java_com_maglev_engine_NativeCore_nativeSetNetworkMetered/.test(read('native/maglev-core/src/jni.rs')));
-  check('Kotlin declares nativeSetNetworkMetered', /external fun nativeSetNetworkMetered\(metered: Boolean\): String/.test(read('modules/maglev-engine/android/src/main/java/com/maglev/engine/NativeCore.kt')));
-  const host = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
+  check('Rust: engine tick feeds both torrents and links', /downloads\.account\(elapsed, metered\)/.test(read('native/reelnest-core/src/engine.rs')) && /m\.timing\.tick\(elapsed, downloading\)/.test(read('native/reelnest-core/src/engine.rs')));
+  check('Rust: torrent timing persists in the meta file', /pub timing: Timing/.test(read('native/reelnest-core/src/meta.rs')));
+  check('Rust: JNI exports nativeSetNetworkMetered', /Java_com_reelnest_engine_NativeCore_nativeSetNetworkMetered/.test(read('native/reelnest-core/src/jni.rs')));
+  check('Kotlin declares nativeSetNetworkMetered', /external fun nativeSetNetworkMetered\(metered: Boolean\): String/.test(read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/NativeCore.kt')));
+  const host = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
   check('Kotlin pushes the metered flag from the governance pass', /nativeSetNetworkMetered\(metered\)/.test(host) && /!n\.unmeteredLink/.test(host));
 
   // ---- simulator: torrents ----
   console.log('simulator torrents');
-  const { MaglevMockEngine } = await import('../modules/maglev-engine/src/MaglevMockEngine.ts');
-  const e = new MaglevMockEngine();
+  const { ReelNestMockEngine } = await import('../modules/reelnest-engine/src/ReelNestMockEngine.ts');
+  const e = new ReelNestMockEngine();
   const snaps = async () => (await e.listTorrents()).torrents;
   const mag = 'magnet:?xt=urn:btih:' + 'ab'.repeat(20) + '&dn=Timing%20Test&xl=40000000';
   const added = await e.addTorrent(mag, {});
@@ -118,7 +118,7 @@ async function main() {
 
   // ---- simulator: link downloads ----
   console.log('simulator downloads');
-  const { MockDownloads, mockSizeFor } = await import('../modules/maglev-engine/src/MaglevMockDownloads.ts');
+  const { MockDownloads, mockSizeFor } = await import('../modules/reelnest-engine/src/ReelNestMockDownloads.ts');
   let blocked = null;
   let metered = false;
   const m = new MockDownloads({ blockedReason: () => blocked, folder: () => '/d', changed: () => {}, metered: () => metered });

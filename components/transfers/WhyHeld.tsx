@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import type { ActiveBlock } from 'maglev-engine';
+import type { ActiveBlock } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { useMinuteTick } from '../../utils/blocks/useMinuteTick';

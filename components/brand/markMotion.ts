@@ -1,5 +1,5 @@
 /*
- * The pure parts of the Maglev mark's motion: frame timing, how far the boost travels, and the
+ * The pure parts of the ReelNest mark's motion: frame timing, how far the boost travels, and the
  * gates that stop it replaying. No React Native imports, so scripts/test-mark-motion.js runs it.
  * The frame counts here must match the boost frames scripts/build-logo.py writes to markPaths.ts.
  */

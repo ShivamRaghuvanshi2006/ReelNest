@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } 
 import { FlatList, Share, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { maglevEngine, type DetailFile, type FilePriority, type TorrentLimits } from 'maglev-engine';
+import { reelnestEngine, type DetailFile, type FilePriority, type TorrentLimits } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { useEngineActions } from '../../context/EngineContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
@@ -174,7 +174,7 @@ export default function TorrentDetailScreen() {
             send({ type: 'RESULT_ERR', code: 'NOT_FOUND', message: '' });
             break;
           }
-          maglevEngine
+          reelnestEngine
             .removeFiles(id, e.indices)
             .then((res) => {
               if (res.ok) {
@@ -206,7 +206,7 @@ export default function TorrentDetailScreen() {
             break;
           }
           if (e.fn === 'addTrackers') {
-            maglevEngine
+            reelnestEngine
               .addTrackers(id, e.urls)
               .then((res) => {
                 if (res.ok) send({ type: 'OK', addedCount: res.added });
@@ -215,7 +215,7 @@ export default function TorrentDetailScreen() {
               .catch(() => send({ type: 'ERR', message: "Couldn't add the trackers. Try again." }));
           } else {
             const url = e.url;
-            maglevEngine
+            reelnestEngine
               .removeTracker(id, url)
               .then((res) => {
                 if (res.ok) {
@@ -235,7 +235,7 @@ export default function TorrentDetailScreen() {
     }
   });
 
-  // SM-32 Files changed outside Maglev. The machine decides; this runs its effects.
+  // SM-32 Files changed outside ReelNest. The machine decides; this runs its effects.
   const [fh, sendFh] = useMachine(fileHealthStep, FILE_HEALTH_INITIAL, (effects, send) => {
     for (const e of effects) {
       switch (e.type) {
@@ -243,7 +243,7 @@ export default function TorrentDetailScreen() {
           haptic(EFFECT_HAPTIC[e.style]);
           break;
         case 'pickFolder':
-          maglevEngine
+          reelnestEngine
             .pickFolder()
             .then((picked) => send('cancelled' in picked ? { type: 'FOLDER_CANCELLED' } : { type: 'FOLDER_PICKED', dir: picked.uri }))
             .catch(() => send({ type: 'PICK_FAILED' }));
@@ -253,7 +253,7 @@ export default function TorrentDetailScreen() {
             send({ type: 'RESULT_ERR', code: 'NOT_FOUND', message: '' });
             break;
           }
-          maglevEngine
+          reelnestEngine
             .resolveFiles(id, e.action, e.indices, e.dir)
             .then((res) => send(res.ok ? { type: 'RESULT_OK' } : { type: 'RESULT_ERR', code: res.code, message: res.message }))
             .catch(() => send({ type: 'RESULT_ERR', code: 'UNKNOWN', message: '' }));
@@ -272,7 +272,7 @@ export default function TorrentDetailScreen() {
       return;
     }
     let alive = true;
-    maglevEngine
+    reelnestEngine
       .fileHealth(id)
       .then((res) => {
         if (!alive) return;
@@ -363,7 +363,7 @@ export default function TorrentDetailScreen() {
       return;
     }
     let alive = true;
-    maglevEngine
+    reelnestEngine
       .getScheduleStatus()
       .then((st) => {
         if (alive) setResumesAt(st.nextBoundary ? clockTime(st.nextBoundary) : null);
@@ -402,7 +402,7 @@ export default function TorrentDetailScreen() {
       setPrioTarget(null);
       setSelection(null);
       setPending((p) => ({ ...p, ...Object.fromEntries(indices.map((i) => [i, priority])) }));
-      const res = await maglevEngine.setFilePriorities(id, next);
+      const res = await reelnestEngine.setFilePriorities(id, next);
       if (!res.ok) {
         setPending((p) => {
           const rest = { ...p };
@@ -449,7 +449,7 @@ export default function TorrentDetailScreen() {
   const handleReannounce = useCallback(async () => {
     setMoreOpen(false);
     if (!id) return;
-    const res = await maglevEngine.reannounce(id);
+    const res = await reelnestEngine.reannounce(id);
     if (res.ok) {
       setRetryUntil(Date.now() + 60_000);
       showNotice({ tone: 'info', text: notices.detail.lookingForPeers });
@@ -487,7 +487,7 @@ export default function TorrentDetailScreen() {
   const handleSaveTorrent = useCallback(async () => {
     setMoreOpen(false);
     if (!id) return;
-    const res = await maglevEngine.exportTorrent(id);
+    const res = await reelnestEngine.exportTorrent(id);
     if (res.ok) {
       haptic('done');
       setSavedTorrent({ path: res.path, name: res.name, folder: res.folder });
@@ -500,7 +500,7 @@ export default function TorrentDetailScreen() {
     async (next: TorrentLimits) => {
       if (!id) return;
       setLimitPending(next);
-      const res = await maglevEngine.setTorrentLimits(id, next);
+      const res = await reelnestEngine.setTorrentLimits(id, next);
       if (!res.ok) {
         setLimitPending(null);
         showNotice({ tone: 'danger', text: res.message || notices.detail.limitFailed });
@@ -515,7 +515,7 @@ export default function TorrentDetailScreen() {
       setMoveBusy(true);
       setMoveError(null);
       try {
-        const res = await maglevEngine.moveStorage(id, target);
+        const res = await reelnestEngine.moveStorage(id, target);
         if (res.ok) {
           setMoveOpen(false);
           showNotice({ tone: 'info', text: notices.detail.moving });
@@ -533,7 +533,7 @@ export default function TorrentDetailScreen() {
   const handlePickMove = useCallback(async () => {
     setMoveError(null);
     try {
-      const picked = await maglevEngine.pickFolder();
+      const picked = await reelnestEngine.pickFolder();
       if ('cancelled' in picked) return;
       await startMove({ kind: 'tree', uri: picked.uri });
     } catch {
@@ -544,7 +544,7 @@ export default function TorrentDetailScreen() {
   const handleRecheck = useCallback(async () => {
     setMoreOpen(false);
     if (!id) return;
-    const res = await maglevEngine.recheck(id);
+    const res = await reelnestEngine.recheck(id);
     showNotice(res.ok ? { tone: 'info', text: notices.detail.checking } : { tone: 'danger', text: res.message });
   }, [id, showNotice]);
 
@@ -568,7 +568,7 @@ export default function TorrentDetailScreen() {
   const handleOpenFolder = useCallback(async () => {
     setMoreOpen(false);
     if (!id) return;
-    const res = await maglevEngine.openFolder(id);
+    const res = await reelnestEngine.openFolder(id);
     if (!res.ok) showNotice({ tone: 'danger', text: res.message || notices.detail.openFolderFailed });
   }, [id, showNotice]);
 
@@ -601,19 +601,19 @@ export default function TorrentDetailScreen() {
   const handleResumeAnyway = useCallback(async () => {
     if (!id) return;
     haptic('tap');
-    const res = await maglevEngine.resumeAnyway(id);
+    const res = await reelnestEngine.resumeAnyway(id);
     if (!res.ok) showNotice({ tone: 'danger', text: res.message || notices.detail.stateFailed });
   }, [id, showNotice]);
 
   const handleScanFiles = useCallback(async () => {
-    const res = await maglevEngine.scanFileHealth();
+    const res = await reelnestEngine.scanFileHealth();
     showNotice(res.ok ? { tone: 'info', text: notices.detail.checking } : { tone: 'danger', text: res.message });
   }, [showNotice]);
 
   const handleKeepTrying = useCallback(async () => {
     if (!id) return;
     haptic('tap');
-    const res = await maglevEngine.setHealth(id, '');
+    const res = await reelnestEngine.setHealth(id, '');
     if (!res.ok) showNotice({ tone: 'danger', text: res.message || notices.common.retryFailed });
   }, [id, showNotice]);
 
@@ -807,7 +807,7 @@ export default function TorrentDetailScreen() {
 
   const openSavedFolder = async () => {
     try {
-      const res = await maglevEngine.openFolder(id);
+      const res = await reelnestEngine.openFolder(id);
       if (!res.ok) showNotice({ tone: 'danger', text: res.message || OPEN_FOLDER_FAILED_TEXT });
     } catch {
       showNotice({ tone: 'danger', text: OPEN_FOLDER_FAILED_TEXT });

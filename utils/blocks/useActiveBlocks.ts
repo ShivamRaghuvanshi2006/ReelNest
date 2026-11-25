@@ -3,7 +3,7 @@
  * `addBlocksListener`, and lets go on unmount. Safe before the engine is ready: the list stays empty.
  */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { maglevEngine, type ActiveBlock } from 'maglev-engine';
+import { reelnestEngine, type ActiveBlock } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import type { BlockContext } from './reasons';
 
@@ -17,7 +17,7 @@ export function useActiveBlocks(): ActiveBlock[] {
     let fresh = false;
     let unsubscribe: (() => void) | undefined;
     try {
-      unsubscribe = maglevEngine.addBlocksListener((next) => {
+      unsubscribe = reelnestEngine.addBlocksListener((next) => {
         if (!alive) return;
         fresh = true;
         setBlocks(next);
@@ -26,7 +26,7 @@ export function useActiveBlocks(): ActiveBlock[] {
       unsubscribe = undefined;
     }
     try {
-      Promise.resolve(maglevEngine.getActiveBlocks())
+      Promise.resolve(reelnestEngine.getActiveBlocks())
         .then((first) => {
           if (alive && !fresh && Array.isArray(first)) setBlocks(first);
         })

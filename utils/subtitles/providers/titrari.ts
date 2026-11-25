@@ -1,7 +1,7 @@
 // Ported from LavX/bazarr-provider-catalog, providers/titrari (MIT), https://github.com/LavX/bazarr-provider-catalog/blob/main/providers/titrari/provider.py
 // Romanian and English (and a few other languages) subtitles from titrari.ro. Group B page scraper.
 // Changes from the reference: the site's plain title search (page=cautare) instead of the advanced search, no IMDb ids,
-// and about half of the files on this site are RAR, which Maglev can't open: those fail at download with the
+// and about half of the files on this site are RAR, which ReelNest can't open: those fail at download with the
 // "file type isn't supported" message, because the listing doesn't say which kind a file is.
 import { stripTags } from '../../search/text.ts';
 import { ProviderError, httpText } from '../../search/http.ts';
@@ -12,7 +12,7 @@ import { bestRelease, parseDate, titleMatchesAlias } from '../match.ts';
 
 export const ID = 'titrari';
 
-// The site's language id (the flag file and the search menu) to a Maglev code.
+// The site's language id (the flag file and the search menu) to a ReelNest code.
 const SITE_LANG: Record<string, string> = { '1': 'ro', '2': 'en', '3': 'es', '4': 'de', '5': 'it', '6': 'pt', '7': 'fr', '18': 'cs', '19': 'ru', '20': 'hu' };
 const SITE_ID: Record<string, string> = Object.fromEntries(Object.entries(SITE_LANG).map(([k, v]) => [v, k]));
 

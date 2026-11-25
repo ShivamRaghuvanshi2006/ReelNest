@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const kt = path.join(root, 'modules/maglev-engine/android/src/main/java/com/maglev/engine');
+const kt = path.join(root, 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine');
 const read = (p) => fs.readFileSync(p, 'utf8');
 const host = read(path.join(kt, 'EngineHost.kt'));
 const notif = read(path.join(kt, 'service/Notifications.kt'));

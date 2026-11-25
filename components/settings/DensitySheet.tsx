@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { TelemetryDensity } from 'maglev-engine';
+import type { TelemetryDensity } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type, radius } from '../../constants/theme';
 import { PixelIcon, type PixelIconName } from '../PixelIcon';

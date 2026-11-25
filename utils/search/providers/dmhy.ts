@@ -7,10 +7,10 @@ import { parseCstDate } from './mikan.ts';
 
 export const ID = 'dmhy';
 
-// Maglev category -> Dmhy `sort_id`. 'all' searches everything.
+// ReelNest category -> Dmhy `sort_id`. 'all' searches everything.
 const SORT_IDS: Partial<Record<Category, string>> = { anime: '2', books: '3', games: '9', music: '4', tv: '6', other: '1' };
 
-/** Site sort id (the `sort-N` class) -> Maglev category, as TorrentSearch maps it. */
+/** Site sort id (the `sort-N` class) -> ReelNest category, as TorrentSearch maps it. */
 export function categoryFromSortId(id: string | undefined): Category {
   switch (id) {
     case '2':

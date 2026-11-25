@@ -41,7 +41,7 @@ check('typed text still goes through go(draft)', /go\(draft\)/.test(browser));
 console.log('settings');
 check('three history toggles', /prefs\.saveHistory/.test(settings) && /prefs\.suggestFromHistory/.test(settings) && /prefs\.clearHistoryOnClose/.test(settings));
 check('toggles write their prefs', /setPrefs\(\{ saveHistory \}\)/.test(settings) && /setPrefs\(\{ suggestFromHistory \}\)/.test(settings) && /setPrefs\(\{ clearHistoryOnClose \}\)/.test(settings));
-check('clear-on-close subtitle is exact', copy.includes("clearOnCloseSubtitle: 'Clears history when you close Maglev, and again when it next starts.'") && /historyCopy\.settings\.clearOnCloseSubtitle/.test(settings));
+check('clear-on-close subtitle is exact', copy.includes("clearOnCloseSubtitle: 'Clears history when you close ReelNest, and again when it next starts.'") && /historyCopy\.settings\.clearOnCloseSubtitle/.test(settings));
 check('History row opens the screen', /router\.push\('\/browser-history'\)/.test(settings));
 check('Clear history row opens the range sheet', /setClearMode\('range'\)/.test(settings));
 check('Clear browsing data uses the shared sheet in browsing-data mode', /setClearMode\('browsing-data'\)/.test(settings) && /<ClearHistorySheet/.test(settings));

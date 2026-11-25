@@ -10,7 +10,7 @@ import { ProviderSheet, TestOutcome } from '../../components/search-providers/Pr
 import { TorznabDraft, TorznabSheet } from '../../components/search-providers/TorznabSheet';
 import { CATEGORY_LABEL, ProviderInfo, TORZNAB_PREFIX, allProviderInfo, coverage, formatSeconds } from '../../components/search/meta';
 import { loadExtraProviders } from '../../components/search/extra';
-import { clearCookies } from 'maglev-engine';
+import { clearCookies } from 'reelnest-engine';
 import { SearchPrefs, clearSiteChecks, deleteTorznabApiKey, setTorznabApiKey, useSearchPrefs } from '../../utils/prefs/search';
 import { listsCopy } from '../../constants/copy';
 import { useListsVersion } from '../../utils/lists/hooks';
@@ -186,7 +186,7 @@ export default function SearchProvidersSettings() {
   return (
     <SettingsPage title="Search sources">
       <Stack.Screen options={{ headerShown: false }} />
-      <Caption>Maglev asks every source you turn on at the same time. Open a source to set which one wins when two return the same torrent.</Caption>
+      <Caption>ReelNest asks every source you turn on at the same time. Open a source to set which one wins when two return the same torrent.</Caption>
 
       {checkList.length > 0 ? (
         <View style={styles.section}>
@@ -340,7 +340,7 @@ export default function SearchProvidersSettings() {
         </Card>
       </View>
 
-      <Caption>Maglev doesn't host or index anything. Sources are third-party websites; you're responsible for what you download.</Caption>
+      <Caption>ReelNest doesn't host or index anything. Sources are third-party websites; you're responsible for what you download.</Caption>
 
       <ProviderSheet
         provider={open}

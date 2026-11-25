@@ -10,7 +10,7 @@ import { appPath, browserIntentRoute } from '../utils/browserUrl';
 import { visibleTabs } from '../components/tabs/tabPrefs';
 import { getTabPrefs } from '../components/tabs/tabPrefsStore';
 import { shareBrowserRoute } from '../utils/browser/shareRoute';
-import { sharedDownloadRoute, stripShareMarker } from '../modules/maglev-engine/src/downloadLink';
+import { sharedDownloadRoute, stripShareMarker } from '../modules/reelnest-engine/src/downloadLink';
 
 const ADD_ROUTE = '/add-torrent';
 
@@ -26,7 +26,7 @@ function isTorrentLocation(url: string): boolean {
 export function redirectSystemPath({ path }: { path: string; initial: boolean }): string {
   try {
     const raw = (path ?? '').trim();
-    // maglev://browser?url= fills the address bar and never loads (NATIVE_CONTRACT 24.7).
+    // reelnest://browser?url= fills the address bar and never loads (NATIVE_CONTRACT 24.7).
     const browser = browserIntentRoute(raw);
     // With the Browser tab on, it opens in that tab (tab bar stays); otherwise the /browser stack screen.
     if (browser) return shareBrowserRoute(browser, visibleTabs(getTabPrefs(), { assistantEnabled: false }).includes('browse'));
@@ -42,13 +42,13 @@ export function redirectSystemPath({ path }: { path: string; initial: boolean })
     if (/^https?:\/\//i.test(raw) && isTorrentLocation(raw)) return addRoute(raw);
     // A shared web link (the share rewrite in plugins/withShareIntents.js hands it over as the intent data).
     // No VIEW filter exists for http(s), so this only ever comes from a share (NATIVE_CONTRACT 17).
-    // Only this branch adds `from=share`, which lets the screen check the link at once. A maglev:// link
+    // Only this branch adds `from=share`, which lets the screen check the link at once. A reelnest:// link
     // (any app or web page can send one) reaches the last line, where every `from` parameter is stripped.
     if (/^https?:\/\//i.test(raw)) return sharedDownloadRoute(raw);
-    // The Quick Settings tile and a notification tap that has no page of its own open maglev://from/tile and
-    // maglev://from/notification: the app shows Transfers, and the launch isn't a plain one (the new-feature dialog waits).
+    // The Quick Settings tile and a notification tap that has no page of its own open reelnest://from/tile and
+    // reelnest://from/notification: the app shows Transfers, and the launch isn't a plain one (the new-feature dialog waits).
     if (/^\/?from\/(tile|notification)\/?$/i.test(appPath(raw).split(/[?#]/)[0])) return '/';
-    // A completed download's notification opens maglev://torrent/dl_<id>.
+    // A completed download's notification opens reelnest://torrent/dl_<id>.
     // NATIVE_CONTRACT 40.1: it opens that download's own page.
     const dl = /^\/?torrent\/(dl_[0-9a-f]+)$/i.exec(appPath(raw).split(/[?#]/)[0]);
     if (dl) return `/download/${dl[1]}`;

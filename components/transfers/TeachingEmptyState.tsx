@@ -67,7 +67,7 @@ export function TeachingEmptyState({ onAdd, onOpenFile, onSearch, onBrowse, sear
         <PixelIcon name="share" size={16} color={colors.textMuted} />
         <Text style={styles.hintText}>
           {/* The two words to look for in the other app's menus stand out. */}
-          {hint.split(/("Share"|Maglev)/).map((part, i) =>
+          {hint.split(/("Share"|ReelNest)/).map((part, i) =>
             i % 2 === 1 ? <Text key={i} style={styles.hintStrong}>{part}</Text> : part,
           )}
         </Text>

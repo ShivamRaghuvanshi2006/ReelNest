@@ -110,7 +110,7 @@ async function main() {
       () => [text('supersubtitles/movie_search.html'), { status: 200, headers: { 'content-type': 'text/html' } }],
       () => ss.supersubtitles.search(q({ languages: ['en'] }), ctx('https://feliratok.eu')),
     );
-    check('search(): one request, to the movie tab, with the generic User-Agent and no cookies', run.calls.length === 1 && /index\.php\?search=Fight\+Club.*tab=film/.test(run.calls[0].url) && /^Maglev\//.test(run.calls[0].init.headers['User-Agent']) && run.calls[0].init.credentials === 'omit');
+    check('search(): one request, to the movie tab, with the generic User-Agent and no cookies', run.calls.length === 1 && /index\.php\?search=Fight\+Club.*tab=film/.test(run.calls[0].url) && /^ReelNest\//.test(run.calls[0].init.headers['User-Agent']) && run.calls[0].init.credentials === 'omit');
     check('search(): returns the English candidates', run.result.length === 3, `got ${run.result.length}`);
     const none = await withFetch(() => ['', { status: 200 }], () => ss.supersubtitles.search(q({ languages: ['fr'] }), ctx('https://feliratok.eu')));
     check('search(): a language the site lacks makes no request', none.calls.length === 0 && none.result.length === 0);

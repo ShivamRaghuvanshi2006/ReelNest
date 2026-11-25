@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // The app must send the page the user was on as `pageUrl` with every browser download, so the engine can keep it
-// (NATIVE_CONTRACT "Auto-refresh"). Field path: TS options.pageUrl -> MaglevNativeBridge.addDownload -> Kotlin
-// MaglevEngineModule "addDownload" -> EngineHost.addDownload (Json.snakeify) -> Rust DownloadOptions.page_url.
+// (NATIVE_CONTRACT "Auto-refresh"). Field path: TS options.pageUrl -> ReelNestNativeBridge.addDownload -> Kotlin
+// ReelNestEngineModule "addDownload" -> EngineHost.addDownload (Json.snakeify) -> Rust DownloadOptions.page_url.
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -67,9 +67,9 @@ check('empty, undefined, about: and file: are not sent', ['', undefined, null, '
   check('add-download (typed link, share) never invents a page', !/pageUrlOption/.test(read('app/add-download.tsx')));
 
   // 4. The native side keeps the field.
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-  const host = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
-  const rs = read('native/maglev-core/src/http_dl/driver.rs');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+  const host = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
+  const rs = read('native/reelnest-core/src/http_dl/driver.rs');
   check('bridge forwards the options object unchanged', /addDownload\(url: string, options: DownloadOptions = \{\}\)[\s\S]{0,120}route\('addDownload', url, options\)/.test(bridge));
   check('EngineHost snakeifies options (pageUrl -> page_url)', /Json\.snakeify\(options\)/.test(host.slice(host.indexOf('fun addDownload('), host.indexOf('fun pauseDownload('))));
   check('Rust DownloadOptions reads page_url', /pub page_url: Option<String>,/.test(rs));

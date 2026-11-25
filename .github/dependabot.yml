@@ -1,6 +1,6 @@
 # Weekly dependency update pull requests, grouped so they don't pile up.
 # Major versions are skipped everywhere: they need code changes (or, for Babel and TypeScript, come with an Expo SDK update).
-# The vendored librqbit crates under native/maglev-core/vendor are path dependencies and are not touched.
+# The vendored librqbit crates under native/reelnest-core/vendor are path dependencies and are not touched.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -22,7 +22,7 @@ updates:
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: cargo
-    directory: /native/maglev-core
+    directory: /native/reelnest-core
     target-branch: dev
     schedule: { interval: weekly }
     open-pull-requests-limit: 5

@@ -15,7 +15,7 @@ export const SETTINGS_SWITCH_SUBTITLE = 'Show Find subtitles on videos';
 export const HEARING_OPTIONS = { both: 'Show both', prefer: 'Prefer', avoid: 'Avoid' } as const;
 export const PRIVACY_LINE =
   "Looking up subtitles sends the video's file name and a fingerprint of the file to the source you use. Nothing is sent until you tap Find subtitles.";
-export const TURNED_OFF_BY_MAGLEV = 'Turned off by Maglev';
+export const TURNED_OFF_BY_REELNEST = 'Turned off by ReelNest';
 
 export const FIND_SUBTITLES = 'Find subtitles…';
 // NATIVE_CONTRACT 42.1
@@ -61,8 +61,8 @@ export function privacyNotice(names: readonly string[]): string {
   return `Finding subtitles sends this video's file name and a fingerprint of the file to the sources you have on (${names.join(', ')}). They can see what you're watching.`;
 }
 
-const AMBIGUOUS_PACK = "This file has subtitles for several episodes and Maglev can't tell which one is yours.";
-const UNREADABLE_TEXT = "Maglev can't read this subtitle's text.";
+const AMBIGUOUS_PACK = "This file has subtitles for several episodes and ReelNest can't tell which one is yours.";
+const UNREADABLE_TEXT = "ReelNest can't read this subtitle's text.";
 const UNSUPPORTED_FILE = "This subtitle's file type isn't supported.";
 
 /** "1 video", "2 videos": the noun takes the singular for exactly 1 (46.1). */
@@ -96,7 +96,7 @@ export function errorCopy(code: SubtitleErrorCode, a: CopyArgs = {}): ErrorCopy 
     case 'missing':
       return { message: "The video isn't there any more.", action: 'Close' };
     case 'CANT_WRITE':
-      return { message: "Maglev can't write to this folder.", action: 'Open folder' };
+      return { message: "ReelNest can't write to this folder.", action: 'Open folder' };
     case 'NO_SPACE':
       return { message: 'Not enough space.', action: 'Close' };
     case 'VERIFY_FAILED':
@@ -119,12 +119,12 @@ export function errorCopy(code: SubtitleErrorCode, a: CopyArgs = {}): ErrorCopy 
 // ---------------------------------------------------------------- NATIVE_CONTRACT 44: the "Added" message and requests
 
 /** 44.6. The switch's line in Settings > Subtitles. */
-export const AUTO_NEW_VIDEOS_SUBTITLE = 'In your languages, while Maglev is open';
+export const AUTO_NEW_VIDEOS_SUBTITLE = 'In your languages, while ReelNest is open';
 
 /** 45.4: the confirm sheet for the Settings switch. It always shows, because names go out in the background. */
 export const AUTO_CONFIRM_TITLE = 'Get subtitles for new videos?';
 export const AUTO_CONFIRM_BODY =
-  'While Maglev is open, it sends the names of new videos you add to your subtitle sources, and saves a subtitle when one fits. Close matches wait for you.';
+  'While ReelNest is open, it sends the names of new videos you add to your subtitle sources, and saves a subtitle when one fits. Close matches wait for you.';
 export const AUTO_CONFIRM_TURN_ON = 'Turn on';
 export const AUTO_CONFIRM_NOT_NOW = NOTICE_NOT_NOW;
 

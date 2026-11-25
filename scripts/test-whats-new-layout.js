@@ -1,6 +1,8 @@
 // What's new (0.25): the notes render as titled sections with one row per change, not one block of text.
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('node:url');
+const load = (p) => import(pathToFileURL(p).href);
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 let failed = 0;
@@ -10,7 +12,7 @@ const check = (name, cond) => {
 };
 
 (async () => {
-  const { parseReleaseNotes } = await import(path.join(root, 'utils/releaseNotesParse.ts'));
+  const { parseReleaseNotes } = await load(path.join(root, 'utils/releaseNotesParse.ts'));
   const md = '## What\'s new\n- Search your **settings**. See [the site](https://x.y).\n- Second `thing`\n  continued line\n\n## What\'s fixed\n* One fix\n';
   const s = parseReleaseNotes(md);
   check('two sections', s.length === 2);

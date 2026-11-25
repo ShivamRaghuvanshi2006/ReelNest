@@ -7,15 +7,15 @@ import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { PressableScale } from '../ui';
 import { useReduceMotion } from '../motion';
 
-export const REPO_URL = 'https://github.com/Kaos599/Maglev';
+export const REPO_URL = 'https://github.com/ShivamRaghuvanshi2006/ReelNest';
 
 const starTicketCopy = {
   top: 'FREE · NO ADS · OPEN SOURCE',
-  title: 'Like Maglev? Give it a star',
+  title: 'Like ReelNest? Give it a star',
   body: 'It takes a second on GitHub and helps others find the app.',
   stub: 'STAR',
-  label: 'Like Maglev? Give it a star on GitHub',
-  hint: 'Opens Maglev on GitHub',
+  label: 'Like ReelNest? Give it a star on GitHub',
+  hint: 'Opens ReelNest on GitHub',
 } as const;
 
 const NOTCH = 18;

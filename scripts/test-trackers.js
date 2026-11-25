@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Tracker address rules (NATIVE_CONTRACT 15). Mirrors the Rust tests in native/maglev-core/src/trackers.rs.
+// Tracker address rules (NATIVE_CONTRACT 15). Mirrors the Rust tests in native/reelnest-core/src/trackers.rs.
 // Needs Node 22.18+ (runs the TypeScript sources directly via type stripping).
 process.removeAllListeners('warning');
 
@@ -16,7 +16,7 @@ function check(name, cond) {
 }
 
 async function main() {
-  const t = await import('../modules/maglev-engine/src/trackerUrl.ts');
+  const t = await import('../modules/reelnest-engine/src/trackerUrl.ts');
   const url = (s) => {
     const r = t.validateTrackerUrl(s);
     return r.ok ? r.url : null;

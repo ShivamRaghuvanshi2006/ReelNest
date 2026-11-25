@@ -16,7 +16,7 @@ export interface LinkDownloadPrefs {
   downloadParts: DownloadParts;
 }
 
-const KEY = 'maglev.linkDownloads.prefs.v1';
+const KEY = 'reelnest.linkDownloads.prefs.v1';
 
 /** Anything that is not one of the allowed counts becomes the default. */
 export function normalizeDownloadParts(raw: unknown): DownloadParts {

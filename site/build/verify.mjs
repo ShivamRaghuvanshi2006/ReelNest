@@ -48,8 +48,8 @@ function checkFaq(name, html) {
   return { blocks: blocks.length, faq: visible.length };
 }
 
-const BASE_PATH = '/maglev';
-/** Maps a root-absolute site URL (/maglev, /maglev/compare, /maglev/assets/x) to a file in site/. */
+const BASE_PATH = '/reelnest';
+/** Maps a root-absolute site URL (/reelnest, /reelnest/compare, /reelnest/assets/x) to a file in site/. */
 function fileFor(urlPath) {
   const rest = decodeURIComponent(urlPath.split('#')[0].split('?')[0]).slice(BASE_PATH.length).replace(/^\//, '');
   let f = path.join(SITE, rest);
@@ -57,14 +57,14 @@ function fileFor(urlPath) {
   return f;
 }
 
-/** Every internal href/src/srcset is root-absolute under /maglev and points at a real file. Nothing is relative. */
+/** Every internal href/src/srcset is root-absolute under /reelnest and points at a real file. Nothing is relative. */
 function checkLinks(name, html) {
   const refs = [...html.matchAll(/\s(?:href|src)="([^"]+)"/g)].map((m) => m[1]);
   for (const m of html.matchAll(/\ssrcset="([^"]+)"/g)) refs.push(...m[1].split(',').map((c) => c.trim().split(/\s+/)[0]));
   for (const r of refs) {
     if (/^(https?:|mailto:|data:|#)/.test(r)) continue;
     if (r !== BASE_PATH && !r.startsWith(`${BASE_PATH}/`) && !r.startsWith(`${BASE_PATH}#`)) { fail(`${name}: not root-absolute under ${BASE_PATH}: ${r}`); continue; }
-    if (/^\/maglev\/?(#|$)/.test(r) || r.startsWith(`${BASE_PATH}#`)) { if (!fs.existsSync(path.join(SITE, 'index.html'))) fail(`${name}: ${r}: no index.html`); continue; }
+    if (/^\/reelnest\/?(#|$)/.test(r) || r.startsWith(`${BASE_PATH}#`)) { if (!fs.existsSync(path.join(SITE, 'index.html'))) fail(`${name}: ${r}: no index.html`); continue; }
     if (/\/$/.test(r.split('#')[0])) fail(`${name}: trailing slash in ${r}`);
     const target = fileFor(r);
     if (!fs.existsSync(target)) fail(`${name}: ${r} does not exist`);
@@ -75,7 +75,7 @@ function checkLinks(name, html) {
   for (const m of html.matchAll(/\shref="#([^"]+)"/g)) if (!ids.has(m[1])) fail(`${name}: #${m[1]} has no target`);
   // Links to the home page's sections point at ids that exist there.
   const home = fs.readFileSync(path.join(SITE, 'index.html'), 'utf8');
-  for (const m of html.matchAll(/\shref="\/maglev#([^"]+)"/g)) if (!home.includes(`id="${m[1]}"`)) fail(`${name}: /maglev#${m[1]} has no target on the home page`);
+  for (const m of html.matchAll(/\shref="\/reelnest#([^"]+)"/g)) if (!home.includes(`id="${m[1]}"`)) fail(`${name}: /reelnest#${m[1]} has no target on the home page`);
   return refs.length;
 }
 
@@ -110,9 +110,9 @@ function staticChecks() {
   }
   // The sitemap lists every indexable page.
   const sm = fs.readFileSync(path.join(SITE, 'sitemap.xml'), 'utf8');
-  if (pages.includes('compare/index.html') && !sm.includes('/maglev/compare</loc>')) fail('sitemap.xml lacks /maglev/compare');
-  if (pages.includes('privacy/index.html') && !sm.includes('/maglev/privacy</loc>')) fail('sitemap.xml lacks /maglev/privacy');
-  for (const s of altSlugs()) if (pages.includes(`${s}/index.html`) && !sm.includes(`/maglev/${s}</loc>`)) fail(`sitemap.xml lacks /maglev/${s}`);
+  if (pages.includes('compare/index.html') && !sm.includes('/reelnest/compare</loc>')) fail('sitemap.xml lacks /reelnest/compare');
+  if (pages.includes('privacy/index.html') && !sm.includes('/reelnest/privacy</loc>')) fail('sitemap.xml lacks /reelnest/privacy');
+  for (const s of altSlugs()) if (pages.includes(`${s}/index.html`) && !sm.includes(`/reelnest/${s}</loc>`)) fail(`sitemap.xml lacks /reelnest/${s}`);
   if (/<loc>[^<]*\/<\/loc>/.test(sm)) fail('sitemap.xml has a URL with a trailing slash');
 }
 
@@ -135,7 +135,7 @@ function loadPlaywright() {
 
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain', '.ico': 'image/x-icon' };
 
-/** Serves site/ under /maglev, slashless like the real host (/maglev, /maglev/compare). Unknown paths get 404.html with status 404. */
+/** Serves site/ under /reelnest, slashless like the real host (/reelnest, /reelnest/compare). Unknown paths get 404.html with status 404. */
 function serve() {
   return new Promise((resolve) => {
     const srv = http.createServer((req, res) => {
@@ -203,7 +203,7 @@ async function browserChecks(outDir) {
 
 staticChecks();
 const i = process.argv.indexOf('--shots');
-if (i > 0) await browserChecks(path.resolve(process.argv[i + 1] || path.join(os.tmpdir(), 'maglev-site-shots')));
+if (i > 0) await browserChecks(path.resolve(process.argv[i + 1] || path.join(os.tmpdir(), 'reelnest-site-shots')));
 if (problems.length) {
   console.error(`\n${problems.length} problem(s):\n- ${problems.join('\n- ')}`);
   process.exit(1);

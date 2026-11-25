@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useIsFocused, useRouter } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettings } from '../../context/SettingsContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, alpha, radius, spacing, type, touch } from '../../constants/theme';
 import { Banner, Button, Chip, IconButton, ListRow, PressableScale, Sheet, TextField } from '../ui';
 import { useListsVersion } from '../../utils/lists/hooks';
@@ -81,7 +81,7 @@ export function SubtitleSheet({ target, onClose, initial = 'results' }: Props) {
   const router = useRouter();
   const { height } = useWindowDimensions();
   const { settings, updateSettings } = useSettings();
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const listsVersion = useListsVersion();
   const [state, dispatch] = useReducer(sheetReducer, CLOSED);
   const [picker, setPicker] = useState(false);
@@ -140,7 +140,7 @@ export function SubtitleSheet({ target, onClose, initial = 'results' }: Props) {
     void (async () => {
       // NATIVE_CONTRACT 42.2 / 42.4: only a finished file is read for its fingerprint, and a typed name never sends one.
       const typed = stateRef.current.searchName;
-      const h = typed ? { videoBytes: t.videoBytes, missing: false, hash: undefined } : await hashIfComplete(t, maglevEngine);
+      const h = typed ? { videoBytes: t.videoBytes, missing: false, hash: undefined } : await hashIfComplete(t, reelnestEngine);
       if (ctl.signal.aborted) return;
       if (h.missing) {
         dispatch({ type: 'SEARCH_FAILED', error: toFlowError('missing') });
@@ -200,7 +200,7 @@ export function SubtitleSheet({ target, onClose, initial = 'results' }: Props) {
           prepared: prepared.current?.key === key ? prepared.current.value : null,
           signal: ctl.signal,
         },
-        { unzip: (b64) => maglevEngine.unzipSubtitles(b64), save: (v, n, b64, r) => maglevEngine.saveSubtitle(v, n, b64, r) },
+        { unzip: (b64) => reelnestEngine.unzipSubtitles(b64), save: (v, n, b64, r) => reelnestEngine.saveSubtitle(v, n, b64, r) },
       );
       if (ctl.signal.aborted) {
         // NATIVE_CONTRACT 39.1 S9: the sheet was closed while the native save was running. The file is on disk, so the
@@ -291,9 +291,9 @@ export function SubtitleSheet({ target, onClose, initial = 'results' }: Props) {
   const openFolder = () => {
     const key = target?.ownerKey ?? '';
     const id = key.slice(2);
-    const call = key.startsWith('d:') ? maglevEngine.openDownloadFolder(id) : maglevEngine.openFolder(id);
+    const call = key.startsWith('d:') ? reelnestEngine.openDownloadFolder(id) : reelnestEngine.openFolder(id);
     void call.then((r) => {
-      if (!r.ok) showNotice({ message: r.message || "Maglev can't open this folder." });
+      if (!r.ok) showNotice({ message: r.message || "ReelNest can't open this folder." });
     });
   };
 

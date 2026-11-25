@@ -149,10 +149,10 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const wvt = read('components/browser/TabWebView.tsx');
   check('TabWebView passes privateMode to the native view', /privateMode=\{privateMode\}/.test(wvt));
   check('the screen feeds the pref to every tab view', /privateMode=\{prefs\.privateBrowsing\}/.test(read('app/browser.tsx')));
-  check('MaglevBrowser declares the privateMode prop', (read('modules/maglev-engine/src/MaglevBrowser.tsx').match(/privateMode\?: boolean/g) || []).length === 2);
-  const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/MaglevBrowserView.kt');
+  check('ReelNestBrowser declares the privateMode prop', (read('modules/reelnest-engine/src/ReelNestBrowser.tsx').match(/privateMode\?: boolean/g) || []).length === 2);
+  const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/ReelNestBrowserView.kt');
   check('Kotlin sets LOAD_NO_CACHE while private and LOAD_DEFAULT otherwise', (kt.match(/WebSettings\.LOAD_NO_CACHE else WebSettings\.LOAD_DEFAULT/g) || []).length === 2);
-  check('Kotlin prop is registered', /Prop\("privateMode"\)/.test(read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt')));
+  check('Kotlin prop is registered', /Prop\("privateMode"\)/.test(read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt')));
   check('the WebView incognito prop is not used (it would wipe Search cookies)', !/incognito=/.test(read('components/search/CloudflareSolverSheet.tsx')) && !/incognito=/.test(read('app/browser.tsx')));
 
   // ---- screen wiring ----
@@ -174,7 +174,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const copy = read('constants/copy.ts');
   check('copy says what it does and what it leaves', /Don't keep history or open tabs, and clear cookies and cached pages from sites you visit when you leave the browser\. Site storage and third-party cookies can stay\./.test(copy));
   check('SECURITY.md states the limit', /Private browsing[^\n]*(site storage|third-party)/i.test(read('SECURITY.md')));
-  const kt2 = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
+  const kt2 = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
   check('native clearCookies expires host-only and Domain forms with Max-Age=0 and path variants', /Max-Age=0; Path=\$path; Secure/.test(kt2) && /Domain=\.\$host; Max-Age=0; Path=\$path/.test(kt2));
 
   if (failed) { console.error(`\n${failed} check(s) failed`); process.exit(1); }

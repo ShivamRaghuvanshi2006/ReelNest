@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { ThemeColors, spacing, type } from '../constants/theme';
 import { haptic } from '../constants/haptics';
 import { bookmarkCopy } from '../constants/bookmarkCopy';
@@ -18,7 +18,7 @@ export default function BrowserBookmarksScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const bookmarks = useBookmarks();
   const [text, setText] = useState('');
   const [menuFor, setMenuFor] = useState<Bookmark | null>(null);

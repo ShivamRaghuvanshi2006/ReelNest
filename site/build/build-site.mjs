@@ -14,23 +14,23 @@ const ROOT = path.resolve(SITE, '..');
 // ---------------------------------------------------------------- constants
 
 /** The one public base URL, without a trailing slash: canonical, og:url, sitemap and JSON-LD. */
-export const SITE_URL = 'https://harshdayal.dev/maglev';
+export const SITE_URL = 'https://harshdayal.dev/reelnest';
 /**
  * The site is served under this path (a Next.js rewrite on harshdayal.dev, which strips trailing
  * slashes). Every internal link and asset is root-absolute under it, never relative, because
- * /maglev without a slash would resolve relative paths against "/".
+ * /reelnest without a slash would resolve relative paths against "/".
  */
-const BASE_PATH = new URL(SITE_URL).pathname.replace(/\/$/, ''); // "/maglev"
+const BASE_PATH = new URL(SITE_URL).pathname.replace(/\/$/, ''); // "/reelnest"
 const A = `${BASE_PATH}/`; // asset prefix
 const HOME = BASE_PATH;
 const COMPARE = `${BASE_PATH}/compare`;
 const abs = (p = '') => (p ? `${SITE_URL}/${p}` : SITE_URL);
-const REPO = 'https://github.com/Kaos599/Maglev';
+const REPO = 'https://github.com/ShivamRaghuvanshi2006/ReelNest';
 const RELEASES = `${REPO}/releases/latest`;
 const ALL_RELEASES = `${REPO}/releases`;
 const ISSUES = `${REPO}/issues`;
 const LICENSE_URL = `${REPO}/blob/main/LICENSE`;
-const OBTAINIUM = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Kaos599/Maglev';
+const OBTAINIUM = 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/ShivamRaghuvanshi2006/ReelNest';
 const OBTAINIUM_REPO = 'https://github.com/ImranR98/Obtainium';
 const MAKER = { name: 'Harsh Dayal', url: 'https://harshdayal.dev', github: 'https://github.com/Kaos599' };
 /** SHA-256 of the release signing certificate (apksigner verify --print-certs). */
@@ -40,7 +40,7 @@ const PUBLISHED = '2026-11-12';
 const app = JSON.parse(fs.readFileSync(path.join(ROOT, 'app.json'), 'utf8')).expo;
 const VERSION = app.version; // "<major>.<minor>"
 /** Direct link to one of the current version's APKs. The fallback for every Download button when download.js can't run. */
-const apkUrl = (kind) => `${REPO}/releases/download/v${VERSION}/Maglev-v${VERSION}-${kind}.apk`;
+const apkUrl = (kind) => `${REPO}/releases/download/v${VERSION}/ReelNest-v${VERSION}-${kind}.apk`;
 const BAKED_APK = apkUrl('universal');
 const APK_FILES = [
   { kind: 'arm64-v8a', label: 'Most phones from the last six years' },
@@ -49,7 +49,7 @@ const APK_FILES = [
   { kind: 'universal', label: 'Any device, if you are not sure' },
 ];
 /** The smart Download button. download.js points it at the right file of the newest release and adds the version and size. */
-const dlButton = () => `<a class="btn primary" href="${BAKED_APK}" data-dl="main" title="Download Maglev ${esc(VERSION)}" aria-label="Download Maglev ${esc(VERSION)}" rel="noopener">${icon('download')}<span data-dl-label>Download latest</span></a>`;
+const dlButton = () => `<a class="btn primary" href="${BAKED_APK}" data-dl="main" title="Download ReelNest ${esc(VERSION)}" aria-label="Download ReelNest ${esc(VERSION)}" rel="noopener">${icon('download')}<span data-dl-label>Download latest</span></a>`;
 const UPDATED = process.env.SITE_DATE || new Date().toISOString().slice(0, 10);
 const human = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 const UPDATED_HUMAN = human(UPDATED);
@@ -66,7 +66,7 @@ function relFor(url) {
   if (url === MAKER.github) return 'me';
   return 'noopener';
 }
-/** "[text](url)" to links; everything else escaped. A relative target like "compare/" becomes /maglev/compare. */
+/** "[text](url)" to links; everything else escaped. A relative target like "compare/" becomes /reelnest/compare. */
 const md = (s) =>
   fill(s)
     .split(/(\[[^\]]+\]\([^)]+\))/)
@@ -87,10 +87,10 @@ const icon = (name, cls = 'px') => {
   return `<svg class="${cls}" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="${ICONS[name]}"/></svg>`;
 };
 
-const TITLE = 'Maglev: free Android downloader for videos, links and torrents';
+const TITLE = 'ReelNest: free Android downloader for videos, links and torrents';
 const DESC =
-  'Maglev is a free, open source Android downloader with no ads. Save videos from web pages, HLS streams, ordinary links and torrents. Android 7 and up.';
-const OG_ALT = 'The Maglev pixel train logo next to the words: Videos, links and torrents. One small app.';
+  'ReelNest is a free, open source Android downloader with no ads. Save videos from web pages, HLS streams, ordinary links and torrents. Android 7 and up.';
+const OG_ALT = 'The ReelNest pixel train logo next to the words: Videos, links and torrents. One small app.';
 const ldBlock = (o) => `<script type="application/ld+json">\n${JSON.stringify(o, null, 2).replace(/</g, '\\u003c')}\n</script>`;
 // Same @id as the Person on harshdayal.dev, so the two graphs join.
 const PERSON = { '@type': 'Person', '@id': 'https://harshdayal.dev/#person', name: MAKER.name, url: MAKER.url, sameAs: [MAKER.url, MAKER.github] };
@@ -116,7 +116,7 @@ function loadCompare() {
     need(!ids.has(a.id), `duplicate app id ${a.id}`);
     ids.add(a.id);
   }
-  need(ids.has('maglev'), 'no app with id "maglev"');
+  need(ids.has('reelnest'), 'no app with id "reelnest"');
   need(Array.isArray(d.rows) && d.rows.length, 'rows missing');
   for (const r of d.rows) {
     need(r.id && r.label && r.values, `row without id/label/values: ${JSON.stringify(r).slice(0, 80)}`);
@@ -162,14 +162,14 @@ function compareTable(d, apps, rows, { notes = false, grouped = false, caption }
       }
       const help = grouped && r.help ? `<span class="help">${esc(r.help)}</span>` : '';
       return `${g}          <tr><th scope="row"><span class="rl">${esc(r.label)}</span>${help}</th>${apps
-        .map((a) => `<td${a.id === 'maglev' ? ' class="me"' : ''}>${renderCell(cellValue(r, a.id))}${noteRef(r, a)}</td>`)
+        .map((a) => `<td${a.id === 'reelnest' ? ' class="me"' : ''}>${renderCell(cellValue(r, a.id))}${noteRef(r, a)}</td>`)
         .join('')}</tr>`;
     })
     .join('\n');
   const html = `<div class="table-scroll" role="region" aria-label="${esc(caption)}" tabindex="0">
       <table class="cmp">
         <caption class="vh">${esc(caption)}</caption>
-        <thead><tr><th scope="col"><span class="vh">Feature</span></th>${apps.map((a) => `<th scope="col"${a.id === 'maglev' ? ' class="me"' : ''}><a href="${esc(a.url)}" rel="noopener">${esc(a.name).replace(/([a-z])([A-Z])/g, '$1&shy;$2')}</a>${a.kind ? `<span class="kind">${esc(a.kind)}</span>` : ''}</th>`).join('')}</tr></thead>
+        <thead><tr><th scope="col"><span class="vh">Feature</span></th>${apps.map((a) => `<th scope="col"${a.id === 'reelnest' ? ' class="me"' : ''}><a href="${esc(a.url)}" rel="noopener">${esc(a.name).replace(/([a-z])([A-Z])/g, '$1&shy;$2')}</a>${a.kind ? `<span class="kind">${esc(a.kind)}</span>` : ''}</th>`).join('')}</tr></thead>
         <tbody>
 ${body}
         </tbody>
@@ -201,7 +201,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="stylesheet" href="${base}assets/site.css">`;
 
 const ogTags = ({ title, desc, url }) => `<meta property="og:type" content="website">
-<meta property="og:site_name" content="Maglev">
+<meta property="og:site_name" content="ReelNest">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
@@ -228,7 +228,7 @@ const header = (base, home, { compare = true, current = '' } = {}) => {
 <a class="maker-link strip dither" href="${MAKER.url}" rel="author"><span class="wrap strip-in"><span class="plate">${icon('external')}<span>More by Harsh</span><span class="strip-url">harshdayal.dev</span></span></span></a>
 <header class="top">
   <div class="wrap top-in">
-    <a class="brand" href="${home}"><img src="${base}assets/mark.svg" width="46" height="19" alt=""><span class="word">Maglev</span></a>
+    <a class="brand" href="${home}"><img src="${base}assets/mark.svg" width="46" height="19" alt=""><span class="word">ReelNest</span></a>
     <nav class="links" aria-label="Main">
       ${links.map(a).join('\n      ')}
     </nav>
@@ -255,7 +255,7 @@ const footer = (home, { compare = true } = {}) => `<footer class="foot">
       <li><a href="${BASE_PATH}/privacy">Privacy</a></li>
       <li><a href="${LICENSE_URL}" rel="noopener">GPL-3.0 licence</a></li>
     </ul>
-    <p class="fine">Icons are <a href="https://github.com/halfmage/pixelarticons" rel="noopener">Pixelarticons</a> by Gerrit Halfmann (MIT). Fonts are Inter and Silkscreen (SIL Open Font License), served from this site. Maglev v${esc(VERSION)}, page updated ${esc(UPDATED_HUMAN)}.</p>
+    <p class="fine">Icons are <a href="https://github.com/halfmage/pixelarticons" rel="noopener">Pixelarticons</a> by Gerrit Halfmann (MIT). Fonts are Inter and Silkscreen (SIL Open Font License), served from this site. ReelNest v${esc(VERSION)}, page updated ${esc(UPDATED_HUMAN)}.</p>
   </div>
 </footer>`;
 
@@ -278,7 +278,7 @@ function indexLd() {
   return {
     '@context': 'https://schema.org',
     '@graph': [
-      { '@type': 'WebSite', '@id': `${SITE_URL}#website`, url: SITE_URL, name: 'Maglev', inLanguage: 'en', publisher: PERSON_REF },
+      { '@type': 'WebSite', '@id': `${SITE_URL}#website`, url: SITE_URL, name: 'ReelNest', inLanguage: 'en', publisher: PERSON_REF },
       {
         '@type': 'WebPage',
         '@id': `${SITE_URL}#webpage`,
@@ -297,7 +297,7 @@ function indexLd() {
       {
         '@type': ['SoftwareApplication', 'MobileApplication'],
         '@id': `${SITE_URL}#app`,
-        name: 'Maglev',
+        name: 'ReelNest',
         description:
           'A small, fast Android downloader for videos on web pages, HLS and DASH streams, ordinary links and torrents. Free, open source and without ads.',
         url: SITE_URL,
@@ -360,16 +360,16 @@ ${f.specs.map((x) => `          <li>${md(x)}</li>`).join('\n')}
   return `    <article class="ft${i % 2 ? ' flip' : ''}" id="${f.id}">\n      ${text}\n      ${phone(f.screen)}\n    </article>`;
 };
 
-/** Home-page teaser: Maglev and up to four well-known apps on up to nine key rows. */
+/** Home-page teaser: ReelNest and up to four well-known apps on up to nine key rows. */
 function teaser(d) {
   const prefer = ['flud', 'libretorrent', '1dm', 'seal', 'ytdlnis', 'adm', 'newpipe'];
-  const others = d.apps.filter((a) => a.id !== 'maglev');
+  const others = d.apps.filter((a) => a.id !== 'reelnest');
   const picked = [...prefer.map((id) => others.find((a) => a.id === id)).filter(Boolean), ...others].filter((a, i, all) => all.indexOf(a) === i).slice(0, 4);
-  const apps = [d.apps.find((a) => a.id === 'maglev'), ...picked];
+  const apps = [d.apps.find((a) => a.id === 'reelnest'), ...picked];
   const want = ['torrents', 'plain-links', 'torrent-search', 'browser', 'hls', 'rss', 'ai', 'no-ads', 'open-source'];
   const rows = want.map((id) => d.rows.find((x) => x.id === id)).filter(Boolean);
   for (const r of d.rows) if (rows.length < 9 && !rows.includes(r)) rows.push(r);
-  return compareTable(d, apps, rows, { caption: `Maglev compared with ${picked.map((a) => a.name).join(', ')}` }).html;
+  return compareTable(d, apps, rows, { caption: `ReelNest compared with ${picked.map((a) => a.name).join(', ')}` }).html;
 }
 
 function index(cmp) {
@@ -387,7 +387,7 @@ ${header(A, HOME, { compare: !!cmp })}
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap hero-in">
     <div class="hero-copy">
-      <p class="wordmark"><img src="${A}assets/wordmark.svg" width="280" height="56" alt="Maglev"></p>
+      <p class="wordmark"><img src="${A}assets/wordmark.svg" width="280" height="56" alt="ReelNest"></p>
       <h1 id="hero-title">Download videos, links and torrents on Android</h1>
       <p class="lede">A free, open source Android downloader. Save videos from web pages through an ad-free browser, download any link with pause and resume, and run torrents, in one small app with no ads.</p>
       <div class="ctas">
@@ -395,7 +395,7 @@ ${header(A, HOME, { compare: !!cmp })}
         <a class="btn" href="${OBTAINIUM}" rel="noopener">${icon('retry')}<span>Get updates with Obtainium</span></a>
       </div>
       <p class="cta-note" data-dl-note>The button picks the right file for your phone, and you can choose another one after you tap it.</p>
-      <p class="cta-note" data-dl-note-desktop hidden>Maglev is an Android app. Click Download, then scan the code that appears with your phone.</p>
+      <p class="cta-note" data-dl-note-desktop hidden>ReelNest is an Android app. Click Download, then scan the code that appears with your phone.</p>
       <p class="meta">v${esc(VERSION)} · updated <time datetime="${UPDATED}">${esc(UPDATED_HUMAN)}</time> · by <a href="${MAKER.url}" rel="author">${MAKER.name}</a></p>
       <ul class="facts" aria-label="At a glance">
         <li>Free</li><li>No ads</li><li>Open source, GPL-3.0</li><li>Android 7 and up</li>
@@ -430,18 +430,18 @@ ${C.howItWorks.map((h) => `      <div class="how-item"><h3>${esc(h.title)}</h3><
 ${cmp ? `
 <section id="compare" class="compare" aria-labelledby="compare-title">
   <div class="wrap">
-    <h2 id="compare-title" class="h2">How Maglev compares</h2>
+    <h2 id="compare-title" class="h2">How ReelNest compares</h2>
     <p class="section-lede">As listed on each app's own pages, checked ${esc(human(cmp.checkedOn))}. Anything an app's pages don't list counts as No.</p>
     ${teaser(cmp)}
     <p class="more-link"><a class="btn" href="${COMPARE}">${icon('chevron-right')}<span>See the full comparison</span></a></p>${(cmp.alternatives || []).length ? `
-    <p class="switch-links">Switching from another app? ${cmp.alternatives.map((x) => `<a href="${BASE_PATH}/${esc(x.slug)}">Maglev vs ${esc((cmp.apps.find((a) => a.id === x.app) || {}).name || x.app)}</a>`).join(' · ')}</p>` : ''}
+    <p class="switch-links">Switching from another app? ${cmp.alternatives.map((x) => `<a href="${BASE_PATH}/${esc(x.slug)}">ReelNest vs ${esc((cmp.apps.find((a) => a.id === x.app) || {}).name || x.app)}</a>`).join(' · ')}</p>` : ''}
   </div>
 </section>
 ` : ''}
 <section id="install" class="install" aria-labelledby="install-title">
   <div class="wrap">
-    <h2 id="install-title" class="h2">How to install Maglev</h2>
-    <p class="section-lede">Maglev isn't on Google Play yet. Download it here and install it in three steps.</p>
+    <h2 id="install-title" class="h2">How to install ReelNest</h2>
+    <p class="section-lede">ReelNest isn't on Google Play yet. Download it here and install it in three steps.</p>
     <ol class="steps">
       <li class="card">
         <span class="n">1</span>
@@ -456,13 +456,13 @@ ${cmp ? `
       </li>
       <li class="card">
         <span class="n">3</span>
-        <h3>Open Maglev</h3>
-        <p>Open the app and follow the short setup. Your downloads go to the Download/Maglev folder unless you pick another one.</p>
+        <h3>Open ReelNest</h3>
+        <p>Open the app and follow the short setup. Your downloads go to the Download/ReelNest folder unless you pick another one.</p>
       </li>
     </ol>
     <div class="dl-row">
       <details class="more" id="verify">
-        <summary>Check it's the real Maglev</summary>
+        <summary>Check it's the real ReelNest</summary>
         <div class="more-body">
           <p>Official APKs are built by GitHub Actions from the public source and signed with one key. Its SHA-256 fingerprint is:</p>
           <div class="fp"><code id="fingerprint">${FINGERPRINT}</code><button type="button" class="btn small copy" data-copy="fingerprint" hidden>${icon('copy')}<span>Copy</span></button></div>
@@ -470,7 +470,7 @@ ${cmp ? `
         </div>
       </details>
       <noscript><p class="nojs">Other files: ${APK_FILES.map((f) => `<a href="${apkUrl(f.kind)}" rel="noopener">${f.kind}</a>`).join(', ')}. <a href="${ALL_RELEASES}" rel="noopener">All releases on GitHub</a></p></noscript>
-      <a class="btn small" href="${OBTAINIUM}" rel="noopener" aria-label="Add Maglev to Obtainium, a free app that installs new versions from GitHub as they come out">${icon('retry')}<span>Add to Obtainium</span></a>
+      <a class="btn small" href="${OBTAINIUM}" rel="noopener" aria-label="Add ReelNest to Obtainium, a free app that installs new versions from GitHub as they come out">${icon('retry')}<span>Add to Obtainium</span></a>
     </div>
   </div>
 </section>
@@ -486,7 +486,7 @@ ${faqList(C.faq)}
   <div class="wrap narrow">
     <div class="card maker-card">
       <h2 id="maker-title" class="h3">About the maker</h2>
-      <p>Maglev is made by ${MAKER.name}.</p>
+      <p>ReelNest is made by ${MAKER.name}.</p>
       <p class="maker-links"><a class="btn" href="${MAKER.url}" rel="author">${icon('external')}<span>harshdayal.dev</span></a> <a class="btn" href="${MAKER.github}" rel="me">${icon('github')}<span>Kaos599 on GitHub</span></a></p>
     </div>
   </div>
@@ -511,7 +511,7 @@ function comparePage(d) {
   const url = abs('compare');
   const p = d.page;
   const faq = (p.faq || []).map((x) => [x.q, x.a]);
-  const { html: table, foot } = compareTable(d, d.apps, d.rows, { notes: true, grouped: true, caption: 'Maglev compared with other Android download apps' });
+  const { html: table, foot } = compareTable(d, d.apps, d.rows, { notes: true, grouped: true, caption: 'ReelNest compared with other Android download apps' });
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -533,7 +533,7 @@ function comparePage(d) {
         '@type': 'BreadcrumbList',
         '@id': `${url}#breadcrumb`,
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Maglev', item: SITE_URL },
+          { '@type': 'ListItem', position: 1, name: 'ReelNest', item: SITE_URL },
           { '@type': 'ListItem', position: 2, name: p.title, item: url },
         ],
       },
@@ -541,15 +541,15 @@ function comparePage(d) {
     ],
   };
   const sources = sourceItems(d.apps);
-  // Switching guides: one page per app people replace with Maglev, listed near the top so visitors see them.
+  // Switching guides: one page per app people replace with ReelNest, listed near the top so visitors see them.
   const appName = (id) => (d.apps.find((a) => a.id === id) || {}).name || id;
   const altList = (d.alternatives || []).length ? `
 <section class="prose-sec" aria-labelledby="alt-title">
   <div class="wrap narrow prose">
     <h2 id="alt-title" class="h2">Switching from another app?</h2>
-    <p>Side-by-side guides for the apps people most often replace with Maglev: what is the same, what is different, and when the other app is the better pick.</p>
+    <p>Side-by-side guides for the apps people most often replace with ReelNest: what is the same, what is different, and when the other app is the better pick.</p>
     <ul class="alt-list">
-${d.alternatives.map((x) => `      <li><a href="${BASE_PATH}/${esc(x.slug)}">Maglev vs ${esc(appName(x.app))}</a>. ${md(x.answer)}</li>`).join('\n')}
+${d.alternatives.map((x) => `      <li><a href="${BASE_PATH}/${esc(x.slug)}">ReelNest vs ${esc(appName(x.app))}</a>. ${md(x.answer)}</li>`).join('\n')}
     </ul>
   </div>
 </section>` : '';
@@ -567,7 +567,7 @@ ${header(A, HOME, { current: 'compare' })}
 <section class="page-head" aria-labelledby="page-title">
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
-    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${HOME}">Maglev</a></li><li aria-current="page">${esc(p.title)}</li></ol></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${HOME}">ReelNest</a></li><li aria-current="page">${esc(p.title)}</li></ol></nav>
     <h1 id="page-title">${esc(p.title)}</h1>
     ${p.intro ? `<p class="lede">${md(p.intro)}</p>` : ''}
     <p class="meta">Checked ${esc(human(d.checkedOn))} · ${esc(d.method)}</p>
@@ -579,7 +579,7 @@ ${altList}
 <section class="cmp-full" aria-labelledby="table-title">
   <div class="wrap">
     <h2 id="table-title" class="h2">Feature by feature</h2>
-    <p class="section-lede">${MARK.yes.replace('class="px s"', 'class="px s inl"')} Yes, ${MARK.partial.replace('class="px s"', 'class="px s inl"')} Partial, ${MARK.no.replace('class="px s"', 'class="px s inl"')} No, ${MARK.soon.replace('class="px s"', 'class="px s inl"')} Not yet (Maglev doesn't do this today; it may come in a later version). Anything an app's own pages don't list counts as No. The table scrolls sideways on small screens.</p>
+    <p class="section-lede">${MARK.yes.replace('class="px s"', 'class="px s inl"')} Yes, ${MARK.partial.replace('class="px s"', 'class="px s inl"')} Partial, ${MARK.no.replace('class="px s"', 'class="px s inl"')} No, ${MARK.soon.replace('class="px s"', 'class="px s inl"')} Not yet (ReelNest doesn't do this today; it may come in a later version). Anything an app's own pages don't list counts as No. The table scrolls sideways on small screens.</p>
     ${table}
 ${foot.length ? `    <ol class="notes">\n${foot.map((f) => `      <li id="note-${f.n}"><b>${esc(f.app)}, ${esc(f.row)}:</b> ${md(f.text)} <a href="#ref-${f.n}" aria-label="Back to the table">↩</a></li>`).join('\n')}\n    </ol>` : ''}
     <h3 class="src-h">Where each answer comes from</h3>
@@ -605,7 +605,7 @@ ${faqList(faq)}
 <section class="maker">
   <div class="wrap narrow">
     <div class="card cta-card">
-      <h2 class="h3">Try Maglev</h2>
+      <h2 class="h3">Try ReelNest</h2>
       <p>Free, open source and without ads. Android 7 and up.</p>
       <div class="ctas">${dlButton()}<a class="btn" href="${HOME}#install">How to install</a></div>
     </div>
@@ -620,26 +620,26 @@ ${footer(HOME)}
 
 // ---------------------------------------------------------------- <app>-alternative/index.html
 
-/** Rows where Maglev and the other app differ, judged after the "unlisted means No" rule. */
+/** Rows where ReelNest and the other app differ, judged after the "unlisted means No" rule. */
 function differingRows(d, appId) {
   return d.rows.filter((r) => {
-    const a = cellValue(r, 'maglev');
+    const a = cellValue(r, 'reelnest');
     const b = cellValue(r, appId);
     return a.kind !== b.kind || a.text !== b.text;
   });
 }
 
-/** One page for one app that people replace with Maglev. Content comes from compare.json `alternatives`. */
+/** One page for one app that people replace with ReelNest. Content comes from compare.json `alternatives`. */
 function alternativePage(d, alt) {
   const url = abs(alt.slug);
-  const maglev = d.apps.find((a) => a.id === 'maglev');
+  const reelnest = d.apps.find((a) => a.id === 'reelnest');
   const other = d.apps.find((a) => a.id === alt.app);
   if (!other) throw new Error(`compare.json: alternative ${alt.slug} names unknown app ${alt.app}`);
   const faq = alt.faq.map((x) => [x.q, x.a]);
-  const { html: table, foot } = compareTable(d, [maglev, other], differingRows(d, alt.app), {
+  const { html: table, foot } = compareTable(d, [reelnest, other], differingRows(d, alt.app), {
     notes: true,
     grouped: true,
-    caption: `Maglev compared with ${other.name}, only the rows where they differ`,
+    caption: `ReelNest compared with ${other.name}, only the rows where they differ`,
   });
   const ld = {
     '@context': 'https://schema.org',
@@ -662,7 +662,7 @@ function alternativePage(d, alt) {
         '@type': 'BreadcrumbList',
         '@id': `${url}#breadcrumb`,
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Maglev', item: SITE_URL },
+          { '@type': 'ListItem', position: 1, name: 'ReelNest', item: SITE_URL },
           { '@type': 'ListItem', position: 2, name: 'Compare apps', item: abs('compare') },
           { '@type': 'ListItem', position: 3, name: alt.title, item: url },
         ],
@@ -683,7 +683,7 @@ ${header(A, HOME, { current: 'compare' })}
 <section class="page-head" aria-labelledby="page-title">
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
-    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${HOME}">Maglev</a></li><li><a href="${COMPARE}">Compare apps</a></li><li aria-current="page">${esc(alt.title)}</li></ol></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${HOME}">ReelNest</a></li><li><a href="${COMPARE}">Compare apps</a></li><li aria-current="page">${esc(alt.title)}</li></ol></nav>
     <h1 id="page-title">${esc(alt.title)}</h1>
     <p class="lede">${md(alt.answer)}</p>
     <p class="meta">Checked ${esc(human(d.checkedOn))} against ${esc(other.name)}'s own pages and store listing. Anything those pages don't list counts as No.</p>
@@ -698,12 +698,12 @@ ${header(A, HOME, { current: 'compare' })}
 ${foot.length ? `    <ol class="notes">\n${foot.map((f) => `      <li id="note-${f.n}"><b>${esc(f.app)}, ${esc(f.row)}:</b> ${md(f.text)} <a href="#ref-${f.n}" aria-label="Back to the table">↩</a></li>`).join('\n')}\n    </ol>` : ''}
     <h3 class="src-h">Where each answer comes from</h3>
     <ul class="sources">
-${sourceItems([maglev, other])}
+${sourceItems([reelnest, other])}
     </ul>
   </div>
 </section>
 
-<section class="prose-sec" aria-label="More about ${esc(other.name)} and Maglev">
+<section class="prose-sec" aria-label="More about ${esc(other.name)} and ReelNest">
   <div class="wrap narrow prose">
 ${alt.sections.map((s) => `    <h2 class="h2">${esc(s.heading)}</h2>\n${s.body.map((b) => `    <p>${md(b)}</p>`).join('\n')}`).join('\n')}
   </div>
@@ -719,7 +719,7 @@ ${faqList(faq)}
 <section class="maker">
   <div class="wrap narrow">
     <div class="card cta-card">
-      <h2 class="h3">Try Maglev</h2>
+      <h2 class="h3">Try ReelNest</h2>
       <p>Free, open source and without ads. Android 7 and up.</p>
       <div class="ctas">${dlButton()}<a class="btn" href="${COMPARE}">Compare all apps</a></div>
     </div>
@@ -754,8 +754,8 @@ function privacyPage(p, cmp) {
       PERSON,
     ],
   };
-  return `${head({ title: `${p.title} | Maglev`, desc: p.description, base: A, canonical: url })}
-${ogTags({ title: `${p.title} | Maglev`, desc: p.description, url })}
+  return `${head({ title: `${p.title} | ReelNest`, desc: p.description, base: A, canonical: url })}
+${ogTags({ title: `${p.title} | ReelNest`, desc: p.description, url })}
 ${ldBlock(ld)}
 </head>
 <body>
@@ -766,7 +766,7 @@ ${header(A, HOME, { compare: !!cmp })}
 <section class="page-head" aria-labelledby="page-title">
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
-    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${HOME}">Maglev</a></li><li aria-current="page">${esc(p.title)}</li></ol></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${HOME}">ReelNest</a></li><li aria-current="page">${esc(p.title)}</li></ol></nav>
     <h1 id="page-title">${esc(p.title)}</h1>
     <p class="lede">${md(p.intro)}</p>
     <p class="meta">Updated ${esc(human(p.updated))}</p>
@@ -788,7 +788,7 @@ ${footer(HOME, { compare: !!cmp })}
 
 // GitHub Pages serves 404.html at whatever path was asked for, so relative paths would break:
 // its assets and links are root-absolute under BASE_PATH like every other page.
-const notFound = (cmp) => `${head({ title: 'Page not found | Maglev', desc: 'This page does not exist. Go to the Maglev home page to download the app.', base: A, noindex: true })}
+const notFound = (cmp) => `${head({ title: 'Page not found | ReelNest', desc: 'This page does not exist. Go to the ReelNest home page to download the app.', base: A, noindex: true })}
 </head>
 <body class="nf-body">
 ${header(A, HOME, { compare: !!cmp })}
@@ -838,16 +838,16 @@ Allow: /
 Sitemap: ${abs('sitemap.xml')}
 `;
 
-const llms = (cmp) => `# Maglev
+const llms = (cmp) => `# ReelNest
 
-> Maglev is a free, open source Android downloader with no ads. It saves videos from web pages (including on-demand HLS and DASH streams), downloads ordinary links with pause and resume, and runs torrents, in one app. Android 7 and later. Version ${VERSION}.
+> ReelNest is a free, open source Android downloader with no ads. It saves videos from web pages (including on-demand HLS and DASH streams), downloads ordinary links with pause and resume, and runs torrents, in one app. Android 7 and later. Version ${VERSION}.
 
 Made by ${MAKER.name} (${MAKER.url}, GitHub: ${MAKER.github}). License: GPL-3.0.
 
 ## Key facts
 
 ${C.features.map((x) => `- ${x.title}: ${plain(x.text)} ${x.specs.map(plain).join('. ')}.`).join('\n')}
-- Maglev never gets around DRM. Protected video, live streams and YouTube-style players can't be saved.
+- ReelNest never gets around DRM. Protected video, live streams and YouTube-style players can't be saved.
 - Release signing certificate SHA-256: ${FINGERPRINT}
 
 ## How it works
@@ -856,7 +856,7 @@ ${C.howItWorks.map((h) => `- ${h.title}: ${plain(h.text)}`).join('\n')}
 
 ## Links
 
-- [Website](${SITE_URL})${cmp ? `\n- [${cmp.page.title} (comparison with ${cmp.apps.filter((a) => a.id !== 'maglev').map((a) => a.name).join(', ')})](${abs('compare')})` : ''}
+- [Website](${SITE_URL})${cmp ? `\n- [${cmp.page.title} (comparison with ${cmp.apps.filter((a) => a.id !== 'reelnest').map((a) => a.name).join(', ')})](${abs('compare')})` : ''}
 - [Download (latest release)](${RELEASES})
 - [Source code](${REPO})
 - [Report a bug](${ISSUES})

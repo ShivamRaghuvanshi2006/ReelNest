@@ -38,7 +38,7 @@ async function main() {
   check('Paste a key', COPY.pasteKey === 'Paste a key');
   check('That address must start with https://', COPY.httpsOnly === 'That address must start with https://');
   check('Pick a model', COPY.pickModel === 'Pick a model');
-  check("This model can't work with Maglev's actions. Pick another.", COPY.cantUseTools === "This model can't work with Maglev's actions. Pick another.");
+  check("This model can't work with ReelNest's actions. Pick another.", COPY.cantUseTools === "This model can't work with ReelNest's actions. Pick another.");
   check('bad key copy has a {provider} placeholder', COPY.badKey === "{provider} didn't accept this key. Paste it again or make a new one.");
   check('out of credit copy has a {provider} placeholder', COPY.outOfCredits === 'Your {provider} account is out of credit. Top up on their site or pick another model.');
   check("Couldn't reach the provider. Try again.", COPY.cantReach === "Couldn't reach the provider. Try again.");

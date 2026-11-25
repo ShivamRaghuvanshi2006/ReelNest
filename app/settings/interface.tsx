@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Stack } from 'expo-router';
-import { AccentName, AppearanceMode } from 'maglev-engine';
+import { AccentName, AppearanceMode } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, accents, radius, spacing, touch, type } from '../../constants/theme';
 import { PixelIcon } from '../../components/PixelIcon';
 import { ListRow, PressableScale, RadioCard, SegmentedControl, Toggle } from '../../components/ui';
 import { Card, Caption, SettingsPage } from '../../components/settings/SettingsParts';
-import { FontStyle, TelemetryDensity } from 'maglev-engine';
+import { FontStyle, TelemetryDensity } from 'reelnest-engine';
 import { fontFamilies, resolveFontStyle } from '../../constants/fontStyles';
 import { fontStyleCopy, tabsCopy } from '../../constants/copy';
 import { DensityThumb } from '../../components/settings/DensityThumb';
@@ -29,7 +29,7 @@ const DENSITY_ROW: Record<TelemetryDensity, { line: string; spoken: string }> = 
   VERBOSE: { line: 'Detailed: adds amounts, connections and timing', spoken: 'Download page, Detailed, adds amounts, connections and timing' },
 };
 const ACCENTS: { name: AccentName; label: string }[] = [
-  { name: 'lime', label: 'Lime' },
+  { name: 'yellow', label: 'Yellow' },
   { name: 'cyan', label: 'Cyan' },
   { name: 'pink', label: 'Pink' },
   { name: 'orange', label: 'Orange' },

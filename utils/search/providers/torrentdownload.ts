@@ -7,7 +7,7 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'torrentdownload';
 
-/** The "&raquo; <Category>" label on a row -> Maglev category. */
+/** The "&raquo; <Category>" label on a row -> ReelNest category. */
 function categoryFromLabel(label: string | undefined): Category | undefined {
   if (!label) return undefined;
   const l = label.toLowerCase().replace(/[^a-z]+/g, '');

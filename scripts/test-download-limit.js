@@ -12,7 +12,7 @@ function check(name, cond) {
 
 const ctx = read('context/EngineContext.tsx');
 check('EngineContext type declares setDownloadLimits', /setDownloadLimits: \(id: string, downLimitBps: number\) => Promise<boolean>/.test(ctx));
-check('wrapper goes through downloadCall', /setDownloadLimits = useCallback\([\s\S]{0,200}downloadCall\([\s\S]{0,120}maglevEngine\.setDownloadLimits\(id, \{ downLimitBps/.test(ctx));
+check('wrapper goes through downloadCall', /setDownloadLimits = useCallback\([\s\S]{0,200}downloadCall\([\s\S]{0,120}reelnestEngine\.setDownloadLimits\(id, \{ downLimitBps/.test(ctx));
 check('wrapper is provided', /^\s+setDownloadLimits,$/m.test(ctx));
 
 const sheet = read('components/detail/SpeedLimitSheet.tsx');

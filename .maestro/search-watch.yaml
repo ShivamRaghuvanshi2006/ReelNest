@@ -1,6 +1,6 @@
 # Watch a search, check it is listed under Settings, Watches, then delete it.
 # If "Sintel" is already watched, the Watch tap shows "You are already watching that." and the flow still continues.
-appId: com.maglev
+appId: com.ReelNest
 name: search-watch
 ---
 - runFlow: subflows/onboard-if-needed.yaml

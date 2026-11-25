@@ -9,7 +9,7 @@
 import Constants from 'expo-constants';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File } from 'expo-file-system';
-import { maglevEngine, settingsStore } from 'maglev-engine';
+import { reelnestEngine, settingsStore } from 'reelnest-engine';
 import { kvGet, kvSet } from '../prefs/kv';
 import { normalizeSearchPrefs, updateSearchPrefs } from '../prefs/search';
 import { importBookmarks } from '../browser/bookmarks';
@@ -27,7 +27,7 @@ import { parseBackup, type ParseResult } from './migrate';
 import { restoreBackup, type RestoreResult } from './import';
 import { PREF_KEYS, isPlainObject, type Backup, type BackupPart, type PrefKey, type RestorePart } from './format';
 
-const LAST_BACKUP_KEY = 'maglev.backup.lastAt.v1';
+const LAST_BACKUP_KEY = 'reelnest.backup.lastAt.v1';
 
 export function getLastBackupAt(): number {
   const n = Number(kvGet(LAST_BACKUP_KEY));
@@ -44,7 +44,7 @@ function readPref(key: PrefKey): unknown {
 }
 
 async function collectBackup(opts: { includeStats?: boolean } = {}): Promise<Backup> {
-  const list = await maglevEngine.listTorrents();
+  const list = await reelnestEngine.listTorrents();
   const torrents = list.ok ? list.torrents : [];
   const downloads = list.ok ? (list.downloads ?? []) : [];
   let stats = null;
@@ -64,7 +64,7 @@ async function collectBackup(opts: { includeStats?: boolean } = {}): Promise<Bac
     torrents,
     downloads,
     torrentData: async (id) => {
-      const d = await maglevEngine.getDetail(id);
+      const d = await reelnestEngine.getDetail(id);
       if (!d.ok) return null;
       return {
         trackers: d.trackers.map((t) => t.url),
@@ -169,11 +169,11 @@ function folderExists(path: string): boolean {
 
 /** Applies the chosen parts to this phone. */
 export async function applyBackup(backup: Backup, parts: ReadonlySet<RestorePart>): Promise<RestoreResult> {
-  const list = await maglevEngine.listTorrents();
+  const list = await reelnestEngine.listTorrents();
   const existingHashes = new Set((list.ok ? list.torrents : []).map((t) => t.id.toLowerCase()));
   const existingUrls = (list.ok ? (list.downloads ?? []) : []).map((d) => d.urlDisplay);
   return restoreBackup(backup, parts, {
-    engine: maglevEngine,
+    engine: reelnestEngine,
     folderExists,
     existingHashes,
     existingUrls,

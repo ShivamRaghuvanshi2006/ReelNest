@@ -16,7 +16,7 @@ import Svg, { Path, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
 import { easeOutCubic, motion, type ThemeColors, type as typeTokens, type } from '../../constants/theme';
 import { haptic } from '../../constants/haptics';
-import { MaglevMark } from '../brand/MaglevMark';
+import { PixelTrain } from '../brand/PixelTrain';
 import { MARK_FX_COMPACT, MARK_RATIO } from '../brand/markPaths';
 import { useReduceMotion } from '../motion';
 import { fmtSize } from '../../utils/stats/format';
@@ -394,7 +394,7 @@ export function PixelCity({ kind, buckets, busiest, selected, minIndex, peakHour
                   <Path d={wagonD.crate} fill={ink.hi} {...crisp} />
                 </Svg>
               ) : null}
-              <MaglevMark height={trainH} cruising={cruising && wagonN === 0} />
+              <PixelTrain height={trainH} cruising={cruising && wagonN === 0} />
             </Animated.View>
           ) : null}
         </View>

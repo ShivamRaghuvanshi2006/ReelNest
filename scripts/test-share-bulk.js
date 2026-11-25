@@ -9,7 +9,7 @@ async function main() {
 
   const a = 'content://x/a.torrent';
   const b = 'content://x/b one.torrent';
-  const packed = `maglev://share?u=${encodeURIComponent(a)}&u=${encodeURIComponent(b)}`;
+  const packed = `reelnest://share?u=${encodeURIComponent(a)}&u=${encodeURIComponent(b)}`;
   assert.deepStrictEqual(parsePackedShare(packed), [a, b]);
   assert.deepStrictEqual(parsePackedShare(`/share?u=${encodeURIComponent(a)}`), [a]);
   assert.strictEqual(parsePackedShare('magnet:?xt=urn:btih:abc'), null);

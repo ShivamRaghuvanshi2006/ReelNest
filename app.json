@@ -1,34 +1,34 @@
 {
   "expo": {
     "extra": {
-      "homepage": "https://harshdayal.dev/maglev"
+      "homepage": "https://github.com/ShivamRaghuvanshi2006/ReelNest"
     },
-    "name": "Maglev",
-    "slug": "maglev",
+    "name": "ReelNest",
+    "slug": "reelnest",
     "version": "0.33",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "maglev",
+    "scheme": "reelnest",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
-      "backgroundColor": "#05070A",
+      "backgroundColor": "#171e19",
       "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.maglev.client",
+      "bundleIdentifier": "com.reelnest.client",
       "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "monochromeImage": "./assets/adaptive-icon-monochrome.png",
-        "backgroundColor": "#0B2A30"
+        "backgroundColor": "#171e19"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.maglev",
+      "package": "com.reelnest",
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE",
@@ -126,6 +126,15 @@
         {
           "android": {
             "fonts": [
+              {
+                "fontFamily": "CabinetGrotesk",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/CabinetGrotesk-Variable.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
               {
                 "fontFamily": "Silkscreen",
                 "fontDefinitions": [

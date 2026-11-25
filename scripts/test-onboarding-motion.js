@@ -40,7 +40,7 @@ check('no spring, bounce, elastic or back easing', !/Animated\.spring|\bspring\(
 check('no glow or shadows', !/shadowColor|shadowRadius|textShadow|elevation|glow/i.test(code));
 check('native driver only', /useNativeDriver:\s*true/.test(code) && !/useNativeDriver:\s*false/.test(code));
 check('slide uses pixel-stepped easing (steppedRanges)', /steppedRanges/.test(of('components/onboarding/StepSlide.tsx')));
-check('the train arrives on step 1 (arrive)', /\barrive\b/.test(of('components/onboarding/BrandMark.tsx')));
+check('the onboarding hero is the ReelNest emblem', /<ReelNestMark\b/.test(of('components/onboarding/BrandMark.tsx')));
 
 // Durations are tokens now: resolve `motion.duration.<name>` against constants/theme.ts, and still read any bare number.
 const tokenBlock = (read('constants/theme.ts').match(/duration:\s*\{([\s\S]*?)\n  \},/) || [])[1] || '';

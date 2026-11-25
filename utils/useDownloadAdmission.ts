@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { maglevEngine, type FreeSpace } from 'maglev-engine';
+import { reelnestEngine, type FreeSpace } from 'reelnest-engine';
 import { useEngineTelemetry } from '../context/EngineContext';
 import { admit, pendingNeedOf, type AdmissionOutcome } from './admission';
 import { noSpaceBody } from './admissionCopy';
@@ -21,7 +21,7 @@ export function useDownloadAdmission(size: number | null | undefined, active: bo
   useEffect(() => {
     if (!active) return;
     let alive = true;
-    maglevEngine
+    reelnestEngine
       .getFreeSpace()
       .then((res) => {
         if (alive) setFree(res.ok ? res : null);

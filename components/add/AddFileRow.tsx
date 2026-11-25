@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { MetadataFile } from 'maglev-engine';
+import type { MetadataFile } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, touch, type } from '../../constants/theme';
 import { formatBytes } from '../../constants/format';

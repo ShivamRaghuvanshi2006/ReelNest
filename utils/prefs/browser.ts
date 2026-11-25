@@ -26,7 +26,7 @@ export interface BrowserPrefs {
   saveHistory: boolean;
   /** Offer history matches under the address bar. */
   suggestFromHistory: boolean;
-  /** Empty the history when Maglev closes, and again on the next start. */
+  /** Empty the history when ReelNest closes, and again on the next start. */
   clearHistoryOnClose: boolean;
   /** What to do with pop-ups and redirects the user didn't tap for (section 24.10). */
   popupPolicy: PopupPolicy;
@@ -41,7 +41,7 @@ export interface BrowserPrefs {
    * wiped when the browser is left (utils/browser/privateSession.ts). UI only; never reaches the engine.
    */
   privateBrowsing: boolean;
-  /** Darken pages that only have a light look while Maglev is dark (section 24.10a). UI only; the view gets it as a prop. */
+  /** Darken pages that only have a light look while ReelNest is dark (section 24.10a). UI only; the view gets it as a prop. */
   darkPages: boolean;
 }
 
@@ -64,7 +64,7 @@ export function normalizeTextZoom(v: unknown): number {
 export type PopupPolicy = 'ask' | 'block' | 'allow';
 const POPUP_POLICIES: readonly PopupPolicy[] = ['ask', 'block', 'allow'];
 
-const KEY = 'maglev.browser.prefs.v1';
+const KEY = 'reelnest.browser.prefs.v1';
 
 export function defaultBrowserPrefs(): BrowserPrefs {
   return {

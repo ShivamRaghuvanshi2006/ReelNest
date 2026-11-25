@@ -4,7 +4,7 @@ import * as Clipboard from 'expo-clipboard';
 import {
   aggregateSnapshots,
   detailToTorrentDetail,
-  maglevEngine,
+  reelnestEngine,
   settingsStore,
   type AddTorrentOptions,
   type AggregatedTelemetry,
@@ -22,7 +22,7 @@ import {
   type TorrentDetailData,
   type TorrentTelemetry,
   type UrlProbe,
-} from 'maglev-engine';
+} from 'reelnest-engine';
 import { etaSecs, smoothRate } from '../utils/rates';
 import { fromCached, readTransferCache, saveTransferCache } from '../utils/transferCache';
 import {
@@ -309,7 +309,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     boot.current = { cached: cachedAggregate() };
     // The start below can wait a frame (cached boot) and child screens mount before it runs: a shared link
     // that calls the engine in that gap waits for the start instead of failing with "Engine not started".
-    maglevEngine.expectStart();
+    reelnestEngine.expectStart();
   }
   const hasCachedList = boot.current.cached !== null;
   // Engine truth (or the saved list until the engine answers), before pending taps and removals.
@@ -320,10 +320,10 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [removing, setRemoving] = useState<readonly string[]>([]);
   const [notice, setNotice] = useState<EngineNotice | null>(null);
   const [clipboardMagnet, setClipboardMagnet] = useState<string | null>(null);
-  const [engineStatus, setEngineStatus] = useState<EngineStatus>(maglevEngine.engineStatus);
-  const [restartRequired, setRestartRequired] = useState(maglevEngine.restartRequired);
-  const [configWarning, setConfigWarning] = useState<string | null>(maglevEngine.configWarning);
-  const [isNative, setIsNative] = useState(maglevEngine.isNativeMode());
+  const [engineStatus, setEngineStatus] = useState<EngineStatus>(reelnestEngine.engineStatus);
+  const [restartRequired, setRestartRequired] = useState(reelnestEngine.restartRequired);
+  const [configWarning, setConfigWarning] = useState<string | null>(reelnestEngine.configWarning);
+  const [isNative, setIsNative] = useState(reelnestEngine.isNativeMode());
   const [storageStatus, setStorageStatus] = useState<StorageStatus | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<NativePermissionStatus | null>(null);
   const [lastCompleted, setLastCompleted] = useState<TorrentCompletedEvent | null>(null);
@@ -468,7 +468,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (inFlight.current.has(id)) return;
     inFlight.current.add(id);
     try {
-      const res = await maglevEngine.getDetail(id);
+      const res = await reelnestEngine.getDetail(id);
       if (res.ok) {
         detailCache.current.set(id, detailToTorrentDetail(res));
         detailStore.bump();
@@ -481,7 +481,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const refreshPermissions = useCallback(async () => {
-    const status = await maglevEngine.getPermissionStatus();
+    const status = await reelnestEngine.getPermissionStatus();
     setPermissionStatus(status);
     return status;
   }, []);
@@ -508,7 +508,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const afterStart = useCallback(
     async (status: EngineStatus) => {
       if (status.kind === 'ready') {
-        const [list, storage] = await Promise.all([maglevEngine.listTorrents(), maglevEngine.getStorageStatus()]);
+        const [list, storage] = await Promise.all([reelnestEngine.listTorrents(), reelnestEngine.getStorageStatus()]);
         if (list.ok) {
           ingest(list.torrents);
           if (list.downloads) ingestDownloads(list.downloads);
@@ -522,17 +522,17 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 
   const retryEngine = useCallback(async () => {
-    await maglevEngine.restart(settingsStore.getSettings());
-    setEngineStatus(maglevEngine.engineStatus);
-    setConfigWarning(maglevEngine.configWarning);
-    await afterStart(maglevEngine.engineStatus);
+    await reelnestEngine.restart(settingsStore.getSettings());
+    setEngineStatus(reelnestEngine.engineStatus);
+    setConfigWarning(reelnestEngine.configWarning);
+    await afterStart(reelnestEngine.engineStatus);
   }, [afterStart]);
 
   const restartEngine = useCallback(async () => {
-    const res = await maglevEngine.restart(settingsStore.getSettings());
-    setEngineStatus(maglevEngine.engineStatus);
-    setConfigWarning(maglevEngine.configWarning);
-    if (res.ok) await afterStart(maglevEngine.engineStatus);
+    const res = await reelnestEngine.restart(settingsStore.getSettings());
+    setEngineStatus(reelnestEngine.engineStatus);
+    setConfigWarning(reelnestEngine.configWarning);
+    if (res.ok) await afterStart(reelnestEngine.engineStatus);
     return res.ok;
   }, [afterStart]);
 
@@ -540,14 +540,14 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     let cancelled = false;
     const syncState = () => {
-      setEngineStatus(maglevEngine.engineStatus);
-      setRestartRequired(maglevEngine.restartRequired);
-      setConfigWarning(maglevEngine.configWarning);
-      setIsNative(maglevEngine.isNativeMode());
+      setEngineStatus(reelnestEngine.engineStatus);
+      setRestartRequired(reelnestEngine.restartRequired);
+      setConfigWarning(reelnestEngine.configWarning);
+      setIsNative(reelnestEngine.isNativeMode());
     };
-    const offState = maglevEngine.subscribeState(syncState);
+    const offState = reelnestEngine.subscribeState(syncState);
 
-    const offTelemetry = maglevEngine.onTelemetry((event) => {
+    const offTelemetry = reelnestEngine.onTelemetry((event) => {
       ingest(event.torrents);
       if (event.downloads) ingestDownloads(event.downloads);
       void recordSnapshot(event.torrents, event.downloads);
@@ -557,9 +557,9 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (event.torrents.some((s) => s.id === id)) void refreshDetail(id);
       });
     });
-    const offCompleted = maglevEngine.onTorrentCompleted((e) => setLastCompleted(e));
-    const offAction = maglevEngine.onNotificationAction(async (e) => {
-      // Sent once on app open after Android killed Maglev (NATIVE_CONTRACT 19). Not in the TS union yet.
+    const offCompleted = reelnestEngine.onTorrentCompleted((e) => setLastCompleted(e));
+    const offAction = reelnestEngine.onNotificationAction(async (e) => {
+      // Sent once on app open after Android killed ReelNest (NATIVE_CONTRACT 19). Not in the TS union yet.
       const ev = e as { action: string; message?: string };
       if (ev.action === 'stopped_by_android') {
         if (ev.message) showNotice({ message: ev.message }, 6000);
@@ -569,16 +569,16 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         BackHandler.exitApp();
         return;
       }
-      const res = await maglevEngine.listTorrents(); // pause_all / resume_all were applied natively
+      const res = await reelnestEngine.listTorrents(); // pause_all / resume_all were applied natively
       if (res.ok) {
         ingest(res.torrents);
         if (res.downloads) ingestDownloads(res.downloads);
       }
     });
-    const offStorage = maglevEngine.onStorageStatus((s) => setStorageStatus(s));
+    const offStorage = reelnestEngine.onStorageStatus((s) => setStorageStatus(s));
 
     const start = async () => {
-      const status = await maglevEngine.start(settingsStore.getSettings());
+      const status = await reelnestEngine.start(settingsStore.getSettings());
       if (cancelled) return;
       syncState();
       await afterStart(status);
@@ -657,16 +657,16 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (bootLogged.current || telemetry.torrents.length === 0) return;
     bootLogged.current = true;
     // Hermes performance.now() counts from device boot, so measure from bundle load instead.
-    console.log('[Maglev] boot', Date.now() - JS_LOADED_AT);
+    console.log('[ReelNest] boot', Date.now() - JS_LOADED_AT);
     // Device perf marker: read against the logcat timestamp of ActivityTaskManager's START line.
-    console.log('[maglev-perf] list-ready');
+    console.log('[reelnest-perf] list-ready');
   }, [telemetry.torrents.length]);
 
   const engineReadyLogged = useRef(false);
   useEffect(() => {
     if (engineReadyLogged.current || engineStatus.kind !== 'ready') return;
     engineReadyLogged.current = true;
-    console.log('[maglev-perf] engine-ready');
+    console.log('[reelnest-perf] engine-ready');
   }, [engineStatus.kind]);
 
   const nameOf = useCallback((id: string) => liveRef.current.torrents.find((t) => t.id === id)?.name ?? 'torrent', []);
@@ -695,7 +695,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (pendingRef.current[id]) return false; // a tap is already in flight
       const label = nameOf(id);
       const group = beginTap([id], 'pause');
-      const ok = (await maglevEngine.pause(id)).ok;
+      const ok = (await reelnestEngine.pause(id)).ok;
       endTap(group, ok, notices.engine.pauseFailed(label));
       return ok;
     },
@@ -706,7 +706,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (pendingRef.current[id]) return false;
       const label = nameOf(id);
       const group = beginTap([id], 'resume');
-      const res = await maglevEngine.resume(id);
+      const res = await reelnestEngine.resume(id);
       endTap(group, res.ok);
       if (!res.ok) {
         // NATIVE_CONTRACT 47.4: a file-health hold says why, and Open goes to the Recheck banner.
@@ -727,14 +727,14 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       .filter((t) => (t.state === 'DOWNLOADING' || t.state === 'SEEDING' || t.state === 'QUEUED') && !pendingRef.current[t.id])
       .map((t) => t.id);
     const group = beginTap(ids, 'pause');
-    const res = await maglevEngine.pauseAll();
+    const res = await reelnestEngine.pauseAll();
     endTap(group, res.ok, notices.engine.pauseAllFailed);
   }, [beginTap, endTap]);
   const resumeAll = useCallback(async () => {
     // NATIVE_CONTRACT 47.4: torrents held by a file health tag are skipped (the engine skips them too).
     const ids = resumableIds(liveRef.current.torrents, (id) => !!pendingRef.current[id]);
     const group = beginTap(ids, 'resume');
-    const res = await maglevEngine.resumeAll();
+    const res = await reelnestEngine.resumeAll();
     endTap(group, res.ok, notices.engine.resumeAllFailed);
   }, [beginTap, endTap]);
 
@@ -758,7 +758,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const deleteTorrent = useCallback(
     async (id: string, deleteFiles: boolean) => {
       const group = beginTap([id], 'remove');
-      const ok = (await maglevEngine.delete(id, deleteFiles)).ok;
+      const ok = (await reelnestEngine.delete(id, deleteFiles)).ok;
       if (ok) {
         detailCache.current.delete(id);
         watched.current.delete(id);
@@ -778,9 +778,9 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ...ids.map(async (id) => {
           detailCache.current.delete(id);
           watched.current.delete(id);
-          return (await maglevEngine.delete(id, false)).ok;
+          return (await reelnestEngine.delete(id, false)).ok;
         }),
-        ...downloadIds.map(async (id) => (await maglevEngine.removeDownload(id, false)).ok),
+        ...downloadIds.map(async (id) => (await reelnestEngine.removeDownload(id, false)).ok),
       ]);
       // Link rows that were removed stay hidden (ids are never reused); failed ones come back.
       const failedDl = downloadIds.filter((_, i) => !results[ids.length + i]);
@@ -869,18 +869,18 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   defaultStoragePathRef.current = defaultStoragePath;
 
   const addTorrent = useCallback(
-    (source: string, options: AddTorrentOptions = {}) => maglevEngine.addTorrent(source, options),
+    (source: string, options: AddTorrentOptions = {}) => reelnestEngine.addTorrent(source, options),
     []
   );
 
   const resolveMetadata = useCallback(
-    (source: string, timeoutMs: number = 30_000) => maglevEngine.resolveMetadata(source, timeoutMs),
+    (source: string, timeoutMs: number = 30_000) => reelnestEngine.resolveMetadata(source, timeoutMs),
     []
   );
 
   const startTorrent = useCallback(
     async (magnetUri: string, savePath?: string, sequential: boolean = false, selectedFileIndices?: number[]) => {
-      const res = await maglevEngine.addTorrent(magnetUri, {
+      const res = await reelnestEngine.addTorrent(magnetUri, {
         // The engine owns the default folder (storage policy); only pass an explicit override.
         outputFolder: savePath && savePath !== defaultStoragePathRef.current ? savePath : null,
         sequential,
@@ -903,17 +903,17 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const included = detail.files
         .filter((f) => (f.index === fileIndex ? priority > 0 : f.priority > 0))
         .map((f) => f.index);
-      return (await maglevEngine.setIncludedFiles(id, included)).ok;
+      return (await reelnestEngine.setIncludedFiles(id, included)).ok;
     },
     [refreshDetail]
   );
 
   const setFilePriorities = useCallback(
-    (id: string, priorities: FilePriorityEntry[]) => maglevEngine.setFilePriorities(id, priorities),
+    (id: string, priorities: FilePriorityEntry[]) => reelnestEngine.setFilePriorities(id, priorities),
     []
   );
-  const reannounce = useCallback((id: string) => maglevEngine.reannounce(id), []);
-  const getFreeSpace = useCallback(() => maglevEngine.getFreeSpace(), []);
+  const reannounce = useCallback((id: string) => reelnestEngine.reannounce(id), []);
+  const getFreeSpace = useCallback(() => reelnestEngine.getFreeSpace(), []);
 
   // Mobile data: asked once at start and again each time the app becomes active. Unknown counts as not metered.
   const [onMeteredNetwork, setOnMeteredNetwork] = useState(false);
@@ -921,7 +921,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     let alive = true;
     const refresh = () => {
-      void maglevEngine
+      void reelnestEngine
         .getNetworkState()
         .then((res) => {
           if (alive && res.ok) {
@@ -943,10 +943,10 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (poll) clearInterval(poll);
     };
   }, [networkOnline]);
-  const openLiveUpdateSettings = useCallback(() => maglevEngine.openLiveUpdateSettings(), []);
+  const openLiveUpdateSettings = useCallback(() => reelnestEngine.openLiveUpdateSettings(), []);
 
   const getPieceBitfield = useCallback(async (id: string) => {
-    const cells = await maglevEngine.getPieceBitfield(id);
+    const cells = await reelnestEngine.getPieceBitfield(id);
     const out = new Uint8Array(256);
     for (let i = 0; i < 256 && i < cells.length; i++) out[i] = cells[i];
     return out;
@@ -983,9 +983,9 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 
   // ---- URL downloads (NATIVE_CONTRACT 17). The engine pushes its list on the next telemetry event. ----
-  const probeUrl = useCallback((url: string, options: DownloadOptions = {}) => maglevEngine.probeUrl(url, options, 15_000), []);
-  const probeStream = useCallback((url: string, options: DownloadOptions = {}) => maglevEngine.probeStream(url, options, 15_000), []);
-  const startDownload = useCallback((url: string, options: DownloadOptions = {}) => maglevEngine.addDownload(url, options), []);
+  const probeUrl = useCallback((url: string, options: DownloadOptions = {}) => reelnestEngine.probeUrl(url, options, 15_000), []);
+  const probeStream = useCallback((url: string, options: DownloadOptions = {}) => reelnestEngine.probeStream(url, options, 15_000), []);
+  const startDownload = useCallback((url: string, options: DownloadOptions = {}) => reelnestEngine.addDownload(url, options), []);
   const downloadCall = useCallback(
     async (label: string, call: () => Promise<EngineResult>) => {
       const res = await call();
@@ -994,11 +994,11 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     },
     [showNotice]
   );
-  const pauseDownload = useCallback((id: string) => downloadCall('pause', () => maglevEngine.pauseDownload(id)), [downloadCall]);
-  const resumeDownload = useCallback((id: string) => downloadCall('resume', () => maglevEngine.resumeDownload(id)), [downloadCall]);
-  const retryDownload = useCallback((id: string) => downloadCall('retry', () => maglevEngine.retryDownload(id)), [downloadCall]);
+  const pauseDownload = useCallback((id: string) => downloadCall('pause', () => reelnestEngine.pauseDownload(id)), [downloadCall]);
+  const resumeDownload = useCallback((id: string) => downloadCall('resume', () => reelnestEngine.resumeDownload(id)), [downloadCall]);
+  const retryDownload = useCallback((id: string) => downloadCall('retry', () => reelnestEngine.retryDownload(id)), [downloadCall]);
   const setDownloadLimits = useCallback(
-    (id: string, downLimitBps: number) => downloadCall('set the speed limit', () => maglevEngine.setDownloadLimits(id, { downLimitBps })),
+    (id: string, downLimitBps: number) => downloadCall('set the speed limit', () => reelnestEngine.setDownloadLimits(id, { downLimitBps })),
     [downloadCall]
   );
   const removeDownload = useCallback(
@@ -1008,7 +1008,7 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         removeTransfers([], [id]);
         return true;
       }
-      const ok = await downloadCall('remove', () => maglevEngine.removeDownload(id, true));
+      const ok = await downloadCall('remove', () => reelnestEngine.removeDownload(id, true));
       if (ok) {
         noteRemoved([id]);
         setRemovingDl((prev) => [...prev, id]);
@@ -1017,10 +1017,10 @@ export const EngineProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     },
     [downloadCall, removeTransfers]
   );
-  const refreshDownloadUrl = useCallback((id: string, url: string) => maglevEngine.refreshDownloadUrl(id, url, {}), []);
+  const refreshDownloadUrl = useCallback((id: string, url: string) => reelnestEngine.refreshDownloadUrl(id, url, {}), []);
 
   const startHttpStream = useCallback(async (id: string, fileIndex: number) => {
-    const res = await maglevEngine.streamUrl(id, fileIndex);
+    const res = await reelnestEngine.streamUrl(id, fileIndex);
     if (res.ok === false) throw engineError(res.code, res.message);
     return res.url;
   }, []);
@@ -1142,12 +1142,12 @@ export function useEngineLastCompleted(): EngineCompletedValue {
  * need only part of it should use the narrow hooks above. Does not re-render on a detail refresh
  * (read `useDetailVersion()` for that).
  */
-export function useMaglevEngine(): EngineContextType {
-  const a = useRequired(EngineActionsContext, 'useMaglevEngine');
-  const s = useRequired(EngineStatusContext, 'useMaglevEngine');
-  const t = useRequired(EngineTelemetryContext, 'useMaglevEngine');
-  const st = useRequired(EngineStateContext, 'useMaglevEngine');
-  const n = useRequired(EngineNoticeContext, 'useMaglevEngine');
-  const c = useRequired(EngineCompletedContext, 'useMaglevEngine');
+export function useReelNestEngine(): EngineContextType {
+  const a = useRequired(EngineActionsContext, 'useReelNestEngine');
+  const s = useRequired(EngineStatusContext, 'useReelNestEngine');
+  const t = useRequired(EngineTelemetryContext, 'useReelNestEngine');
+  const st = useRequired(EngineStateContext, 'useReelNestEngine');
+  const n = useRequired(EngineNoticeContext, 'useReelNestEngine');
+  const c = useRequired(EngineCompletedContext, 'useReelNestEngine');
   return useMemo(() => ({ ...a, ...s, ...t, ...st, ...n, ...c }), [a, s, t, st, n, c]);
 }

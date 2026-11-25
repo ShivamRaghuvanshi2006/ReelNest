@@ -7,7 +7,7 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'therarbg';
 
-// Maglev category -> TheRarBg category name in the search path.
+// ReelNest category -> TheRarBg category name in the search path.
 const SEGMENT: Partial<Record<Category, string>> = {
   movies: 'Movies',
   tv: 'Tv',

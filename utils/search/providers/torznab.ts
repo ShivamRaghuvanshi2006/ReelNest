@@ -10,7 +10,7 @@ export interface TorznabConfig {
   categories: Category[];
 }
 
-// Maglev category -> Torznab category code. 'all' sends no filter.
+// ReelNest category -> Torznab category code. 'all' sends no filter.
 const TORZNAB_CODES: Partial<Record<Category, number>> = {
   movies: 2000,
   tv: 5000,

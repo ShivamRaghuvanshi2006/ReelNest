@@ -1,5 +1,5 @@
 # Copy: constants/copy.ts (onboarding), buttons: app/onboarding.tsx
-appId: com.maglev
+appId: com.ReelNest
 ---
 - tapOn: "Get started"
 - extendedWaitUntil:

@@ -5,7 +5,7 @@
  * Why: when the route being opened is guarded, expo-router falls back to the first UNGUARDED
  * route in file order (expo-router 58, layouts/GuardContext.js findDefaultRedirectRouteInNavigator),
  * not the order of the screens in _layout.tsx. A route left out of every guard is never guarded,
- * so on a fresh install (onboarded = false, "(tabs)" guarded) Maglev 0.12 opened `browser`
+ * so on a fresh install (onboarded = false, "(tabs)" guarded) ReelNest 0.12 opened `browser`
  * instead of onboarding, with nothing behind it.
  *
  * With every route guarded, the only unguarded route on a fresh install is `onboarding`.

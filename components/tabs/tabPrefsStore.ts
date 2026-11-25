@@ -3,7 +3,7 @@ import { useSyncExternalStore } from 'react';
 import { kvGet, kvSet } from '../../utils/prefs/kv.ts';
 import { defaultTabPrefs, normalizeTabPrefs, type TabPrefs } from './tabPrefs.ts';
 
-const KEY = 'maglev.tabs.prefs.v1';
+const KEY = 'reelnest.tabs.prefs.v1';
 
 let cache: TabPrefs | null = null;
 const listeners = new Set<() => void>();

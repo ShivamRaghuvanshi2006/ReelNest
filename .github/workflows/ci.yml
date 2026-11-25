@@ -36,17 +36,17 @@ jobs:
       - name: Cache Cargo build
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: native/maglev-core
+          workspaces: native/reelnest-core
 
       - name: Run tests
-        run: cargo test --manifest-path native/maglev-core/Cargo.toml --no-default-features
+        run: cargo test --manifest-path native/reelnest-core/Cargo.toml --no-default-features
 
       - name: Run TLS verifier shim tests
-        run: cargo test --manifest-path native/maglev-core/vendor/rustls-platform-verifier/Cargo.toml
+        run: cargo test --manifest-path native/reelnest-core/vendor/rustls-platform-verifier/Cargo.toml
 
       - name: Clippy (non-blocking)
         continue-on-error: true
-        run: cargo clippy --manifest-path native/maglev-core/Cargo.toml --no-default-features -- -D warnings
+        run: cargo clippy --manifest-path native/reelnest-core/Cargo.toml --no-default-features -- -D warnings
 
   js:
     name: JS checks (typecheck, tests, assistant eval)
@@ -134,11 +134,11 @@ jobs:
           retention-days: 7
 
       - name: Upload APK set
-        if: steps.find.outputs.found == 'true' && hashFiles('pr-set/maglev.apks') != ''
+        if: steps.find.outputs.found == 'true' && hashFiles('pr-set/reelnest.apks') != ''
         uses: actions/upload-artifact@v7
         with:
           name: accrescent-apks
-          path: pr-set/maglev.apks
+          path: pr-set/reelnest.apks
           retention-days: 7
 
   rust-android:
@@ -162,7 +162,7 @@ jobs:
       GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
       # Everyday CI builds arm64 only (plugins/withAbiSplits.js). main and pull requests into main build all three;
       # main reuses a pull request's set when nothing changed (job reuse), and release-apk.yml reuses main's `apks` artifact (app-{universal,arm64-v8a,armeabi-v7a,x86_64}-release.apk).
-      MAGLEV_ABIS: ${{ (github.ref == 'refs/heads/main' || github.base_ref == 'main') && 'arm64-v8a,armeabi-v7a,x86_64' || 'arm64-v8a' }}
+      REELNEST_ABIS: ${{ (github.ref == 'refs/heads/main' || github.base_ref == 'main') && 'arm64-v8a,armeabi-v7a,x86_64' || 'arm64-v8a' }}
 
     steps:
       - name: Checkout repository
@@ -205,15 +205,15 @@ jobs:
         with:
           pattern: jniLibs-*
           merge-multiple: true
-          path: modules/maglev-engine/android/src/main/jniLibs
+          path: modules/reelnest-engine/android/src/main/jniLibs
 
       - name: Verify jniLibs layout
         run: |
-          for abi in ${MAGLEV_ABIS//,/ }; do
-            test -f "modules/maglev-engine/android/src/main/jniLibs/$abi/libmaglev_core.so" \
-              || { echo "Missing $abi/libmaglev_core.so"; find modules/maglev-engine/android/src/main/jniLibs -type f; exit 1; }
+          for abi in ${REELNEST_ABIS//,/ }; do
+            test -f "modules/reelnest-engine/android/src/main/jniLibs/$abi/libreelnest_core.so" \
+              || { echo "Missing $abi/libreelnest_core.so"; find modules/reelnest-engine/android/src/main/jniLibs -type f; exit 1; }
           done
-          ls -l modules/maglev-engine/android/src/main/jniLibs/*/
+          ls -l modules/reelnest-engine/android/src/main/jniLibs/*/
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
@@ -224,11 +224,11 @@ jobs:
       - name: Decode release keystore (only when the secret exists)
         # Forks and PRs have no secrets: this step is a no-op and Gradle keeps debug signing (plugins/withReleaseSigning.js).
         env:
-          MAGLEV_KEYSTORE_B64: ${{ secrets.MAGLEV_KEYSTORE_B64 }}
+          REELNEST_KEYSTORE_B64: ${{ secrets.REELNEST_KEYSTORE_B64 }}
         run: |
-          if [ -n "$MAGLEV_KEYSTORE_B64" ]; then
-            (umask 077; printf '%s' "$MAGLEV_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/maglev-release.jks")
-            echo "MAGLEV_KEYSTORE_PATH=$RUNNER_TEMP/maglev-release.jks" >> "$GITHUB_ENV"
+          if [ -n "$REELNEST_KEYSTORE_B64" ]; then
+            (umask 077; printf '%s' "$REELNEST_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/reelnest-release.jks")
+            echo "REELNEST_KEYSTORE_PATH=$RUNNER_TEMP/reelnest-release.jks" >> "$GITHUB_ENV"
             echo "Release keystore decoded"
           else
             echo "No release keystore secret; APKs stay debug-signed"
@@ -237,9 +237,9 @@ jobs:
       - name: Build release APKs
         # Passwords are given to this step only, not to every later step.
         env:
-          MAGLEV_KEYSTORE_PASSWORD: ${{ secrets.MAGLEV_KEYSTORE_PASSWORD }}
-          MAGLEV_KEY_ALIAS: ${{ secrets.MAGLEV_KEY_ALIAS }}
-          MAGLEV_KEY_PASSWORD: ${{ secrets.MAGLEV_KEY_PASSWORD }}
+          REELNEST_KEYSTORE_PASSWORD: ${{ secrets.REELNEST_KEYSTORE_PASSWORD }}
+          REELNEST_KEY_ALIAS: ${{ secrets.REELNEST_KEY_ALIAS }}
+          REELNEST_KEY_PASSWORD: ${{ secrets.REELNEST_KEY_PASSWORD }}
         run: |
           cd android
           chmod +x gradlew
@@ -273,7 +273,7 @@ jobs:
             fi
           done
           if [ "$BAD" = 1 ] && [ "$STRICT" = true ]; then
-            echo "::error::Debug-signed APK on main or a tag. Set the MAGLEV_KEYSTORE_* secrets (docs/RELEASE_SIGNING.md)."
+            echo "::error::Debug-signed APK on main or a tag. Set the REELNEST_KEYSTORE_* secrets (docs/RELEASE_SIGNING.md)."
             exit 1
           fi
 
@@ -303,11 +303,11 @@ jobs:
           retention-days: 7
 
       - name: Build signed APK set for Accrescent (main, pull requests into main and tags, when signing secrets exist)
-        if: env.MAGLEV_KEYSTORE_PATH != '' && (github.ref == 'refs/heads/main' || github.base_ref == 'main' || startsWith(github.ref, 'refs/tags/'))
+        if: env.REELNEST_KEYSTORE_PATH != '' && (github.ref == 'refs/heads/main' || github.base_ref == 'main' || startsWith(github.ref, 'refs/tags/'))
         env:
-          MAGLEV_KEYSTORE_PASSWORD: ${{ secrets.MAGLEV_KEYSTORE_PASSWORD }}
-          MAGLEV_KEY_ALIAS: ${{ secrets.MAGLEV_KEY_ALIAS }}
-          MAGLEV_KEY_PASSWORD: ${{ secrets.MAGLEV_KEY_PASSWORD }}
+          REELNEST_KEYSTORE_PASSWORD: ${{ secrets.REELNEST_KEYSTORE_PASSWORD }}
+          REELNEST_KEY_ALIAS: ${{ secrets.REELNEST_KEY_ALIAS }}
+          REELNEST_KEY_PASSWORD: ${{ secrets.REELNEST_KEY_PASSWORD }}
           # bundletool 1.18.3; digest matches the GitHub release page.
           BUNDLETOOL_VERSION: '1.18.3'
           BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
@@ -326,21 +326,21 @@ jobs:
           [ "$GOT" = "$WANT" ] || { echo "::error::AAB versionCode $GOT, expected $WANT"; exit 1; }
           # bundletool takes passwords as pass: or file: only (no env:), so use 0600 files and remove them after.
           (umask 077
-           printf '%s' "$MAGLEV_KEYSTORE_PASSWORD" > "$RUNNER_TEMP/ks.pass"
-           printf '%s' "$MAGLEV_KEY_PASSWORD" > "$RUNNER_TEMP/key.pass")
+           printf '%s' "$REELNEST_KEYSTORE_PASSWORD" > "$RUNNER_TEMP/ks.pass"
+           printf '%s' "$REELNEST_KEY_PASSWORD" > "$RUNNER_TEMP/key.pass")
           trap 'rm -f "$RUNNER_TEMP/ks.pass" "$RUNNER_TEMP/key.pass"' EXIT
           mkdir -p apkset
-          java -jar "$JAR" build-apks --bundle="$AAB" --output=apkset/maglev.apks \
-            --ks="$MAGLEV_KEYSTORE_PATH" --ks-key-alias="$MAGLEV_KEY_ALIAS" \
+          java -jar "$JAR" build-apks --bundle="$AAB" --output=apkset/reelnest.apks \
+            --ks="$REELNEST_KEYSTORE_PATH" --ks-key-alias="$REELNEST_KEY_ALIAS" \
             --ks-pass="file:$RUNNER_TEMP/ks.pass" --key-pass="file:$RUNNER_TEMP/key.pass"
-          ls -lh apkset/maglev.apks
+          ls -lh apkset/reelnest.apks
 
       - name: Upload APK set
-        if: env.MAGLEV_KEYSTORE_PATH != '' && (github.ref == 'refs/heads/main' || github.base_ref == 'main' || startsWith(github.ref, 'refs/tags/'))
+        if: env.REELNEST_KEYSTORE_PATH != '' && (github.ref == 'refs/heads/main' || github.base_ref == 'main' || startsWith(github.ref, 'refs/tags/'))
         uses: actions/upload-artifact@v7
         with:
           name: accrescent-apks
-          path: apkset/maglev.apks
+          path: apkset/reelnest.apks
           if-no-files-found: error
           retention-days: 7
 
@@ -348,7 +348,7 @@ jobs:
       - name: Kotlin unit tests (schedule, feed rules, restart policy)
         run: |
           cd android
-          ./gradlew :maglev-engine:testDebugUnitTest --stacktrace
+          ./gradlew :reelnest-engine:testDebugUnitTest --stacktrace
 
   contracts:
     name: Contract tests

@@ -1,16 +1,16 @@
 name: Bug report
-description: Something in Maglev doesn't work the way it should.
+description: Something in ReelNest doesn't work the way it should.
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting. If you opened this from Maglev (About → Report a bug), the version and device fields are already filled in.
+        Thanks for reporting. If you opened this from ReelNest (About → Report a bug), the version and device fields are already filled in.
         Please don't paste magnet links or addresses of pages you were downloading from unless they're needed to reproduce the bug.
   - type: input
     id: version
     attributes:
-      label: Maglev version
+      label: ReelNest version
       description: Settings → About.
       placeholder: "0.22"
     validations:
@@ -36,7 +36,7 @@ body:
       options:
         - GitHub release
         - Obtainium
-        - Maglev F-Droid repo
+        - ReelNest F-Droid repo
         - Built from source
         - Other
     validations:
@@ -69,5 +69,5 @@ body:
     id: crash
     attributes:
       label: Crash log
-      description: If Maglev crashed, open Settings → About → Copy crash report, and paste it here.
+      description: If ReelNest crashed, open Settings → About → Copy crash report, and paste it here.
       render: text

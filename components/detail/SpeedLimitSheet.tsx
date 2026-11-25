@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { TorrentLimits } from 'maglev-engine';
-import { SPEED_PRESET_MAP } from 'maglev-engine';
+import type { TorrentLimits } from 'reelnest-engine';
+import { SPEED_PRESET_MAP } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import { Caption, ChipGroup, BYTES_PER_MB, InputSheet, formatLimit } from '../settings/SettingsParts';
 import { Sheet } from '../ui';

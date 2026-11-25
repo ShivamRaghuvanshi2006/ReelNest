@@ -1,6 +1,6 @@
 /**
  * Every number in the new-feature highlight's entrance, in one place. Times are ms on one clock that starts when the
- * card opens. This is the approved motion design (maglev-highlight.html) with each CSS custom property carried over
+ * card opens. This is the approved motion design (reelnest-highlight.html) with each CSS custom property carried over
  * by name. Lengths are in two units: `u` is one pixel of the train mark (the station, rail, burst and dust sit on
  * that grid) and `cq` is 1% of the phone width in the design (the card is 86 cq wide), so both scale with the card.
  * Pure data: no imports, so Node tests can load it.

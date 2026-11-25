@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# On-device fault test for Maglev's link-download engine (multi-part HTTP downloads).
+# On-device fault test for ReelNest's link-download engine (multi-part HTTP downloads).
 #
 # Usage:
 #   scripts/device/test-link-faults.sh [--timeout 120] [--port 8766]
-#   MAGLEV_HOST_IP=192.168.1.20 ANDROID_SERIAL=XXXX scripts/device/test-link-faults.sh
+#   REELNEST_HOST_IP=192.168.1.20 ANDROID_SERIAL=XXXX scripts/device/test-link-faults.sh
 #
-# Needs: one phone on adb (or ANDROID_SERIAL set), screen on and unlocked, Maglev installed, and the Mac and phone on
-# the same Wi-Fi. The Mac LAN IP comes from `ipconfig getifaddr en0` unless MAGLEV_HOST_IP is set.
+# Needs: one phone on adb (or ANDROID_SERIAL set), screen on and unlocked, ReelNest installed, and the Mac and phone on
+# the same Wi-Fi. The Mac LAN IP comes from `ipconfig getifaddr en0` unless REELNEST_HOST_IP is set.
 # It starts scripts/device/faultserver.py on the Mac, drives the "Add a link" sheet through uiautomator, waits for
 # each file, checks its SHA-256 against the server and prints a PASS/FAIL table. Exit 0 all pass, 1 any FAIL, 2 setup.
 #
 # SAFETY (the phone is a personal device). This script NEVER runs: pm clear, uninstall, install, settings, reboot,
 # force-stop, or anything that touches other apps or other transfers. It only
-#   - opens Maglev with a SEND intent and taps the Parts chip and Start in the sheet,
-#   - reads /sdcard/Download/Maglev (ls, stat, sha256sum),
+#   - opens ReelNest with a SEND intent and taps the Parts chip and Start in the sheet,
+#   - reads /sdcard/Download/ReelNest (ls, stat, sha256sum),
 #   - deletes ONLY the file a scenario created (not present before it, name starts "<n>MB"), and only after its
 #     size equals exactly n*1048576 bytes. A wrong-sized or timed-out file is left in place and reported.
 # The test server is stopped on exit by a trap. With no device, or more than one and no ANDROID_SERIAL, it refuses.
 set -uo pipefail
 
-PKG="com.maglev"
-DIR="/sdcard/Download/Maglev"
-PORT="${MAGLEV_FAULT_PORT:-8766}"
+PKG="com.reelnest"
+DIR="/sdcard/Download/ReelNest"
+PORT="${REELNEST_FAULT_PORT:-8766}"
 TIMEOUT=120
 
 while [ $# -gt 0 ]; do
@@ -47,14 +47,14 @@ else
   [ "$ndev" -eq 1 ] || { echo "Need exactly one adb device, found $ndev. Set ANDROID_SERIAL to pick one." >&2; exit 2; }
 fi
 
-HOST_IP="${MAGLEV_HOST_IP:-$(ipconfig getifaddr en0 2>/dev/null || true)}"
-[ -n "$HOST_IP" ] || { echo "Cannot find the Mac LAN IP. Set MAGLEV_HOST_IP." >&2; exit 2; }
+HOST_IP="${REELNEST_HOST_IP:-$(ipconfig getifaddr en0 2>/dev/null || true)}"
+[ -n "$HOST_IP" ] || { echo "Cannot find the Mac LAN IP. Set REELNEST_HOST_IP." >&2; exit 2; }
 
 if curl -s --max-time 2 "http://127.0.0.1:$PORT/ctl/state" >/dev/null 2>&1; then
   echo "Something already answers on port $PORT. Stop it or pass --port." >&2; exit 2
 fi
 
-WORK="$(mktemp -d "${TMPDIR:-/tmp}/maglev-link-faults.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/reelnest-link-faults.XXXXXX")"
 LOG="$WORK/server.log"
 : > "$LOG"
 SERVER_PID=""

@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react';
-import { getHistoryWipeCount } from 'maglev-engine';
+import { getHistoryWipeCount } from 'reelnest-engine';
 import type { TabsState } from '../../utils/browser/tabs';
 import { tabStore } from '../../utils/browser/tabStore';
 import { deleteSavedTabs, flushTabs, loadTabs, scheduleSaveTabs } from '../../utils/history';

@@ -145,7 +145,7 @@ export function createTabStore(initialDeps: TabStoreDeps = noDeps) {
 
     /**
      * Call when a browser screen mounts. When native emptied the history since the last time JS looked (the activity
-     * was finished with "Clear history when Maglev closes" on), the in-memory tabs are stale: one blank tab.
+     * was finished with "Clear history when ReelNest closes" on), the in-memory tabs are stale: one blank tab.
      */
     async checkWipe(): Promise<void> {
       let n: number;

@@ -5,9 +5,9 @@
 //   1. copies the generated drawables, colours and mipmaps from assets/app-icons/ (scripts/build-app-icons.py) into
 //      android/app/src/main/res/, and
 //   2. moves MainActivity's MAIN/LAUNCHER intent filter onto one alias per icon. MainActivity keeps every
-//      other filter (maglev:// links, magnet:, .torrent, share), so deep links and shares are unaffected.
+//      other filter (reelnest:// links, magnet:, .torrent, share), so deep links and shares are unaffected.
 //      Only the default icon (teal) starts enabled.
-// The Kotlin side (modules/maglev-engine/.../appicon/AppIconManager.kt) carries the same id list and the same
+// The Kotlin side (modules/reelnest-engine/.../appicon/AppIconManager.kt) carries the same id list and the same
 // alias names. scripts/test-app-icons.js fails when the two drift.
 // Docs: https://developer.android.com/guide/topics/manifest/activity-alias-element
 //       https://developer.android.com/reference/android/content/pm/PackageManager#setComponentEnabledSetting(android.content.ComponentName,%20int,%20int)
@@ -20,13 +20,13 @@ const ICON_IDS = [
   'm-bare-lime', 'm-bare-teal', 'm-bare-mono', 'nose', 'dash', 'crt', 'amber',
 ];
 const DEFAULT_ICON = 'teal';
-const PACKAGE = 'com.maglev';
+const PACKAGE = 'com.reelnest';
 const RES_PREFIX = 'ic_launcher_alt_';
 const RES_DIRS = ['drawable', 'mipmap-anydpi', 'mipmap-anydpi-v26', 'values'];
 
 const resName = (id) => RES_PREFIX + id.replace(/-/g, '_');
 /** Fully qualified, so it does not depend on how the manifest package is resolved. */
-const aliasName = (id) => `${PACKAGE}.MaglevIcon_${id.replace(/-/g, '_')}`;
+const aliasName = (id) => `${PACKAGE}.ReelNestIcon_${id.replace(/-/g, '_')}`;
 
 const isLauncherFilter = (f) =>
   (f.action || []).some((a) => a.$ && a.$['android:name'] === 'android.intent.action.MAIN') &&

@@ -7,7 +7,7 @@ import { clearanceFor, dropClearance } from './clearance.ts';
 import { decodeWindows1251, isWindows1251 } from './charset.ts';
 
 export const APP_VERSION = '0.1.0';
-export const USER_AGENT = `Maglev/${APP_VERSION} (Android)`;
+export const USER_AGENT = `ReelNest/${APP_VERSION} (Android)`;
 
 export type ProviderErrorKind = 'network' | 'http' | 'blocked' | 'challenge' | 'parse' | 'timeout' | 'cancelled';
 

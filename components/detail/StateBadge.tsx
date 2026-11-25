@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { PausedBy, TorrentState } from 'maglev-engine';
+import type { PausedBy, TorrentState } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, alpha, radius, spacing, type } from '../../constants/theme';
 import { stateColor, stateLabel } from './torrentLabels';

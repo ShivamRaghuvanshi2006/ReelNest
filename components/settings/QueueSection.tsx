@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { PeerTimeoutMins, SeedingDurationLimit, SeedingRatioLimit } from 'maglev-engine';
+import type { PeerTimeoutMins, SeedingDurationLimit, SeedingRatioLimit } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import { Card, ChipGroup, InputSheet, parseIntIn } from './SettingsParts';
 

@@ -74,7 +74,7 @@ export function RemoveTrackerSheet({ url, last, busy, onClose, onRemove }: Remov
       <Text style={s.body}>
         {last
           ? 'This is the last tracker. Peers can still be found without it, but it may take longer.'
-          : 'Maglev stops asking this tracker for peers. The other trackers keep working.'}
+          : 'ReelNest stops asking this tracker for peers. The other trackers keep working.'}
       </Text>
       <View style={s.stack}>
         <Button label="Remove" variant="danger" fullWidth loading={busy} onPress={onRemove} />

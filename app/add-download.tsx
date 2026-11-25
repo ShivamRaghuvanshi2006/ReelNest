@@ -4,15 +4,15 @@ import { DownloadParts, PART_CHOICES, useLinkDownloadPrefs } from '../utils/pref
 import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { maglevEngine, infoHashToMagnet, isDownloadLink, isShareOpen, isTorrentSource, normalizeIncoming, type UrlProbe } from 'maglev-engine';
+import { reelnestEngine, infoHashToMagnet, isDownloadLink, isShareOpen, isTorrentSource, normalizeIncoming, type UrlProbe } from 'reelnest-engine';
 import { useTheme } from '../context/ThemeContext';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { ThemeColors, radius, spacing, touch, type } from '../constants/theme';
 import { formatBytes } from '../constants/format';
 import { haptic } from '../constants/haptics';
 import { StreamSheet } from '../components/browser/StreamSheet';
 import { streamKindOfLink } from '../components/browser/streamChoice';
-import type { FoundItem } from 'maglev-engine';
+import type { FoundItem } from 'reelnest-engine';
 import { Banner, Button, EmptyBlock, Screen, TextField } from '../components/ui';
 import { useDownloadAdmission } from '../utils/useDownloadAdmission';
 import { actionRoute, probeErrorView } from '../utils/downloadCopy';
@@ -46,7 +46,7 @@ export default function AddDownloadScreen() {
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
   const params = useLocalSearchParams<{ url?: string; source?: string; from?: string }>();
-  const { defaultStoragePath, probeUrl, probeStream, startDownload, showNotice, onMeteredNetwork, restartEngine } = useMaglevEngine();
+  const { defaultStoragePath, probeUrl, probeStream, startDownload, showNotice, onMeteredNetwork, restartEngine } = useReelNestEngine();
   const { settings } = useSettings();
 
   const [text, setText] = useState('');
@@ -133,10 +133,10 @@ export default function AddDownloadScreen() {
     [probeUrl, probeStream, router],
   );
 
-  // The `url` or `source` param (a share, a maglev:// link, or another screen) fills the field.
+  // The `url` or `source` param (a share, a reelnest:// link, or another screen) fills the field.
   // Only a share (`from=share`, set by app/+native-intent.tsx and stripped from every outside link)
   // or the Add torrent hand-off (`from=add-torrent`) checks the link at once. Anything else waits for a tap, so a web page or app cannot make the
-  // phone fetch a link by opening maglev://add-download.
+  // phone fetch a link by opening reelnest://add-download.
   const lastIncoming = useRef<string | null>(null);
   useEffect(() => {
     const raw = params.url || params.source;
@@ -193,7 +193,7 @@ export default function AddDownloadScreen() {
   const handleChangeFolder = async () => {
     haptic('tap');
     try {
-      const res = await pickFolderForThisDownload(() => maglevEngine.pickFolder());
+      const res = await pickFolderForThisDownload(() => reelnestEngine.pickFolder());
       if (res.kind === 'cancelled') return;
       if (res.kind === 'unsupported') {
         setAddError(notices.inline.folderNotDirect);

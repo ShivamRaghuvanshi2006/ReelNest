@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
-import { maglevEngine } from 'maglev-engine';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { reelnestEngine } from 'reelnest-engine';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { useSettings } from '../../context/SettingsContext';
 import { useListsVersion } from '../../utils/lists/hooks';
 import { listSubtitleEntries } from '../../utils/lists';
@@ -103,7 +103,7 @@ async function bulkOnce(keys: readonly string[], env: BulkEnv): Promise<string |
   await Promise.all(
     involved.map(async (key) => {
       try {
-        const d = await maglevEngine.getDetail(env.idFor(key));
+        const d = await reelnestEngine.getDetail(env.idFor(key));
         if (!d.ok) return;
         const done = d.files.filter((f) => f.length > 0 && f.progressBytes >= f.length).map((f) => ({ path: f.path }));
         for (const r of runs.filter((x) => x.askKey === key)) {
@@ -146,7 +146,7 @@ async function bulkOnce(keys: readonly string[], env: BulkEnv): Promise<string |
         const query = buildQuery({ fileName: target.fileName, videoBytes: target.videoBytes }, env.languages);
         const res = await downloadAndSave(
           { candidate, provider, sourceName: provider.name, target, query, choice: 'normal', signal },
-          { unzip: (b) => maglevEngine.unzipSubtitles(b), save: (v, n, b, rep) => maglevEngine.saveSubtitle(v, n, b, rep) },
+          { unzip: (b) => reelnestEngine.unzipSubtitles(b), save: (v, n, b, rep) => reelnestEngine.saveSubtitle(v, n, b, rep) },
         );
         if (res.status === 'saved') {
           savedAs.set(`${r.askKey}\n${r.fileKey}`, { lang: res.language, file: res.fileName });
@@ -159,7 +159,7 @@ async function bulkOnce(keys: readonly string[], env: BulkEnv): Promise<string |
       guarded<StoredCandidate[] | null>(r, null, async (signal) => {
         const target = targetOf(r);
         if (!target) return null;
-        const h = await hashIfComplete(target, maglevEngine);
+        const h = await hashIfComplete(target, reelnestEngine);
         const res = await searchSubtitles({ fileName: target.fileName, videoBytes: target.videoBytes, hash: h.hash }, { providers: [...env.providers], languages: env.languages, hearingImpaired: env.hearingImpaired, signal });
         if (signal.aborted || outcomeFromSources(res.sources, true)) return null;
         return toStored(res.ranked, env.languages);
@@ -208,7 +208,7 @@ export interface SeasonBulk {
 
 /** The hook the page row and the status sheet share. */
 export function useSeasonBulk(): SeasonBulk {
-  const { telemetry } = useMaglevEngine();
+  const { telemetry } = useReelNestEngine();
   const { settings } = useSettings();
   const listsVersion = useListsVersion();
   useSyncExternalStore(subscribeRequests, getRequestsVersion, getRequestsVersion);

@@ -1,7 +1,7 @@
 name: Rust Android (reusable)
 
-# Cross-compiles native/maglev-core for every Android ABI and uploads one
-# artifact per ABI. Each artifact contains `<abi>/libmaglev_core.so`, so the
+# Cross-compiles native/reelnest-core for every Android ABI and uploads one
+# artifact per ABI. Each artifact contains `<abi>/libreelnest_core.so`, so the
 # caller can merge them straight into jniLibs/.
 
 on:
@@ -56,14 +56,14 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          # Keep in sync with native/maglev-core/rust-toolchain.toml.
+          # Keep in sync with native/reelnest-core/rust-toolchain.toml.
           toolchain: 1.100.0
           targets: ${{ matrix.target }}
 
       - name: Cache Cargo build
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: native/maglev-core
+          workspaces: native/reelnest-core
           key: ${{ matrix.target }}
 
       - name: Setup Android NDK
@@ -78,7 +78,7 @@ jobs:
           tool: cargo-ndk
 
       - name: Build release .so
-        working-directory: native/maglev-core
+        working-directory: native/reelnest-core
         env:
           # Android 15 requires 16 KB ELF page alignment.
           RUSTFLAGS: "-C link-arg=-Wl,-z,max-page-size=16384"
@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: cargo-lock
-          path: native/maglev-core/Cargo.lock
+          path: native/reelnest-core/Cargo.lock
           if-no-files-found: error
           retention-days: 90
 
@@ -103,7 +103,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          SO="native/maglev-core/target/${{ matrix.target }}/release/libmaglev_core.so"
+          SO="native/reelnest-core/target/${{ matrix.target }}/release/libreelnest_core.so"
           test -f "$SO" || { echo "FAIL: missing $SO"; exit 1; }
           ls -l "$SO"
           SIZE=$(stat -c %s "$SO")
@@ -122,7 +122,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          SO="native/maglev-core/target/${{ matrix.target }}/release/libmaglev_core.so"
+          SO="native/reelnest-core/target/${{ matrix.target }}/release/libreelnest_core.so"
           READELF="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf"
           ALIGNS=$("$READELF" -lW "$SO" | awk '$1 == "LOAD" { print $NF }')
           echo "LOAD segment alignments: $ALIGNS"
@@ -137,14 +137,14 @@ jobs:
       - name: Stage library
         run: |
           mkdir -p jniLibs-stage/${{ matrix.abi }}
-          cp native/maglev-core/target/${{ matrix.target }}/release/libmaglev_core.so \
-             jniLibs-stage/${{ matrix.abi }}/libmaglev_core.so
+          cp native/reelnest-core/target/${{ matrix.target }}/release/libreelnest_core.so \
+             jniLibs-stage/${{ matrix.abi }}/libreelnest_core.so
 
       - name: Upload jniLibs artifact
         uses: actions/upload-artifact@v7
         with:
           name: jniLibs-${{ matrix.abi }}
-          # Directory root is jniLibs-stage, so the artifact holds <abi>/libmaglev_core.so.
+          # Directory root is jniLibs-stage, so the artifact holds <abi>/libreelnest_core.so.
           path: jniLibs-stage
           if-no-files-found: error
           retention-days: 7

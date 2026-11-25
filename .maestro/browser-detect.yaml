@@ -1,16 +1,16 @@
 # Open the Browser on a public test page with direct MP4 links, see the Files list with sizes,
 # download one file, find it in Transfers, then remove it and its files.
 # Test page: https://test-videos.co.uk/bigbuckbunny/mp4-h264 (Big Buck Bunny, CC BY 3.0). Checked with curl.
-appId: com.maglev
+appId: com.ReelNest
 name: browser-detect
 ---
 - runFlow: subflows/onboard-if-needed.yaml
-# maglev://browser?url= loads the page (utils/browserUrl.ts browserIntentRoute; NATIVE_CONTRACT 24.7).
-- openLink: "maglev://browser?url=https%3A%2F%2Ftest-videos.co.uk%2Fbigbuckbunny%2Fmp4-h264"
+# reelnest://browser?url= loads the page (utils/browserUrl.ts browserIntentRoute; NATIVE_CONTRACT 24.7).
+- openLink: "reelnest://browser?url=https%3A%2F%2Ftest-videos.co.uk%2Fbigbuckbunny%2Fmp4-h264"
 - extendedWaitUntil:
     visible: "Address" # app/browser.tsx:268 TextInput accessibilityLabel="Address"
     timeout: 30000
-# maglev://browser?url= only PREFILLS the address bar since 0.19 (app/browser.tsx: an external link never loads by itself), so submit it.
+# reelnest://browser?url= only PREFILLS the address bar since 0.19 (app/browser.tsx: an external link never loads by itself), so submit it.
 - tapOn: "Address"
 - pressKey: Enter
 # Found-files indicator: "Files · N" (app/browser.tsx:344), accessibilityLabel "Files, N found" (:347).

@@ -22,12 +22,12 @@ const files = [
   'app/download/[id].tsx',
   'components/TransferCard.tsx',
 ];
-for (const f of files) check(`${f} does not call useMaglevEngine()`, !/useMaglevEngine\s*\(/.test(read(f)));
+for (const f of files) check(`${f} does not call useReelNestEngine()`, !/useReelNestEngine\s*\(/.test(read(f)));
 
 const transfersDir = path.join(root, 'components/transfers');
 for (const f of fs.readdirSync(transfersDir)) {
   if (f === 'lowSpace.ts' || !/\.tsx?$/.test(f)) continue;
-  check(`components/transfers/${f} does not call useMaglevEngine()`, !/useMaglevEngine\s*\(/.test(read(`components/transfers/${f}`)));
+  check(`components/transfers/${f} does not call useReelNestEngine()`, !/useReelNestEngine\s*\(/.test(read(`components/transfers/${f}`)));
 }
 
 const tab = read('app/(tabs)/index.tsx');

@@ -8,7 +8,7 @@
 // the Android policy and enforce their own rules.
 // If the manifest already names another networkSecurityConfig, it is left alone and a warning is printed.
 // Docs: https://developer.android.com/privacy-and-security/security-config
-const CONFIG_NAME = 'maglev_network_security_config';
+const CONFIG_NAME = 'reelnest_network_security_config';
 const CONFIG_REF = '@xml/' + CONFIG_NAME;
 
 const networkSecurityXml = () =>

@@ -8,7 +8,7 @@ import { episodeOf, sameTitle, stripSlash } from '../match.ts';
 
 export const ID = 'gestdown';
 
-/** Maglev language code -> Gestdown's language name (Addic7ed labels). */
+/** ReelNest language code -> Gestdown's language name (Addic7ed labels). */
 const NAMES: Record<string, string> = {
   ar: 'Arabic', az: 'Azerbaijani', bn: 'Bengali', bs: 'Bosnian', bg: 'Bulgarian', ca: 'Català', cs: 'Czech', da: 'Danish',
   de: 'German', el: 'Greek', en: 'English', eu: 'Euskera', fa: 'Persian', fi: 'Finnish', fr: 'French', gl: 'Galego',

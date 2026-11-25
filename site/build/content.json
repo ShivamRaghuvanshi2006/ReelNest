@@ -6,7 +6,7 @@
       "source": "browser-v2.html",
       "title": "Save videos from any page",
       "caption": "Play a video, then save it from the tray.",
-      "description": "Maglev's browser with the Files tray open: 9 files found on the page, including a video stream (sintel.m3u8, HLS), a WebM trailer, images, a PDF and an audio file, with filters for All, Video and Audio."
+      "description": "ReelNest's browser with the Files tray open: 9 files found on the page, including a video stream (sintel.m3u8, HLS), a WebM trailer, images, a PDF and an audio file, with filters for All, Video and Audio."
     },
     {
       "id": "stream-sheet",
@@ -51,7 +51,7 @@
       "text": "Torrents, ordinary links and saved streams sit in the same list, each with its size, progress, speed and time left, such as 412 MB of 1.2 GB. A queue decides how many run at once. Pause, resume and retry survive a restart, and downloads keep going with the screen off.",
       "specs": [
         "One + button for a link you paste or type, a .torrent file, Search or the browser",
-        "Share a magnet, a .torrent file or a file link to Maglev from any app, or open .torrent files from your file manager",
+        "Share a magnet, a .torrent file or a file link to ReelNest from any app, or open .torrent files from your file manager",
         "Transfers says why a download is held (Wi-Fi only, battery, schedule, storage full and more), with a button to change that setting",
         "Swipe a row right to pause or resume it, or left to remove it from the list (files are kept). You can turn this off",
         "A file type icon on each card (a torrent's comes from its biggest file), which you can turn off",
@@ -67,13 +67,13 @@
     {
       "id": "browser",
       "title": "A browser that blocks ads and finds the files on a page",
-      "text": "Open any page inside Maglev. Ads and trackers are blocked before they load. Play a video and Maglev lists it, together with the page's other files, in a tray you can filter by type. Tap one to download it with the page's cookies, so files behind a sign-in still work.",
+      "text": "Open any page inside ReelNest. Ads and trackers are blocked before they load. Play a video and ReelNest lists it, together with the page's other files, in a tray you can filter by type. Tap one to download it with the page's cookies, so files behind a sign-in still work.",
       "specs": [
         "Over 42,000 blocked domains from [StevenBlack/hosts](https://github.com/StevenBlack/hosts), refreshed once a day on its own. Add your own lists and they refresh too",
         "Tabs with a long-press menu on links and images: new tab, background tab, copy, share or download",
         "Pop-ups and redirects you didn't tap for wait until you choose Open, Block or Always allow on this site",
         "Find in page and text size",
-        "A history you can search, with suggestions as you type and recent pages on every new tab. It can clear itself when you close Maglev",
+        "A history you can search, with suggestions as you type and recent pages on every new tab. It can clear itself when you close ReelNest",
         "App installers come with a warning",
         "Swipe the address bar left or right to switch tabs, or down to see all tabs",
         "Downloads that start without a tap go to the found-files tray instead, pages can't fill your Back history to keep you on them, known crypto-mining scripts are blocked, and pages open over HTTPS when the site supports it"
@@ -83,10 +83,10 @@
     {
       "id": "streams",
       "title": "Streaming video, saved as one file",
-      "text": "Many sites play video as hundreds of small pieces listed in a playlist: [HLS](https://www.rfc-editor.org/rfc/rfc8216) (.m3u8) or DASH. Maglev reads the playlist, lets you pick the quality and audio language, downloads the pieces and joins them into one video file.",
+      "text": "Many sites play video as hundreds of small pieces listed in a playlist: [HLS](https://www.rfc-editor.org/rfc/rfc8216) (.m3u8) or DASH. ReelNest reads the playlist, lets you pick the quality and audio language, downloads the pieces and joins them into one video file.",
       "specs": [
         "On-demand HLS and DASH, including HLS with standard AES-128 encryption",
-        "DRM-protected video and live streams are refused, and Maglev says why",
+        "DRM-protected video and live streams are refused, and ReelNest says why",
         "Separate video and audio are joined without re-encoding"
       ],
       "screen": "stream-sheet"
@@ -94,20 +94,20 @@
     {
       "id": "subtitles",
       "title": "Subtitles for the videos you download",
-      "text": "Open a finished download, or a video inside a torrent, and tap Find subtitles. Maglev asks 21 free sources, with no account, and groups what it finds as Fits this file, Probably fits and May be out of sync. The subtitle is saved next to the video, so your player picks it up.",
+      "text": "Open a finished download, or a video inside a torrent, and tap Find subtitles. ReelNest asks 21 free sources, with no account, and groups what it finds as Fits this file, Probably fits and May be out of sync. The subtitle is saved next to the video, so your player picks it up.",
       "specs": [
         "Open a finished link download's menu in Transfers, a torrent's options, or the ⋯ next to a video in its Files tab",
         "Saved as <video name>.<lang>.srt (or .ass or .vtt). If that name exists, you choose Replace or Keep both",
         "Pick and order languages, set a hearing-impaired preference and turn each source on or off in Settings > Finding things > Subtitle sources",
         "Two sources match by file fingerprint: Subtis for Spanish and Napisy24 for Polish. The rest match by name, so check the fit",
-        "The source list updates itself from Maglev's signed list",
+        "The source list updates itself from ReelNest's signed list",
         "Nothing is looked up until you tap Find subtitles"
       ]
     },
     {
       "id": "search",
       "title": "One search, many sources, one list",
-      "text": "Type once and Maglev asks up to 40 built-in public torrent indexes at the same time, including ones you can switch off by category. Results that point to the same torrent are merged, so you see one row with every source that has it.",
+      "text": "Type once and ReelNest asks up to 40 built-in public torrent indexes at the same time, including ones you can switch off by category. Results that point to the same torrent are merged, so you see one row with every source that has it.",
       "specs": [
         "Filter results by category, and sort by seeders, size or date",
         "A size range slider hides results that are too small or too big",
@@ -121,11 +121,11 @@
     {
       "id": "feeds",
       "title": "Feeds that download new episodes for you",
-      "text": "Follow a show from Search, or add any RSS feed. When a new item matches your rule, Maglev adds it to your downloads. Items that don't match are left alone.",
+      "text": "Follow a show from Search, or add any RSS feed. When a new item matches your rule, ReelNest adds it to your downloads. Items that don't match are left alone.",
       "specs": [
         "Works with any RSS feed",
         "Rules decide what gets added",
-        "Watch for a title: Maglev checks every 1, 6 or 24 hours (Wi-Fi only unless you allow mobile data) and tells you when something new turns up"
+        "Watch for a title: ReelNest checks every 1, 6 or 24 hours (Wi-Fi only unless you allow mobile data) and tells you when something new turns up"
       ],
       "screen": "feeds"
     },
@@ -145,9 +145,9 @@
     {
       "id": "control",
       "title": "You stay in control",
-      "text": "Rules for when and how Maglev downloads, so it fits your data plan, your battery and your storage.",
+      "text": "Rules for when and how ReelNest downloads, so it fits your data plan, your battery and your storage.",
       "specs": [
-        "Maglev updates itself: a daily check and Check for updates in About. It downloads on Wi-Fi and asks before installing, or installs on its own if you choose. F-Droid and Obtainium installs keep their own updates",
+        "ReelNest updates itself: a daily check and Check for updates in About. It downloads on Wi-Fi and asks before installing, or installs on its own if you choose. F-Droid and Obtainium installs keep their own updates",
         "The ad block list, search sources and default trackers refresh once a day without an app update, or when you tap Check now",
         "Download only on Wi-Fi, only over a VPN, or only while charging",
         "Pause when the battery runs low",
@@ -155,7 +155,7 @@
         "A schedule for when downloads run or slow down",
         "Pick the files in a torrent and mark one to download first",
         "Pause all, Resume all and Shut down from the notification, and a Quick Settings tile",
-        "Files land in Download/Maglev, where any file manager finds them, or in any folder you choose",
+        "Files land in Download/ReelNest, where any file manager finds them, or in any folder you choose",
         "Move a torrent's files mid-download, and stream video before it finishes",
         "Pauses before the phone runs out of space, keeping 500 MB to 1 GB free, and resumes when space comes back",
         "Backup and restore in Settings: your settings, search sources, torrents and downloads in one file, and your stats if you tick Include stats. API keys are never included",
@@ -166,104 +166,104 @@
   ],
   "faq": [
     [
-      "Is Maglev free?",
-      "Yes. Maglev is free to download and use, with no ads and nothing to buy. It is free software under the GNU General Public License v3.0, made by [Harsh Dayal](https://harshdayal.dev). The source code is public on GitHub, so anyone can check what the app does."
+      "Is ReelNest free?",
+      "Yes. ReelNest is free to download and use, with no ads and nothing to buy. It is free software under the GNU General Public License v3.0, made by [Harsh Dayal](https://harshdayal.dev). The source code is public on GitHub, so anyone can check what the app does."
     ],
     [
-      "Does Maglev have ads?",
-      "No. Maglev has no ads and no ads SDK. Its built-in browser also blocks ads and trackers on the pages you open, using a list of over 42,000 ad and tracker domains. Once a day Maglev refreshes that list, the search source addresses and the default trackers, from harshdayal.dev/maglev/lists/sources.json and raw.githubusercontent.com, with no cookies and no identifiers. You can replace the list or turn the updates off in Settings."
+      "Does ReelNest have ads?",
+      "No. ReelNest has no ads and no ads SDK. Its built-in browser also blocks ads and trackers on the pages you open, using a list of over 42,000 ad and tracker domains. Once a day ReelNest refreshes that list, the search source addresses and the default trackers, from harshdayal.dev/reelnest/lists/sources.json and raw.githubusercontent.com, with no cookies and no identifiers. You can replace the list or turn the updates off in Settings."
     ],
     [
-      "Is Maglev safe to install?",
-      "Yes, when you get it from the official [GitHub Releases](https://github.com/Kaos599/Maglev/releases/latest) page. Maglev is open source, and its release APKs are built by GitHub Actions from the public code. Every official APK is signed with the same key, whose SHA-256 fingerprint is {{FINGERPRINT}}. You can check it with apksigner before you install."
+      "Is ReelNest safe to install?",
+      "Yes, when you get it from the official [GitHub Releases](https://github.com/ShivamRaghuvanshi2006/ReelNest/releases/latest) page. ReelNest is open source, and its release APKs are built by GitHub Actions from the public code. Every official APK is signed with the same key, whose SHA-256 fingerprint is {{FINGERPRINT}}. You can check it with apksigner before you install."
     ],
     [
-      "Is it legal to use Maglev?",
-      "Yes. Maglev is a download tool, like a browser or download manager; what matters is what you download and your local law. Maglev doesn't host or index any content: its search sends your query to public indexes run by third parties. Download only what you have the right to."
+      "Is it legal to use ReelNest?",
+      "Yes. ReelNest is a download tool, like a browser or download manager; what matters is what you download and your local law. ReelNest doesn't host or index any content: its search sends your query to public indexes run by third parties. Download only what you have the right to."
     ],
     [
-      "Does Maglev collect my data or use analytics?",
-      "No. Maglev has no analytics or ads SDKs. It contacts only what you use: the sites you open, the block-list addresses in Settings, the public sources you search, the subtitle sources you turn on, and OpenRouter when you use the assistant. Torrents also connect to trackers and other peers, as every torrent client does."
+      "Does ReelNest collect my data or use analytics?",
+      "No. ReelNest has no analytics or ads SDKs. It contacts only what you use: the sites you open, the block-list addresses in Settings, the public sources you search, the subtitle sources you turn on, and OpenRouter when you use the assistant. Torrents also connect to trackers and other peers, as every torrent client does."
     ],
     [
-      "Why isn't Maglev on the Google Play Store?",
-      "Not yet. A Google Play build is planned. Until then, install the APK from [GitHub Releases](https://github.com/Kaos599/Maglev/releases/latest), or add Maglev to [Obtainium](https://github.com/ImranR98/Obtainium), which installs new versions from GitHub as they come out."
+      "Why isn't ReelNest on the Google Play Store?",
+      "Not yet. A Google Play build is planned. Until then, install the APK from [GitHub Releases](https://github.com/ShivamRaghuvanshi2006/ReelNest/releases/latest), or add ReelNest to [Obtainium](https://github.com/ImranR98/Obtainium), which installs new versions from GitHub as they come out."
     ],
     [
-      "Is Maglev available for iPhone?",
-      "No. Maglev is an Android app only. It runs on Android 7 and later, on phones, tablets, Chromebooks and emulators. There is no iPhone or iPad version."
+      "Is ReelNest available for iPhone?",
+      "No. ReelNest is an Android app only. It runs on Android 7 and later, on phones, tablets, Chromebooks and emulators. There is no iPhone or iPad version."
     ],
     [
-      "Does Maglev work on Android 7?",
-      "Yes. Maglev runs on Android 7 and every later version. On Android 16 and later, download progress also shows as a live chip in the status bar."
+      "Does ReelNest work on Android 7?",
+      "Yes. ReelNest runs on Android 7 and every later version. On Android 16 and later, download progress also shows as a live chip in the status bar."
     ],
     [
       "How do I download videos from websites on Android?",
-      "Open the page in Maglev's browser and play the video. Maglev lists it in the Files tray with the page's other files. Tap it to download. Files that need the site's session still work, because Maglev uses the page's cookies for that download."
+      "Open the page in ReelNest's browser and play the video. ReelNest lists it in the Files tray with the page's other files. Tap it to download. Files that need the site's session still work, because ReelNest uses the page's cookies for that download."
     ],
     [
       "How do I save an HLS or m3u8 stream on Android?",
-      "Play the video in Maglev's browser, then tap the stream in the Files tray. Choose the quality and audio language and tap Start. Maglev downloads the pieces and joins them into one video file. It saves on-demand HLS and DASH streams, including HLS with standard AES-128 encryption."
+      "Play the video in ReelNest's browser, then tap the stream in the Files tray. Choose the quality and audio language and tap Start. ReelNest downloads the pieces and joins them into one video file. It saves on-demand HLS and DASH streams, including HLS with standard AES-128 encryption."
     ],
     [
       "What is a good m3u8 or HLS downloader for Android?",
-      "Maglev is one free, open source option. It finds HLS (.m3u8) and DASH streams while a page plays, lets you pick the quality and audio language, and joins the pieces into one video file. It handles on-demand streams, including AES-128 encrypted HLS, and refuses DRM-protected and live streams."
+      "ReelNest is one free, open source option. It finds HLS (.m3u8) and DASH streams while a page plays, lets you pick the quality and audio language, and joins the pieces into one video file. It handles on-demand streams, including AES-128 encrypted HLS, and refuses DRM-protected and live streams."
     ],
     [
-      "Which streams can't Maglev save?",
-      "DRM-protected streams, live streams and players that hide their video inside the page. That includes HLS that uses SAMPLE-AES, Netflix-style protected video and YouTube-style players. Maglev never gets around DRM, and when it can't save something, it tells you why."
+      "Which streams can't ReelNest save?",
+      "DRM-protected streams, live streams and players that hide their video inside the page. That includes HLS that uses SAMPLE-AES, Netflix-style protected video and YouTube-style players. ReelNest never gets around DRM, and when it can't save something, it tells you why."
     ],
     [
-      "Can Maglev download YouTube videos?",
-      "No. YouTube-style players hide their video inside the page in a way Maglev can't save, and Maglev says so when you try. The same goes for Netflix-style protected video and live streams."
+      "Can ReelNest download YouTube videos?",
+      "No. YouTube-style players hide their video inside the page in a way ReelNest can't save, and ReelNest says so when you try. The same goes for Netflix-style protected video and live streams."
     ],
     [
-      "Can Maglev download subtitles?",
-      "Yes, for videos you have already downloaded. Tap Find subtitles on a finished download, or on a video in a torrent's Files tab. Maglev searches 21 free sources with no account and groups the results by how well they fit the file. The subtitle is saved next to the video, so players pick it up. Two sources match by file fingerprint (Subtis for Spanish, Napisy24 for Polish); the rest match by name. Maglev doesn't fetch subtitles by itself when a download finishes."
+      "Can ReelNest download subtitles?",
+      "Yes, for videos you have already downloaded. Tap Find subtitles on a finished download, or on a video in a torrent's Files tab. ReelNest searches 21 free sources with no account and groups the results by how well they fit the file. The subtitle is saved next to the video, so players pick it up. Two sources match by file fingerprint (Subtis for Spanish, Napisy24 for Polish); the rest match by name. ReelNest doesn't fetch subtitles by itself when a download finishes."
     ],
     [
-      "Can Maglev save Instagram, TikTok or X videos?",
-      "Sometimes. Maglev has no special support for any one site. It saves video files and on-demand HLS or DASH streams that a page loads while you play them. Some players stream in a way Maglev can't save, and protected video never saves, so results vary by site and by video."
+      "Can ReelNest save Instagram, TikTok or X videos?",
+      "Sometimes. ReelNest has no special support for any one site. It saves video files and on-demand HLS or DASH streams that a page loads while you play them. Some players stream in a way ReelNest can't save, and protected video never saves, so results vary by site and by video."
     ],
     [
       "Is there an ad-free browser for Android that downloads videos?",
-      "Yes, Maglev's built-in browser is one. It blocks ads and trackers before they load, lists the videos and files a page plays or links to, and saves them with the page's cookies. Pop-ups and redirects you didn't tap for wait until you choose Open, Block or Always allow on this site."
+      "Yes, ReelNest's built-in browser is one. It blocks ads and trackers before they load, lists the videos and files a page plays or links to, and saves them with the page's cookies. Pop-ups and redirects you didn't tap for wait until you choose Open, Block or Always allow on this site."
     ],
     [
       "What is a torrent, in plain words?",
       "A torrent is a way to share a file between many people at once. Instead of downloading from one server, your phone gets small pieces from everyone who has the file and shares pieces back while it downloads. A magnet link or a .torrent file tells the app which file to look for."
     ],
     [
-      "Is Maglev a good LibreTorrent or Flud alternative?",
-      "It can be. Like LibreTorrent and Flud, Maglev downloads torrents and magnet links and follows RSS feeds. It also downloads ordinary links with resume, saves videos from web pages through an ad-free browser, and searches 40 built-in sources. The [comparison page](compare/) lists what each app's own page says."
+      "Is ReelNest a good LibreTorrent or Flud alternative?",
+      "It can be. Like LibreTorrent and Flud, ReelNest downloads torrents and magnet links and follows RSS feeds. It also downloads ordinary links with resume, saves videos from web pages through an ad-free browser, and searches 40 built-in sources. The [comparison page](compare/) lists what each app's own page says."
     ],
     [
-      "Can Maglev open magnet links and .torrent files?",
+      "Can ReelNest open magnet links and .torrent files?",
       "Yes. Open them from your browser, a chat app, the clipboard or a share. You see every file in the torrent before it starts, and you can pick only the ones you want."
     ],
     [
       "Where can I find torrents to download?",
-      "In Maglev's Search tab. One search asks up to 40 built-in public torrent indexes, and merges results that point to the same torrent. Results from sources known for fake uploads carry a warning. You can also add your own Jackett or Prowlarr indexer."
+      "In ReelNest's Search tab. One search asks up to 40 built-in public torrent indexes, and merges results that point to the same torrent. Results from sources known for fake uploads carry a warning. You can also add your own Jackett or Prowlarr indexer."
     ],
     [
       "Which APK file should I download?",
       "You don't have to choose. The Download button picks the right file for your phone. If you want to pick yourself: arm64-v8a is for most phones from the last six years, armeabi-v7a for an older 32-bit phone, x86_64 for an emulator or a Chromebook, and universal if you aren't sure, because it runs on every device."
     ],
     [
-      "What permissions does Maglev need, and why?",
-      "Only what downloads need. Notifications show progress and finished downloads. A foreground service and wake lock keep downloads running with the screen off. Network state powers the Wi-Fi-only rule. Storage permission is asked only on Android 9 and older. Maglev can also ask to skip battery optimization and resume downloads after a restart."
+      "What permissions does ReelNest need, and why?",
+      "Only what downloads need. Notifications show progress and finished downloads. A foreground service and wake lock keep downloads running with the screen off. Network state powers the Wi-Fi-only rule. Storage permission is asked only on Android 9 and older. ReelNest can also ask to skip battery optimization and resume downloads after a restart."
     ],
     [
-      "Do I need root or a VPN to use Maglev?",
-      "No. Maglev needs no root and no VPN. If you use a VPN, you can tell Maglev to download only while the VPN is connected, and it pauses whenever the VPN drops."
+      "Do I need root or a VPN to use ReelNest?",
+      "No. ReelNest needs no root and no VPN. If you use a VPN, you can tell ReelNest to download only while the VPN is connected, and it pauses whenever the VPN drops."
     ],
     [
-      "Can I back up Maglev and restore it on a new phone?",
+      "Can I back up ReelNest and restore it on a new phone?",
       "Yes. In Settings > Backup, export one file with your settings, search sources, torrents and downloads, and your stats if you tick Include stats. API keys are never included. On the new phone, open the file in Settings > Backup and choose what to restore."
     ],
     [
-      "Where does Maglev save downloaded files?",
-      "In the Download/Maglev folder on your phone, where any file manager can find them. When a download finishes you can open it, share it or open its folder right from the list."
+      "Where does ReelNest save downloaded files?",
+      "In the Download/ReelNest folder on your phone, where any file manager can find them. When a download finishes you can open it, share it or open its folder right from the list."
     ],
     [
       "Can I save downloads to a different folder?",
@@ -271,47 +271,47 @@
     ],
     [
       "Can I pause and resume downloads?",
-      "Yes. Pause, resume and retry work for torrents and for ordinary links, and they survive a restart. If a link has expired, Maglev asks for a fresh one and continues where it stopped."
+      "Yes. Pause, resume and retry work for torrents and for ordinary links, and they survive a restart. If a link has expired, ReelNest asks for a fresh one and continues where it stopped."
     ],
     [
       "Do downloads keep going in the background?",
-      "Yes. Downloads keep going with the screen off. If Android closes the app, Maglev comes back and carries on. The notification has Pause all, Resume all and Shut down buttons."
+      "Yes. Downloads keep going with the screen off. If Android closes the app, ReelNest comes back and carries on. The notification has Pause all, Resume all and Shut down buttons."
     ],
     [
       "Can I download only on Wi-Fi?",
-      "Yes. You can set Maglev to download only on Wi-Fi, only when a VPN is on, or only while charging. You can also set speed limits and a schedule for when downloads run or slow down."
+      "Yes. You can set ReelNest to download only on Wi-Fi, only when a VPN is on, or only while charging. You can also set speed limits and a schedule for when downloads run or slow down."
     ],
     [
-      "Does Maglev drain the battery?",
-      "It uses battery while it downloads, like any download app, and torrents also use it while they share with others. To keep it in check, Maglev can pause on low battery, download only while charging, and stop sharing a torrent once it reaches the ratio or time you set."
+      "Does ReelNest drain the battery?",
+      "It uses battery while it downloads, like any download app, and torrents also use it while they share with others. To keep it in check, ReelNest can pause on low battery, download only while charging, and stop sharing a torrent once it reaches the ratio or time you set."
     ],
     [
       "How do I get updates?",
-      "Add Maglev to [Obtainium](https://github.com/ImranR98/Obtainium) and new versions install as they come out. Or download the new APK from GitHub Releases and install it over the old one; your downloads and settings stay."
+      "Add ReelNest to [Obtainium](https://github.com/ImranR98/Obtainium) and new versions install as they come out. Or download the new APK from GitHub Releases and install it over the old one; your downloads and settings stay."
     ],
     [
-      "Does Maglev check for updates, and what does that send?",
-      "Once a day, and when you tap Check for updates, Maglev asks api.github.com for the latest release. GitHub sees your IP address and the app version. Turning off Check automatically in Settings → About stops the daily request. The update file downloads from GitHub's release file servers. By default Maglev downloads updates on Wi-Fi and asks before installing. Pick 'Tell me' to decide each time."
+      "Does ReelNest check for updates, and what does that send?",
+      "Once a day, and when you tap Check for updates, ReelNest asks api.github.com for the latest release. GitHub sees your IP address and the app version. Turning off Check automatically in Settings → About stops the daily request. The update file downloads from GitHub's release file servers. By default ReelNest downloads updates on Wi-Fi and asks before installing. Pick 'Tell me' to decide each time."
     ],
     [
       "What does the AI assistant do, and do I need it?",
       "You don't need it. The assistant is optional: it searches, compares results, checks size and free space, and explains problems, and it always waits for you to tap Confirm. It runs on your own OpenRouter key, kept in secure storage, and can use free models. Turn it off and its tab disappears."
     ],
     [
-      "Is Maglev open source?",
-      "Yes. Maglev is free software under the GNU General Public License v3.0: you can use, study, change and share it. The source code is on [GitHub](https://github.com/Kaos599/Maglev). The torrent engine is a modified copy of [librqbit](https://github.com/ikatson/rqbit) by Igor Katson, under the Apache License 2.0. Its subtitle sources are ported from the [Bazarr+](https://github.com/LavX/bazarr-provider-catalog) provider catalog (MIT)."
+      "Is ReelNest open source?",
+      "Yes. ReelNest is free software under the GNU General Public License v3.0: you can use, study, change and share it. The source code is on [GitHub](https://github.com/ShivamRaghuvanshi2006/ReelNest). The torrent engine is a modified copy of [librqbit](https://github.com/ikatson/rqbit) by Igor Katson, under the Apache License 2.0. Its subtitle sources are ported from the [Bazarr+](https://github.com/LavX/bazarr-provider-catalog) provider catalog (MIT)."
     ],
     [
-      "Is Maglev finished?",
-      "Maglev is stable, and it keeps growing: new search sources and features arrive in regular updates. If something goes wrong, please report it on GitHub."
+      "Is ReelNest finished?",
+      "ReelNest is stable, and it keeps growing: new search sources and features arrive in regular updates. If something goes wrong, please report it on GitHub."
     ],
     [
-      "Who makes Maglev?",
-      "Harsh Dayal makes Maglev. You can find him at [harshdayal.dev](https://harshdayal.dev) and on GitHub as [Kaos599](https://github.com/Kaos599)."
+      "Who makes ReelNest?",
+      "Harsh Dayal makes ReelNest. You can find him at [harshdayal.dev](https://harshdayal.dev) and on GitHub as [Kaos599](https://github.com/Kaos599)."
     ],
     [
       "How do I report a bug or ask for a feature?",
-      "Open an issue on [GitHub](https://github.com/Kaos599/Maglev/issues). Say what you did, what you expected and what happened, and include your Android version and phone model."
+      "Open an issue on [GitHub](https://github.com/ShivamRaghuvanshi2006/ReelNest/issues). Say what you did, what you expected and what happened, and include your Android version and phone model."
     ]
   ],
   "howItWorks": [
@@ -330,21 +330,21 @@
   ],
   "privacy": {
     "title": "Privacy policy",
-    "description": "Maglev has no account, no ads and no analytics. This page lists every time the app talks to the internet and what it sends.",
+    "description": "ReelNest has no account, no ads and no analytics. This page lists every time the app talks to the internet and what it sends.",
     "updated": "2026-11-18",
     "contact": "yojzt6j3@anonaddy.me",
-    "intro": "Maglev has no account, no ads, no analytics and no server of its own. This page lists every time the app talks to the internet, and what it sends.",
+    "intro": "ReelNest has no account, no ads, no analytics and no server of its own. This page lists every time the app talks to the internet, and what it sends.",
     "sections": [
       {
-        "heading": "What Maglev collects",
+        "heading": "What ReelNest collects",
         "body": [
-          "Nothing. The app contains no analytics, crash reporting or tracking code, and no Maglev server receives anything from it. There is no account to make."
+          "Nothing. The app contains no analytics, crash reporting or tracking code, and no ReelNest server receives anything from it. There is no account to make."
         ]
       },
       {
         "heading": "What stays on your phone",
         "body": [
-          "Your transfers, settings, feeds, watched searches, the assistant chat if you use it, and a crash log. They stay on the phone. Clearing Maglev's data or uninstalling it deletes them.",
+          "Your transfers, settings, feeds, watched searches, the assistant chat if you use it, and a crash log. They stay on the phone. Clearing ReelNest's data or uninstalling it deletes them.",
           "The crash log leaves the phone only if you copy it from About and send it somewhere yourself. A backup is a file you save where you choose."
         ]
       },
@@ -366,7 +366,7 @@
       {
         "heading": "Lists that update themselves",
         "body": [
-          "Once a day, and when you tap Check now in Settings → About, Maglev fetches harshdayal.dev/maglev/lists/sources.json and the ad block list addresses (raw.githubusercontent.com by default). The first holds search and subtitle source addresses, any source Maglev turned off, and the default trackers. Maglev checks its signature before it uses it.",
+          "Once a day, and when you tap Check now in Settings → About, ReelNest fetches harshdayal.dev/reelnest/lists/sources.json and the ad block list addresses (raw.githubusercontent.com by default). The first holds search and subtitle source addresses, any source ReelNest turned off, and the default trackers. ReelNest checks its signature before it uses it.",
           "These requests carry no cookies and no identifiers. The sites see your IP address, like any download. Turning off Update lists automatically in Settings → About stops the daily requests."
         ]
       },
@@ -374,27 +374,27 @@
         "heading": "The assistant",
         "body": [
           "The assistant is off until you set it up. If you turn it on, your messages go to the AI provider you pick: OpenRouter, OpenAI, Anthropic, Groq, or an address you enter. So do the results of actions it runs for you, such as search results or the names and sizes of your transfers.",
-          "You use your own key, kept in Android's encrypted storage on the phone. Maglev never receives the key or the chat. The provider's own privacy policy covers what it does with your messages."
+          "You use your own key, kept in Android's encrypted storage on the phone. ReelNest never receives the key or the chat. The provider's own privacy policy covers what it does with your messages."
         ]
       },
       {
         "heading": "Updates",
         "body": [
-          "Once a day, and when you tap Check for updates, Maglev asks api.github.com for the latest release. GitHub sees your IP address and the app version. Turning off Check automatically in Settings → About stops the daily request.",
-          "The update file downloads from GitHub's release file servers. By default Maglev downloads updates on Wi-Fi and asks before installing. Pick 'Tell me' to decide each time."
+          "Once a day, and when you tap Check for updates, ReelNest asks api.github.com for the latest release. GitHub sees your IP address and the app version. Turning off Check automatically in Settings → About stops the daily request.",
+          "The update file downloads from GitHub's release file servers. By default ReelNest downloads updates on Wi-Fi and asks before installing. Pick 'Tell me' to decide each time."
         ]
       },
       {
         "heading": "Children",
         "body": [
-          "Maglev is not made for children under 13."
+          "ReelNest is not made for children under 13."
         ]
       },
       {
         "heading": "Changes and contact",
         "body": [
           "If any of this changes, this page will change with it and show a new date.",
-          "Questions: write to [yojzt6j3@anonaddy.me](mailto:yojzt6j3@anonaddy.me) or [open an issue on GitHub](https://github.com/Kaos599/Maglev/issues)."
+          "Questions: write to [yojzt6j3@anonaddy.me](mailto:yojzt6j3@anonaddy.me) or [open an issue on GitHub](https://github.com/ShivamRaghuvanshi2006/ReelNest/issues)."
         ]
       }
     ]

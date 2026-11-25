@@ -3,7 +3,7 @@
  * Writes the two bundled data files the About pages read, so nothing is hand-written or fetched:
  *   constants/licenses.generated.ts      runtime dependencies (package.json) + pixelarticons + librqbit, with licences
  *   constants/releaseNotes.generated.ts  release-notes/<version>.md for every version
- * Licences come from node_modules/<pkg>/package.json; librqbit's from native/maglev-core/vendor/librqbit/Cargo.toml.
+ * Licences come from node_modules/<pkg>/package.json; librqbit's from native/reelnest-core/vendor/librqbit/Cargo.toml.
  * Other Rust crates are left out: their licences cannot be read offline, and we do not guess.
  * Run: node scripts/gen-licenses.js   (node_modules must be installed)
  */
@@ -23,7 +23,7 @@ function repoUrl(p) {
 }
 
 const rows = [];
-const names = [...Object.keys(pkg.dependencies), 'pixelarticons'].filter((n) => n !== 'maglev-engine');
+const names = [...Object.keys(pkg.dependencies), 'pixelarticons'].filter((n) => n !== 'reelnest-engine');
 for (const name of names) {
   const f = path.join(root, 'node_modules', name, 'package.json');
   if (!fs.existsSync(f)) throw new Error(`${name} is not installed; install dependencies first`);
@@ -33,7 +33,7 @@ for (const name of names) {
   rows.push({ name, version: p.version, license, url: repoUrl(p) });
 }
 
-const toml = fs.readFileSync(path.join(root, 'native/maglev-core/vendor/librqbit/Cargo.toml'), 'utf8');
+const toml = fs.readFileSync(path.join(root, 'native/reelnest-core/vendor/librqbit/Cargo.toml'), 'utf8');
 const field = (k) => (toml.match(new RegExp(`^${k}\\s*=\\s*"([^"]+)"`, 'm')) || [])[1];
 if (!field('license')) throw new Error('librqbit license not found in vendored Cargo.toml');
 rows.push({ name: field('name'), version: field('version'), license: field('license'), url: field('repository') || '' });

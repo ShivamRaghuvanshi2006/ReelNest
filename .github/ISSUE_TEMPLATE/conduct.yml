@@ -4,13 +4,13 @@ labels: [conduct]
 body:
   - type: markdown
     attributes:
-      value: See the [code of conduct](https://github.com/Kaos599/Maglev/blob/main/CODE_OF_CONDUCT.md). Describe what happened, but don't repeat the abuse itself.
+      value: See the [code of conduct](https://github.com/ShivamRaghuvanshi2006/ReelNest/blob/main/CODE_OF_CONDUCT.md). Describe what happened, but don't repeat the abuse itself.
   - type: input
     id: link
     attributes:
       label: Link
       description: The comment, issue or pull request.
-      placeholder: https://github.com/Kaos599/Maglev/issues/123#issuecomment-…
+      placeholder: https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/123#issuecomment-…
     validations:
       required: true
   - type: textarea

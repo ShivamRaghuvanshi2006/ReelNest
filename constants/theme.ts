@@ -1,7 +1,7 @@
 import { DEFAULT_FONT_STYLE, fontFamilies, resolveFontStyle, slotAdvance, type FontStyleName } from './fontStyles.ts';
 
 /**
- * Maglev theme foundation.
+ * ReelNest theme foundation.
  *
  * STYLE PATTERN (applies to every screen and component):
  *   const { colors } = useTheme();
@@ -12,27 +12,27 @@ import { DEFAULT_FONT_STYLE, fontFamilies, resolveFontStyle, slotAdvance, type F
  * `alpha(colors.accent, 0.15)` for tints. Fonts come from `type`:
  *   spread `...type.mono` for numbers, filenames and telemetry (tabular-nums),
  *   `...type.body` / `...type.bodyStrong` for copy, `...type.heading` for titles,
- *   `...type.brand` for the MAGLEV wordmark only (Silkscreen in every font style). Custom faces have no synthetic bold on
+ *   `...type.brand` for the REELNEST wordmark only (Cabinet Grotesk in every font style). Custom faces have no synthetic bold on
  *   Android, so never pair fontWeight with them; use the Bold/SemiBold face.
  *
  * CONTRAST (WCAG 2.x, computed by the helper below, verified with node):
- *   mode   text/bg  textMuted/bg  textFaint/bg  accentText(lime)/bg  borderStrong/bg
- *   oled   18.33    7.94          5.41           17.16                4.17
- *   dim    16.00    7.95          5.13           15.82                3.89
- *   light  16.42    6.83          4.46           6.47                 3.48
+ *   mode   text/bg  textMuted/bg  textFaint/bg  accentText(yellow)/bg  borderStrong/bg
+ *   oled   17.40    8.63          5.70           13.19                  4.52
+ *   dim    15.21    7.98          5.33           12.26                  4.11
+ *   light  16.42    6.83          4.46           6.47                   3.48
  * Light role colours on bg (#F5F5F0): download 5.43, upload 6.47, success 4.59, paused 5.51,
- * warning 5.84, danger 5.15; accent fill #4D7C0F is 4.57 on bg and 4.99 with white onAccent text.
+ * warning 5.84, danger 5.15; accent fill #9A7000 is 4.52 on bg and 5.12 with white onAccent text.
  * First chip (light): firstFg on firstBg 12.52. selBg/selBorder are fills, not text.
  * Required: text, textMuted, accentText, download, upload, paused, success,
  * warning, danger >= 4.5 against bg; borderStrong >= 3 (interactive outlines).
  * textFaint is for disabled/placeholder hints only (>= 3 everywhere).
  * On light, accent fills use the darkened accent (white onAccent text) so the
- * fill itself has >= 3:1 against paper; lime on paper would be ~1.1:1.
+ * fill itself has >= 3:1 against paper; yellow on paper would be ~1.1:1.
  * firstBg/firstFg/firstBorder style the "First" chip; selBg/selBorder style a selected option card.
  */
 
 export type ThemeMode = 'oled' | 'dim' | 'light';
-export type AccentName = 'lime' | 'cyan' | 'pink' | 'orange' | 'violet' | 'blue' | 'amber' | 'mint';
+export type AccentName = 'yellow' | 'cyan' | 'pink' | 'orange' | 'violet' | 'blue' | 'amber' | 'mint';
 
 export interface ThemeColors {
   bg: string;
@@ -111,26 +111,26 @@ interface Palette {
 
 export const palettes: Record<ThemeMode, Palette> = {
   oled: {
-    bg: '#05070A', surface: '#0D1117', surfaceRaised: '#161B22',
-    border: '#1F2937', borderStrong: '#6B7280', outline: 'rgba(255, 255, 255, 0.1)',
+    bg: '#171e19', surface: '#1e2522', surfaceRaised: '#232a25',
+    border: '#2d3630', borderStrong: '#6B7280', outline: 'rgba(255, 255, 255, 0.1)',
     text: '#F3F4F6', textMuted: '#9CA3AF', textFaint: '#7D8590',
-    download: '#00E5FF', upload: '#CCFF00', paused: '#8B949E',
-    success: '#3DDC84', warning: '#FFB020', danger: '#FF4D79', onDanger: '#05070A',
+    download: '#00E5FF', upload: '#ffe17c', paused: '#8B949E',
+    success: '#3DDC84', warning: '#FFB020', danger: '#FF4D79', onDanger: '#171e19',
     overlay: 'rgba(0, 0, 0, 0.85)', dark: true,
   },
   dim: {
-    bg: '#111317', surface: '#181B21', surfaceRaised: '#1F232A',
-    border: '#2A2F38', borderStrong: '#6B7380', outline: 'rgba(255, 255, 255, 0.1)',
+    bg: '#1a211c', surface: '#212820', surfaceRaised: '#252c25',
+    border: '#323b34', borderStrong: '#6B7380', outline: 'rgba(255, 255, 255, 0.1)',
     text: '#ECEEF1', textMuted: '#A3AAB5', textFaint: '#7F8793',
-    download: '#00E5FF', upload: '#CCFF00', paused: '#9AA2AD',
-    success: '#3DDC84', warning: '#FFB020', danger: '#FF4D79', onDanger: '#111317',
+    download: '#00E5FF', upload: '#ffe17c', paused: '#9AA2AD',
+    success: '#3DDC84', warning: '#FFB020', danger: '#FF4D79', onDanger: '#1a211c',
     overlay: 'rgba(8, 9, 11, 0.85)', dark: true,
   },
   light: {
     bg: '#F5F5F0', surface: '#FFFFFF', surfaceRaised: '#ECECE4',
     border: '#DAD9CF', borderStrong: '#85837A', outline: 'rgba(0, 0, 0, 0.1)',
     text: '#15171A', textMuted: '#52555C', textFaint: '#6F7178',
-    download: '#0369A1', upload: '#3F6212', paused: '#5F636B',
+    download: '#0369A1', upload: '#8A6100', paused: '#5F636B',
     success: '#15803D', warning: '#8A5200', danger: '#C71F4B', onDanger: '#FFFFFF',
     overlay: 'rgba(21, 23, 26, 0.55)', dark: false,
   },
@@ -138,7 +138,7 @@ export const palettes: Record<ThemeMode, Palette> = {
 
 /**
  * Bright brand accent (dark modes) and its AA-safe darker variant (light mode).
- * Rules every entry meets (scripts/test-accents.js enforces them): dark onAccent (#05070A) on `bright` >= 4.5,
+ * Rules every entry meets (scripts/test-accents.js enforces them): dark onAccent (#171e19) on `bright` >= 4.5,
  * `bright` on the dark pages and cards >= 4.5, white onAccent on `deep` >= 4.5, `deepText` on the light page
  * and cards >= 4.5, and a hue at least 20 degrees from danger (345) so no accent reads as an error.
  * Pink sits at hue ~320 (magenta-pink) for that reason; blue is 222-224, well away from the downloading cyan.
@@ -146,7 +146,7 @@ export const palettes: Record<ThemeMode, Palette> = {
  * saturated fills; pink and cyan follow. Mint and amber are the quietest on paper (5.3 and 5.1 on the page).
  */
 export const accents: Record<AccentName, { bright: string; deep: string; deepText: string }> = {
-  lime: { bright: '#CCFF00', deep: '#4D7C0F', deepText: '#3F6212' },
+  yellow: { bright: '#ffe17c', deep: '#966D00', deepText: '#7A5900' },
   cyan: { bright: '#00E5FF', deep: '#00697A', deepText: '#00697A' },
   pink: { bright: '#F864C8', deep: '#A8137F', deepText: '#A8137F' },
   orange: { bright: '#FF9F1C', deep: '#9A4F00', deepText: '#9A4F00' },
@@ -157,7 +157,7 @@ export const accents: Record<AccentName, { bright: string; deep: string; deepTex
 };
 
 export const DEFAULT_MODE: ThemeMode = 'oled';
-export const DEFAULT_ACCENT: AccentName = 'lime';
+export const DEFAULT_ACCENT: AccentName = 'yellow';
 
 export function isDarkMode(mode: ThemeMode): boolean {
   return palettes[mode].dark;
@@ -170,7 +170,7 @@ export function buildColors(mode: ThemeMode, accent: AccentName, pureBlack = fal
   const accentFill = dark ? a.bright : a.deep;
   return {
     bg: pureBlack && mode === 'oled' ? '#000000' : p.bg,
-    surface: pureBlack && mode === 'oled' ? '#07090D' : p.surface,
+    surface: pureBlack && mode === 'oled' ? '#0D120F' : p.surface,
     surfaceRaised: p.surfaceRaised,
     border: p.border,
     borderStrong: p.borderStrong,
@@ -179,7 +179,7 @@ export function buildColors(mode: ThemeMode, accent: AccentName, pureBlack = fal
     textMuted: p.textMuted,
     textFaint: p.textFaint,
     accent: accentFill,
-    onAccent: dark ? '#05070A' : '#FFFFFF',
+    onAccent: dark ? '#171e19' : '#FFFFFF',
     accentText: dark ? a.bright : a.deepText,
     // Cyan accent would make "downloading" indistinguishable from active/primary state.
     download: accent === 'cyan' ? (dark ? '#5AA9FF' : '#1F5FBF') : p.download,
@@ -191,11 +191,11 @@ export function buildColors(mode: ThemeMode, accent: AccentName, pureBlack = fal
     onDanger: p.onDanger,
     overlay: p.overlay,
     focus: dark ? '#00E5FF' : '#00697A',
-    // "First" chip and selected option card. Light mode uses a lime highlighter for lime only.
-    firstBg: dark || accent !== 'lime' ? alpha(accentFill, 0.1) : '#D9F99D',
-    firstFg: dark || accent !== 'lime' ? (dark ? a.bright : a.deepText) : '#1A2E05',
+    // "First" chip and selected option card. Light mode uses a yellow highlighter for yellow only.
+    firstBg: dark || accent !== 'yellow' ? alpha(accentFill, 0.1) : '#FFF3C4',
+    firstFg: dark || accent !== 'yellow' ? (dark ? a.bright : a.deepText) : '#3D2E00',
     firstBorder: accentFill,
-    selBg: dark || accent !== 'lime' ? alpha(accentFill, 0.08) : '#F4FCE3',
+    selBg: dark || accent !== 'yellow' ? alpha(accentFill, 0.08) : '#FFF9E0',
     selBorder: accentFill,
   };
 }
@@ -239,9 +239,9 @@ export const type = {
    * A size off this scale needs a `// design-exception: <reason>` comment on its line (scripts/test-design-system.js).
    */
   size: { xs: 11, sm: 12, md: 13, base: 14, lg: 15, xl: 17, xxl: 22, display: 32 },
-  /** The MAGLEV wordmark only. Silkscreen in every style. */
+  /** The REELNEST wordmark only. Cabinet Grotesk Bold in every style. */
   get brand() { return { fontFamily: fontFamily.brand }; },
-  /** Screen and sheet titles: Inter Bold (Clean), Silkscreen (Retro), Space Mono Bold (Mono). */
+  /** Screen and sheet titles: Cabinet Grotesk Bold (Clean), Silkscreen (Retro), Space Mono Bold (Mono). */
   get heading() { return { fontFamily: fontFamily.heading }; },
   get mono() { return { fontFamily: fontFamily.mono, fontVariant: ['tabular-nums' as const] }; },
   get monoBold() { return { fontFamily: fontFamily.monoBold, fontVariant: ['tabular-nums' as const] }; },
@@ -299,7 +299,7 @@ export const motion = {
   easeOutBezier: [0.33, 1, 0.68, 1] as const,
   /** Pressed scale for rows and buttons. */
   pressScale: 0.97,
-  /** How long the lime check stays after a download finishes, before it fades (a hold, not motion). */
+  /** How long the yellow check stays after a download finishes, before it fades (a hold, not motion). */
   finishHold: 900,
   sheet: {
     /** A release faster than this (points/s, downward) dismisses. */

@@ -3,7 +3,7 @@
  * on the screen. The view keeps its tracker, so a player that asks for the same file again does not bring it back.
  * Undo and "Scan again" empty the set. Every helper returns a new Set.
  */
-import type { FoundItem } from '../../modules/maglev-engine/src/MaglevBrowser';
+import type { FoundItem } from '../../modules/reelnest-engine/src/ReelNestBrowser';
 import { hideVariantPlaylists } from './foundFilter.ts';
 
 /** What the tray lists: variant playlists folded away first, then the dismissed ids hidden. */

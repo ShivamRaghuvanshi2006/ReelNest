@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { Share } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { type BrowserLongPressEvent } from 'maglev-engine';
+import { type BrowserLongPressEvent } from 'reelnest-engine';
 import { browserTabs, notices } from '../../constants/copy';
 import { haptic } from '../../constants/haptics';
 import { ListRow } from '../ui';

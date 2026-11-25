@@ -6,8 +6,8 @@
 import { useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
 import Constants from 'expo-constants';
-import { maglevEngine, settingsStore } from 'maglev-engine';
-import type { ManagedBy } from 'maglev-engine';
+import { reelnestEngine, settingsStore } from 'reelnest-engine';
+import type { ManagedBy } from 'reelnest-engine';
 import { checkForUpdate, type UpdateInfo } from './check.ts';
 import { autoCheckDue, initialState, reduce, type UpdateEvent, type UpdateState } from './machine.ts';
 import { autoDownloadAllowed, isUploading, networkAllows, safeToInstall, type UpdateNet } from './rules.ts';
@@ -59,9 +59,9 @@ export function getUpdateState(): UpdateState {
 export function getManagedCheck(): ManagedCheck {
   return managedCheck;
 }
-/** True when something other than Maglev installed it, so the first update needs a tap (27.5). */
+/** True when something other than ReelNest installed it, so the first update needs a tap (27.5). */
 export function firstUpdateAsks(): boolean {
-  return installer !== 'com.maglev';
+  return installer !== 'com.reelnest';
 }
 export function getManagedBy(): ManagedBy | null {
   return managedBy;
@@ -81,7 +81,7 @@ const rules = () => {
 
 async function readNet(): Promise<UpdateNet | null> {
   try {
-    const r = await maglevEngine.getUpdateNetwork();
+    const r = await reelnestEngine.getUpdateNetwork();
     return r.ok ? { connected: r.connected, metered: r.metered, vpn: r.vpn } : null;
   } catch {
     return null;
@@ -93,13 +93,13 @@ function notify(kind: 'available' | 'ready', version: string, file?: { path: str
   const key = `${kind}:${version}`;
   if (getUpdatePrefs().notifiedVersion === key) return;
   updateUpdatePrefs({ notifiedVersion: key });
-  void maglevEngine.postUpdateNotice(kind, version, file?.path ?? null, file?.sha256 ?? null).catch(() => {});
+  void reelnestEngine.postUpdateNotice(kind, version, file?.path ?? null, file?.sha256 ?? null).catch(() => {});
 }
 
-/** Reads who installed Maglev. Called once at start. */
+/** Reads who installed ReelNest. Called once at start. */
 async function loadSource(): Promise<void> {
   try {
-    const src = await maglevEngine.getInstallSource();
+    const src = await reelnestEngine.getInstallSource();
     installer = src.installer;
     installedVersionCode = typeof src.versionCode === 'number' ? src.versionCode : null;
     managedBy = src.managedBy;
@@ -191,7 +191,7 @@ export async function downloadNow(): Promise<void> {
 }
 
 async function runDownload(info: UpdateInfo): Promise<void> {
-  const res = await maglevEngine.downloadUpdate(info.apkUrl, info.sha256, info.size, rules().vpnOnly).catch(
+  const res = await reelnestEngine.downloadUpdate(info.apkUrl, info.sha256, info.size, rules().vpnOnly).catch(
     () => ({ ok: false as const, code: 'NETWORK', message: '' }),
   );
   if (state.kind !== 'downloading') return;
@@ -228,7 +228,7 @@ export async function installNow(): Promise<void> {
 /** The release hash comes from `pending` (the verified download), falling back to the state's own info. */
 async function sendInstall(path: string, silent: boolean, stateSha: string): Promise<void> {
   const sha256 = getUpdatePrefs().pending?.info.sha256 ?? stateSha;
-  const res = await maglevEngine.installUpdate(path, silent, sha256).catch(
+  const res = await reelnestEngine.installUpdate(path, silent, sha256).catch(
     () => ({ ok: false as const, code: 'INSTALL_FAILED', message: '' }),
   );
   if (state.kind !== 'installing') return;
@@ -242,7 +242,7 @@ async function sendInstall(path: string, silent: boolean, stateSha: string): Pro
 
 /** The card's "allow installs" button: opens the system screen. The install retries once on return. */
 export async function openInstallPermission(): Promise<void> {
-  await maglevEngine.openInstallPermissionSettings().catch(() => {});
+  await reelnestEngine.openInstallPermissionSettings().catch(() => {});
 }
 
 /** "Skip this version" on the card. */
@@ -251,9 +251,9 @@ export function skipThisVersion(): void {
   if (!info) return;
   if (dispatch({ type: 'skip' }).kind === 'skipped') {
     updateUpdatePrefs({ skippedVersion: info.version, pending: null, available: null });
-    void maglevEngine.cleanupUpdates(null).catch(() => {});
-    void maglevEngine.clearUpdateNotice('available').catch(() => {});
-    void maglevEngine.clearUpdateNotice('ready').catch(() => {});
+    void reelnestEngine.cleanupUpdates(null).catch(() => {});
+    void reelnestEngine.clearUpdateNotice('available').catch(() => {});
+    void reelnestEngine.clearUpdateNotice('ready').catch(() => {});
   }
 }
 
@@ -309,14 +309,14 @@ export function startUpdates(): () => void {
       const found = getUpdatePrefs().available;
       if (found && !isNewer(found.tag, installedVersion())) updateUpdatePrefs({ available: null });
       const keep = getUpdatePrefs();
-      await maglevEngine.cleanupUpdates(keep.pending?.path ?? null, (keep.pending?.info ?? keep.available)?.sha256 ?? null).catch(() => {});
+      await reelnestEngine.cleanupUpdates(keep.pending?.path ?? null, (keep.pending?.info ?? keep.available)?.sha256 ?? null).catch(() => {});
       await restoreAvailable();
       if (AppState.currentState === 'active') await onActive();
     }
   })();
   subs.push(
-    maglevEngine.onUpdateProgress((e) => dispatch({ type: 'progress', bytes: e.bytes, total: e.total })),
-    maglevEngine.onUpdateResult((e) => {
+    reelnestEngine.onUpdateProgress((e) => dispatch({ type: 'progress', bytes: e.bytes, total: e.total })),
+    reelnestEngine.onUpdateResult((e) => {
       if (!e.ok) {
         if (e.code === 'MANAGED') return;
         dispatch({ type: 'installFailed', code: e.code });
@@ -326,7 +326,7 @@ export function startUpdates(): () => void {
         dispatch({ type: 'installed' });
       }
     }),
-    maglevEngine.onTelemetry((e) => {
+    reelnestEngine.onTelemetry((e) => {
       const wasSafe = safeToInstall({ now: Date.now(), lastUploadAt, playerOpen, ...telemetry });
       if (isUploading(e.torrents)) lastUploadAt = Date.now();
       telemetry = { torrents: e.torrents, downloads: e.downloads ?? [] };

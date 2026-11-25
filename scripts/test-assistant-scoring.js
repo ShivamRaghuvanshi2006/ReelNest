@@ -368,7 +368,7 @@ async function main() {
   check('bigger-than-needed copy', has(/would likely look the same on a phone/));
   check('lossless-only audio copy', has(/^The sound track is disc-quality and adds gigabytes a phone can't use\.$/));
   check('Dolby Vision copy', has(/^Dolby Vision only\. On phones without it, colours can look green or purple\.$/));
-  check('risky source names Maglev', has(/^Maglev flags The Pirate Bay as unsafe, and only The Pirate Bay lists this one\.$/), copyRows.filter((x) => /Maglev|unsafe/.test(x)).join('|'));
+  check('risky source names ReelNest', has(/^ReelNest flags The Pirate Bay as unsafe, and only The Pirate Bay lists this one\.$/), copyRows.filter((x) => /ReelNest|unsafe/.test(x)).join('|'));
 
   // ---------------------------------------------------------------- non-Latin titles
   {
@@ -623,7 +623,7 @@ async function main() {
   for (const file of ['scoring.ts', 'sizeBands.ts']) {
     const src = fs.readFileSync(path.join(__dirname, '..', 'utils', 'assistant', file), 'utf8');
     const imports = [...src.matchAll(/^\s*import(?!\s+type)[^'"]*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
-    const forbidden = imports.filter((p) => /react|engine|maglev|modules\//i.test(p));
+    const forbidden = imports.filter((p) => /react|engine|reelnest|modules\//i.test(p));
     check(`${file} imports no React or engine modules`, forbidden.length === 0, forbidden.join(', '));
   }
   const fsSrc = fs.readFileSync(path.join(__dirname, '..', 'utils', 'assistant', 'fileSafety.ts'), 'utf8');

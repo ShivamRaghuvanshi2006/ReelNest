@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Stack } from 'expo-router';
 import Constants from 'expo-constants';
-import { getBlocklistInfo, type BlocklistInfo } from 'maglev-engine';
+import { getBlocklistInfo, type BlocklistInfo } from 'reelnest-engine';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
 import { Button, ListRow, RadioCard, SectionHeader, Sheet, Toggle } from '../../components/ui';

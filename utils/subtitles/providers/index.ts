@@ -4,7 +4,7 @@
  */
 import type { SubtitleProvider } from '../types.ts';
 import type { SourceEntry } from '../../lists/schema.ts';
-import type { SubtitleSettings } from '../../../modules/maglev-engine/src/MaglevSettings.types.ts';
+import type { SubtitleSettings } from '../../../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 import { BATCH_1 } from './batch1.ts';
 import { BATCH_2 } from './batch2.ts';
 import { BATCH_3 } from './batch3.ts';

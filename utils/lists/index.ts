@@ -5,7 +5,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
-import { maglevEngine, settingsStore, updateBlocklist } from 'maglev-engine';
+import { reelnestEngine, settingsStore, updateBlocklist } from 'reelnest-engine';
 import { PROVIDERS } from '../search/aggregate.ts';
 import { SUBTITLE_PROVIDERS } from '../subtitles/providers/index.ts';
 import { getBrowserPrefs, updateBrowserPrefs } from '../prefs/browser.ts';
@@ -53,7 +53,7 @@ const rules = () => {
 
 async function readNet(): Promise<ListsNet | null> {
   try {
-    const r = await maglevEngine.getUpdateNetwork();
+    const r = await reelnestEngine.getUpdateNetwork();
     return r.ok ? { connected: r.connected, metered: r.metered, vpn: r.vpn } : null;
   } catch {
     return null;
@@ -91,7 +91,7 @@ export async function updateAdList(opts: { conditional: boolean }) {
 const deps = (): ListDeps => ({
   now: () => Date.now(),
   fetch: ((url, init) => fetch(url, init as RequestInit)) as TextFetch,
-  verify: (body, sig) => maglevEngine.verifyListSignature(body, sig),
+  verify: (body, sig) => reelnestEngine.verifyListSignature(body, sig),
   known: new Set(PROVIDERS.map((p) => p.id)),
   knownSubtitles: new Set(SUBTITLE_PROVIDERS.map((p) => p.id)),
   net: readNet,

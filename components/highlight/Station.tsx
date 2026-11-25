@@ -5,7 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { MARK_BODY, MARK_LINES } from '../brand/markPaths';
-import { useMarkInk } from '../brand/MaglevMark';
+import { useMarkInk } from '../brand/PixelTrain';
 import { BADGE, CQ_PER_U, HIGHLIGHT_MOTION as M, RAIL, STATION_CQ } from './timing';
 import { badgeParts, burstLayout, type Particle } from './burst';
 import { TRACK, burstAt, dustAt, flashAt, railLitAt, railStarts, sparkAt, speedAt, stampAt, trainDip, trainX } from './timeline';

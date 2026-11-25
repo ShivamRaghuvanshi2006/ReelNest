@@ -1,5 +1,5 @@
 # Search for a public-domain title, add the first result, expect it in Transfers.
-appId: com.maglev
+appId: com.ReelNest
 name: search-add
 ---
 - runFlow: subflows/onboard-if-needed.yaml

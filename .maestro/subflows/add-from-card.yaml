@@ -1,9 +1,9 @@
-# Opens a link in Maglev's quick share card, taps Download, then brings the app forward.
+# Opens a link in ReelNest's quick share card, taps Download, then brings the app forward.
 # Set ${LINK} (a magnet or https link). Since 0.19 the card is a native floating window (QuickShareActivity.kt,
-# copy in QuickShareText.kt): title, "<size> · <n> files · Magnet link", "Saves to <folder>", buttons "Download" and "Open in Maglev".
+# copy in QuickShareText.kt): title, "<size> · <n> files · Magnet link", "Saves to <folder>", buttons "Download" and "Open in ReelNest".
 # "Download" is shown at once; the size line says "Getting details…" until the metadata arrives, and tapping early is fine.
-# After the add the card closes ("Added to Maglev") and Maglev's own window is NOT opened, so launchApp (stopApp: false) brings it forward.
-appId: com.maglev
+# After the add the card closes ("Added to ReelNest") and ReelNest's own window is NOT opened, so launchApp (stopApp: false) brings it forward.
+appId: com.ReelNest
 ---
 - openLink: ${LINK}
 - extendedWaitUntil:
@@ -11,7 +11,7 @@ appId: com.maglev
     timeout: 120000
 - tapOn: "Download"
 - extendedWaitUntil:
-    notVisible: "Open in Maglev"
+    notVisible: "Open in ReelNest"
     timeout: 60000
 - launchApp:
     stopApp: false

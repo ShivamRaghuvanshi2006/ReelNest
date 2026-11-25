@@ -7,7 +7,7 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'limetorrents';
 
-// Maglev category -> LimeTorrents search segment. Books have no segment of their own: they live under "all".
+// ReelNest category -> LimeTorrents search segment. Books have no segment of their own: they live under "all".
 const SEGMENT: Partial<Record<Category, string>> = {
   movies: 'movies',
   tv: 'tv',
@@ -18,7 +18,7 @@ const SEGMENT: Partial<Record<Category, string>> = {
   other: 'other',
 };
 
-/** The site's "in <Category>" label on a row -> Maglev category. */
+/** The site's "in <Category>" label on a row -> ReelNest category. */
 function categoryFromLabel(label: string | undefined): Category | undefined {
   if (!label) return undefined;
   const l = label.toLowerCase();

@@ -19,9 +19,9 @@ function check(name, cond, extra) {
 }
 
 async function main() {
-  const types = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const { migrateSettings } = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
-  const { toNativeConfig } = await import('../modules/maglev-engine/src/toNativeConfig.ts');
+  const types = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const { migrateSettings } = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
+  const { toNativeConfig } = await import('../modules/reelnest-engine/src/toNativeConfig.ts');
   const { SETTINGS_INDEX, searchSettings } = await import('../utils/settingsIndex.ts');
   const { DEFAULT_SETTINGS, PEER_TIMEOUT_OPTIONS } = types;
 
@@ -54,8 +54,8 @@ async function main() {
   check('Never sends 0', cfg(0).peer_timeout_secs === 0);
 
   console.log('mock engine echoes it');
-  const { MaglevMockEngine } = await import('../modules/maglev-engine/src/MaglevMockEngine.ts');
-  const eng = new MaglevMockEngine();
+  const { ReelNestMockEngine } = await import('../modules/reelnest-engine/src/ReelNestMockEngine.ts');
+  const eng = new ReelNestMockEngine();
   const echoed = async (mins) => {
     await eng.applyConfig(cfg(mins));
     const eff = await eng.getEffectiveConfig();
@@ -75,18 +75,18 @@ async function main() {
   }
 
   console.log('Rust wiring');
-  const cfgRs = read('native/maglev-core/src/config.rs');
+  const cfgRs = read('native/reelnest-core/src/config.rs');
   check('config has peer_timeout_secs with a 600 default', /pub peer_timeout_secs: u32/.test(cfgRs) && /peer_timeout_secs: DEFAULT_PEER_TIMEOUT_SECS/.test(cfgRs));
-  const sch = read('native/maglev-core/src/scheduler.rs');
+  const sch = read('native/reelnest-core/src/scheduler.rs');
   check('default constant is 10 minutes', /DEFAULT_PEER_TIMEOUT_SECS: u32 = 10 \* 60/.test(sch));
-  check('no fixed 10 minute constant left', !/NO_PEERS_AFTER_MS/.test(sch + read('native/maglev-core/src/engine.rs')));
+  check('no fixed 10 minute constant left', !/NO_PEERS_AFTER_MS/.test(sch + read('native/reelnest-core/src/engine.rs')));
   check('stall rule and clock tests exist', /fn stall_exclusions\(/.test(sch) && /fn a_peer_one_tick_before_the_limit_resets_the_clock\(/.test(sch) && /fn never_does_not_run_the_stall_clock\(/.test(sch) && /fn a_live_config_change_applies_to_the_running_clock\(/.test(sch));
-  const eng2 = read('native/maglev-core/src/engine.rs');
+  const eng2 = read('native/reelnest-core/src/engine.rs');
   check('tick uses the stall rule', /is_waiting_for_peers\(&StallInputs/.test(eng2) && /stall_step\(/.test(eng2));
   check('Never clears no_peers tags on config apply', /peer_timeout_is_never\(&self\.config\.lock\(\)\)/.test(eng2) && /set_health\(&id, ""\)/.test(eng2));
   check('Keep trying resets the stall clock', /m\.stalled_since_ms = None;/.test(eng2));
-  check('snapshot exports stalled_secs', /pub stalled_secs: Option<i64>/.test(read('native/maglev-core/src/types.rs')));
-  check('meta keeps stalled_since_ms in memory only (fresh window per process)', /#\[serde\(skip\)\]\s*pub stalled_since_ms: Option<i64>/.test(read('native/maglev-core/src/meta.rs')));
+  check('snapshot exports stalled_secs', /pub stalled_secs: Option<i64>/.test(read('native/reelnest-core/src/types.rs')));
+  check('meta keeps stalled_since_ms in memory only (fresh window per process)', /#\[serde\(skip\)\]\s*pub stalled_since_ms: Option<i64>/.test(read('native/reelnest-core/src/meta.rs')));
   {
     const contract = readPrivateDoc('NATIVE_CONTRACT.md');
     if (contract !== null) check('contract section exists', /### 20\.1 Stop waiting for peers after/.test(contract));

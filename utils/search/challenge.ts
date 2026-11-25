@@ -1,5 +1,5 @@
 // Cloudflare challenge detection. Contract: docs/SEARCH_CONTRACT.md section 8.
-// Pure: no network, no React Native imports. Maglev never solves a challenge itself.
+// Pure: no network, no React Native imports. ReelNest never solves a challenge itself.
 
 export interface HeaderReader {
   get(name: string): string | null | undefined;

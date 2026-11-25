@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // Design-system checks. Keeps the code honest to DESIGN.md and DESIGN.md honest to the code.
 // Plain node, no dependencies. Run: node scripts/test-design-system.js
-// Override the scanned root with MAGLEV_ROOT=<dir> (used to prove the checks fail on a bad copy).
+// Override the scanned root with REELNEST_ROOT=<dir> (used to prove the checks fail on a bad copy).
 
 const fs = require('fs');
 const path = require('path');
 
-const root = process.env.MAGLEV_ROOT ? path.resolve(process.env.MAGLEV_ROOT) : path.join(__dirname, '..');
+const root = process.env.REELNEST_ROOT ? path.resolve(process.env.REELNEST_ROOT) : path.join(__dirname, '..');
 let failed = 0;
 
 function check(name, problems) {
@@ -150,11 +150,11 @@ if (design) {
   const oledMatch = theme.match(/oled:\s*\{([\s\S]*?)\},\s*\n\s*dim:/);
   const oled = {};
   if (oledMatch) for (const m of oledMatch[1].matchAll(/(\w+):\s*'([^']+)'/g)) oled[m[1]] = m[2];
-  // accent-derived roles under the default (lime) accent
-  const lime = theme.match(/lime:\s*\{\s*bright:\s*'([^']+)'/);
-  if (lime) {
-    oled.accent = lime[1];
-    oled.accentText = lime[1];
+  // accent-derived roles under the default (yellow) accent
+  const yellow = theme.match(/yellow:\s*\{\s*bright:\s*'([^']+)'/);
+  if (yellow) {
+    oled.accent = yellow[1];
+    oled.accentText = yellow[1];
   }
   const valueProblems = [];
   for (const m of design.matchAll(/^\|\s*`(\w+)`\s*\|\s*`(#[0-9A-Fa-f]{6})`/gm)) {

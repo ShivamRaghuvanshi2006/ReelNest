@@ -1,5 +1,5 @@
 /**
- * Regenerates modules/maglev-engine/android/src/main/assets/miners.txt (docs/NATIVE_CONTRACT.md section 24.4a).
+ * Regenerates modules/reelnest-engine/android/src/main/assets/miners.txt (docs/NATIVE_CONTRACT.md section 24.4a).
  *
  *   node scripts/build-miners.js            fetch the upstream list once and write the asset
  *   node scripts/build-miners.js <file>     build from a local copy of the hosts file instead
@@ -12,7 +12,7 @@ const path = require('path');
 
 const SOURCE_URL = 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt';
 const LICENSE = 'MIT (hoshsadiq/adblock-nocoin-list, https://github.com/hoshsadiq/adblock-nocoin-list/blob/master/LICENSE)';
-const OUT = path.join(__dirname, '..', 'modules/maglev-engine/android/src/main/assets/miners.txt');
+const OUT = path.join(__dirname, '..', 'modules/reelnest-engine/android/src/main/assets/miners.txt');
 const LABEL = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/;
 
 function validHost(h) {
@@ -35,7 +35,7 @@ async function main() {
   const domains = [...parse(text)].sort();
   if (domains.length < 100) throw new Error(`only ${domains.length} domains found, refusing to write`);
   const header = [
-    '# Maglev crypto-mining block list',
+    '# ReelNest crypto-mining block list',
     `# Source: ${SOURCE_URL}`,
     `# License: ${LICENSE}`,
     `# Date: ${new Date().toISOString().slice(0, 10)}`,

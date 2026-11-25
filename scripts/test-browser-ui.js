@@ -45,16 +45,16 @@ async function main() {
   check('allowed covers subdomains', u.isAllowedHost(['example.com'], 'a.b.example.com') && !u.isAllowedHost(['example.com'], 'notexample.com'));
   check('notice rate limit', u.noticeAllowed(0, 100) && !u.noticeAllowed(1000, 5999) && u.noticeAllowed(1000, 6000));
 
-  console.log('maglev://browser');
+  console.log('reelnest://browser');
   const r = u.browserIntentRoute;
   check('url is prefilled, never loaded', r('/browser?url=' + encodeURIComponent('https://x.test/a')) === '/browser?prefill=' + encodeURIComponent('https://x.test/a'));
   check('other params are dropped', r('browser?go=1&url=https%3A%2F%2Fx.test&prefill=https%3A%2F%2Fevil.test') === '/browser?prefill=https%3A%2F%2Fx.test');
   check('non-web url is dropped', r('/browser?url=javascript%3Aalert(1)') === '/browser' && r('/browser?url=file%3A%2F%2F%2Fa') === '/browser');
   const enc = encodeURIComponent('https://x.test/a');
-  check('full maglev://browser?url= only prefills', r('maglev://browser?url=' + enc) === '/browser?prefill=' + enc);
-  check('maglev:///browser?url= only prefills', r('maglev:///browser?url=' + enc) === '/browser?prefill=' + enc);
-  check('full url, no param, is the bare route', r('maglev://browser') === '/browser' && r('MAGLEV://browser/') === '/browser');
-  check('full url, evil scheme dropped', r('maglev://browser?url=javascript%3Aalert(1)') === '/browser');
+  check('full reelnest://browser?url= only prefills', r('reelnest://browser?url=' + enc) === '/browser?prefill=' + enc);
+  check('reelnest:///browser?url= only prefills', r('reelnest:///browser?url=' + enc) === '/browser?prefill=' + enc);
+  check('full url, no param, is the bare route', r('reelnest://browser') === '/browser' && r('REELNEST://browser/') === '/browser');
+  check('full url, evil scheme dropped', r('reelnest://browser?url=javascript%3Aalert(1)') === '/browser');
   check('appPath leaves other schemes', u.appPath('magnet:?xt=1') === 'magnet:?xt=1' && u.appPath('https://a.test/x') === 'https://a.test/x');
   {
     const src = read('app/+native-intent.tsx');
@@ -65,7 +65,7 @@ async function main() {
   console.log('prefs');
   const d = prefs.defaultBrowserPrefs();
   check('defaults', d.adBlock === true && d.desktopMode === false && d.searchEngine === 'duckduckgo' && d.allowAdsHosts.length === 0 && d.blocklistUrls[0] === 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts');
-  check('default list address matches the bundled list header', read('modules/maglev-engine/android/src/main/assets/blocklist.txt').includes(d.blocklistUrls[0]));
+  check('default list address matches the bundled list header', read('modules/reelnest-engine/android/src/main/assets/blocklist.txt').includes(d.blocklistUrls[0]));
   const n = prefs.normalizeBrowserPrefs({ adBlock: false, allowAdsHosts: ['A.com', 'a.com', 3], blocklistUrls: ['http://x/y', 'https://x/y'], searchEngine: 'nope', desktopMode: true });
   check('normalize', n.adBlock === false && n.allowAdsHosts.join() === 'a.com' && n.blocklistUrls.join() === 'https://x/y' && n.searchEngine === 'duckduckgo' && n.desktopMode === true);
   check('no usable list falls back to the default', prefs.normalizeBrowserPrefs({ blocklistUrls: ['http://x'] }).blocklistUrls[0] === d.blocklistUrls[0]);
@@ -140,10 +140,10 @@ async function main() {
     check('streams do not say "later"', !/later version/i.test(b + read('components/browser/FoundTray.tsx') + read('constants/copy.ts')));
   }
   check('stream sheet probes and starts with the stream selection', /probeStream/.test(read('components/browser/StreamSheet.tsx')) && /stream:/.test(read('components/browser/StreamSheet.tsx')) && /StreamSheet/.test(read('app/browser.tsx')));
-  check('native intent routes maglev://browser', /browserIntentRoute/.test(read('app/+native-intent.tsx')));
+  check('native intent routes reelnest://browser', /browserIntentRoute/.test(read('app/+native-intent.tsx')));
   {
     const b = read('app/browser.tsx');
-    const k = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/MaglevBrowserView.kt');
+    const k = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/ReelNestBrowserView.kt');
     check('a download hand-off ends loading in the screen', /onDownloadRequest: \(id, e\)[\s\S]{0,400}loading: false/.test(b));
     check('Stop always clears loading in the screen', /view\(\)\?\.stop\(\);\s*patch\(activeId, \(d\) => void \(d\.page = d\.page \? \{ \.\.\.d\.page, loading: false \}/.test(b));
     check('native download hand-off and stop emit loading false', /private fun onDownload[\s\S]{0,900}loading = false[\s\S]{0,40}emitPage/.test(k) && /fun stop\(\)[\s\S]{0,200}loading = false/.test(k));

@@ -5,7 +5,7 @@ import { toInt, toMs } from '../text.ts';
 
 export const ID = 'knaben';
 
-// Maglev category -> Knaben category ids. 'all' sends no filter.
+// ReelNest category -> Knaben category ids. 'all' sends no filter.
 const CATEGORY_IDS: Partial<Record<Category, number[]>> = {
   music: [1000000],
   tv: [2000000],

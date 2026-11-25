@@ -1,9 +1,9 @@
-import type { PickFolderResult } from 'maglev-engine';
+import type { PickFolderResult } from 'reelnest-engine';
 
 /** What the folder picker gave back for a single download. */
 export type FolderPick =
   | { kind: 'cancelled' }
-  /** A folder Maglev can write to directly. `path` goes to the download, `label` is what the screen shows. */
+  /** A folder ReelNest can write to directly. `path` goes to the download, `label` is what the screen shows. */
   | { kind: 'ok'; path: string; label: string }
   /** The folder is only reachable through the Android picker (no plain path), so it can't be used for one download. */
   | { kind: 'unsupported'; label: string };

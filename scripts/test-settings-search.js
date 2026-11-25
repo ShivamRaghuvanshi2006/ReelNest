@@ -7,6 +7,8 @@ process.removeAllListeners("warning");
 
 const fs = require("fs");
 const path = require("path");
+const { pathToFileURL } = require('node:url');
+const load = (p) => import(pathToFileURL(p).href);
 const root = path.join(__dirname, "..");
 const read = (p) => fs.readFileSync(path.join(root, p), "utf8");
 const exists = (p) => fs.existsSync(path.join(root, p));
@@ -27,7 +29,7 @@ async function main() {
     check("utils/settingsIndex.ts exists", false);
     process.exit(1);
   }
-  const { SETTINGS_INDEX, searchSettings, SYNONYM_GROUPS } = await import(indexPath);
+  const { SETTINGS_INDEX, searchSettings, SYNONYM_GROUPS } = await load(indexPath);
 
   // Pages: every app/settings/*.tsx except redirects must have at least one entry.
   const settingsDir = path.join(root, "app/settings");

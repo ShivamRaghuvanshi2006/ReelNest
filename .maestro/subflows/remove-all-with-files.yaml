@@ -1,7 +1,7 @@
 # Cleanup: removes the one transfer on screen and deletes its files.
 # Cards carry testID "transfer-card" (components/TransferCard.tsx). Never match on "percent":
 # the status bar battery reads "Battery charging, 85 percent." and matches any percent regex.
-appId: com.maglev
+appId: com.ReelNest
 ---
 - extendedWaitUntil:
     visible:

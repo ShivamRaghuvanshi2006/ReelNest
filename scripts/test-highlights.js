@@ -42,8 +42,8 @@ function check(name, cond, extra) {
   check('a plan that shows does not also advance (closing the sheet does)', H.highlightPlan('0.30', '0.27', false, true).advanceSilently === false && H.highlightPlan('0.30', '0.27', false, true).show.version === '0.30');
 
   console.log('[launch]');
-  check('a launcher start is plain', H.isPlainLaunch(null) && H.isPlainLaunch('') && H.isPlainLaunch(undefined) && H.isPlainLaunch('maglev://') && H.isPlainLaunch('maglev:///'));
-  check('a magnet, file, share, torrent link or deep link is not plain', ['magnet:?xt=urn:btih:abc', 'content://x/y.torrent', 'file:///sdcard/a.torrent', 'https://example.com/v', 'maglev://torrent/dl_ab12', 'maglev://browser?url=x'].every((u) => !H.isPlainLaunch(u)));
+  check('a launcher start is plain', H.isPlainLaunch(null) && H.isPlainLaunch('') && H.isPlainLaunch(undefined) && H.isPlainLaunch('reelnest://') && H.isPlainLaunch('reelnest:///'));
+  check('a magnet, file, share, torrent link or deep link is not plain', ['magnet:?xt=urn:btih:abc', 'content://x/y.torrent', 'file:///sdcard/a.torrent', 'https://example.com/v', 'reelnest://torrent/dl_ab12', 'reelnest://browser?url=x'].every((u) => !H.isPlainLaunch(u)));
 
   console.log('[entry]');
   const e = HIGHLIGHTS['0.30'];
@@ -57,7 +57,7 @@ function check(name, cond, extra) {
   console.log('[setting]');
   const prefs = await import('../utils/prefs/update.ts');
   check('showHighlights defaults on; only false turns it off', prefs.defaultUpdatePrefs().showHighlights === true && prefs.normalizeUpdatePrefs({ showHighlights: false }).showHighlights === false && prefs.normalizeUpdatePrefs({ showHighlights: 0 }).showHighlights === true);
-  check('UI only: toNativeConfig never reads it', !/showHighlights|highlights/i.test(read('modules/maglev-engine/src/toNativeConfig.ts')));
+  check('UI only: toNativeConfig never reads it', !/showHighlights|highlights/i.test(read('modules/reelnest-engine/src/toNativeConfig.ts')));
   const updates = read('app/settings/updates.tsx');
   check('Settings > Updates has "Show new features after updates"', /highlightCopy\.settingTitle/.test(updates) && /prefs\.showHighlights/.test(updates) && /settingTitle: 'Show new features after updates'/.test(read('constants/copy.ts')));
   const { SETTINGS_INDEX } = await import('../utils/settingsIndex.ts');

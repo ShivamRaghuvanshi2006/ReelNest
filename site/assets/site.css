@@ -1,4 +1,4 @@
-/* Maglev site. Tokens mirror AGENTS.md §1 and constants/. Inter 400 and 700 for everything; Silkscreen only for the wordmark. */
+/* ReelNest site. Tokens mirror AGENTS.md §1 and constants/. Inter 400 and 700 for everything; Silkscreen only for the wordmark. */
 @font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: swap; src: url('fonts/inter-400.woff2') format('woff2'); }
 @font-face { font-family: 'Inter'; font-weight: 700; font-style: normal; font-display: swap; src: url('fonts/inter-700.woff2') format('woff2'); }
 @font-face { font-family: 'Silkscreen'; font-weight: 400; font-style: normal; font-display: swap; src: url('fonts/silkscreen-400.woff2') format('woff2'); }
@@ -229,7 +229,7 @@ section { padding: 56px 0; }
 .cmp td.me, .cmp thead th.me { background: rgb(204 255 0 / 0.04); }
 .cv { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .cv.yes { color: var(--text); }
-/* Maglev's own column: its Yes in lime so it reads at a glance. */
+/* ReelNest's own column: its Yes in lime so it reads at a glance. */
 .me .cv.yes { color: var(--lime); font-weight: 700; }
 .cv.no { color: var(--muted); }
 .cv.partial { color: var(--copy); }

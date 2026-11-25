@@ -93,8 +93,8 @@ async function main() {
 
   // Banner copy (SM-32, SM-33, SM-37)
   const b2 = m.fileHealthBanner(missing);
-  check('missing banner title (n files)', b2 && b2.title === '2 files were deleted outside Maglev.', b2 && b2.title);
-  check('missing banner title (1 file)', m.fileHealthBanner({ kind: 'missing', indices: [1] }).title === '1 file was deleted outside Maglev.');
+  check('missing banner title (n files)', b2 && b2.title === '2 files were deleted outside ReelNest.', b2 && b2.title);
+  check('missing banner title (1 file)', m.fileHealthBanner({ kind: 'missing', indices: [1] }).title === '1 file was deleted outside ReelNest.');
   check(
     'missing banner buttons',
     JSON.stringify(b2.buttons.map((b) => b.label)) === JSON.stringify(['Stop downloading them', 'Download again', 'Pick folder']),

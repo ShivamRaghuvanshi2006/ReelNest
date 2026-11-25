@@ -480,7 +480,7 @@ async function main() {
       const r = step(toRequesting(), event);
       return r.effects.length === 1 && r.effects[0].type === 'errorCard' && r.state.kind === 'idle' ? r.effects[0].message : r;
     };
-    const NO_TOOLS = "This model can't use Maglev's tools. Pick another model in Settings → Assistant.";
+    const NO_TOOLS = "This model can't use ReelNest's tools. Pick another model in Settings → Assistant.";
     const GONE = "That model isn't available any more. Pick another in Settings → Assistant.";
     const MUCH = 'That was too much for this model. Clear the chat or ask a shorter question.';
     const REFUSED = 'The AI service refused this message. Try again, or pick another model in Settings.';

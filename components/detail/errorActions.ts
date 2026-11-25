@@ -10,7 +10,7 @@ export interface ErrorActions {
 }
 
 const DISK_FULL: ErrorActions = { message: 'Storage full.', primary: 'freeSpace', secondary: 'move' };
-const PERMISSION: ErrorActions = { message: "Maglev can't write to this folder.", primary: 'pickFolder' };
+const PERMISSION: ErrorActions = { message: "ReelNest can't write to this folder.", primary: 'pickFolder' };
 const FILES_MISSING: ErrorActions = { message: 'Some files are missing.', primary: 'filesMissing' };
 const STORAGE_UNAVAILABLE: ErrorActions = { message: "The SD card isn't there.", primary: 'none', secondary: 'move' };
 const NETWORK: ErrorActions = { message: "Can't reach anyone right now.", primary: 'retry' };

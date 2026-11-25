@@ -32,7 +32,7 @@ import { lowSpaceWarning, usableFreeOf, type LowSpaceWarning } from '../../compo
 import { BlockBanner } from '../../components/transfers/BlockBanner';
 import { BlockContextProvider, queueLimitOf, useActiveBlocks } from '../../utils/blocks/useActiveBlocks';
 import * as DocumentPicker from 'expo-document-picker';
-import { maglevEngine, openQuickShare, type DownloadSnapshot } from 'maglev-engine';
+import { reelnestEngine, openQuickShare, type DownloadSnapshot } from 'reelnest-engine';
 import { haptic } from '../../constants/haptics';
 import { useEngineActions, useEngineState, useEngineTelemetry, type TransferTelemetry } from '../../context/EngineContext';
 import { useSettings } from '../../context/SettingsContext';
@@ -298,7 +298,7 @@ export default function TransfersScreen() {
   );
   const onResumeAnyway = useCallback(
     (id: string) => {
-      void maglevEngine.resumeAnyway(id).then((res) => {
+      void reelnestEngine.resumeAnyway(id).then((res) => {
         if (!res.ok) showNotice({ message: res.message || notices.common.retryFailed });
       });
     },
@@ -308,12 +308,12 @@ export default function TransfersScreen() {
   const onOpenTorrent = useCallback(
     (id: string) => {
       const toDetail = () => router.push({ pathname: '/torrent/[id]', params: { id } });
-      void maglevEngine
+      void reelnestEngine
         .getDetail(id)
         .then((res) => {
           const main = res.ok ? pickMainFile(res.files).main : null;
           if (!main) return toDetail();
-          return maglevEngine.openFile(id, main.index).then((opened) => {
+          return reelnestEngine.openFile(id, main.index).then((opened) => {
             if (!opened.ok) showNotice({ message: opened.message || 'No app can open this file.' });
           });
         })
@@ -345,7 +345,7 @@ export default function TransfersScreen() {
   // SM-37: clear the no_peers tag so the torrent looks for peers again.
   const onKeepTrying = useCallback(
     (id: string) => {
-      void maglevEngine.setHealth(id, '').then((res) => {
+      void reelnestEngine.setHealth(id, '').then((res) => {
         if (!res.ok) showNotice({ message: res.message || notices.common.retryFailed });
       });
     },

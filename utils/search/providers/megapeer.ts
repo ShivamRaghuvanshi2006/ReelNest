@@ -6,7 +6,7 @@ import { absUrl, cells, firstMagnet, parseBinarySize, parseRuDate, tableRows } f
 
 export const ID = 'megapeer';
 
-// Maglev category -> MegaPeer category id (0 = all).
+// ReelNest category -> MegaPeer category id (0 = all).
 const CATEGORY_ID: Partial<Record<Category, number>> = {
   all: 0, apps: 29, books: 52, games: 28, movies: 80, music: 94, other: 59, tv: 6,
 };

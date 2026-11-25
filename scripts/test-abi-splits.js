@@ -28,7 +28,7 @@ const props = applyArchitectures([
 assert.strictEqual(props.filter((p) => p.key === 'reactNativeArchitectures').length, 1);
 assert.strictEqual(props.find((p) => p.key === 'reactNativeArchitectures').value, 'armeabi-v7a,arm64-v8a,x86_64');
 assert(props.some((p) => p.key === 'newArchEnabled'));
-// MAGLEV_ABIS narrows the build (CI uses arm64 only on everyday pushes; releases build all).
+// REELNEST_ABIS narrows the build (CI uses arm64 only on everyday pushes; releases build all).
 const { resolveAbis } = require('../plugins/withAbiSplits');
 assert.deepStrictEqual(resolveAbis(undefined), ['armeabi-v7a', 'arm64-v8a', 'x86_64']);
 assert.deepStrictEqual(resolveAbis(''), ['armeabi-v7a', 'arm64-v8a', 'x86_64']);

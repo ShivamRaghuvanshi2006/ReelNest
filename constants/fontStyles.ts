@@ -2,7 +2,7 @@
  * Font styles: Clean (default), Retro, Mono. Pure data, no imports, so node tests can load it.
  *
  * Screens never name a font file. They use semantic slots through `type` in constants/theme.ts:
- *   brand       the MAGLEV wordmark. Silkscreen in every style.
+ *   brand       the REELNEST wordmark. Cabinet Grotesk in every style.
  *   heading     screen and sheet titles.
  *   mono        file names, sizes, speeds and other telemetry (tabular-nums).
  *   monoBold    the same, emphasised.
@@ -17,6 +17,7 @@ export const DEFAULT_FONT_STYLE: FontStyleName = 'clean';
 
 /** Names the fonts are registered under (app/_layout.tsx loads one file per name). */
 export const FONT_NAMES = {
+  cabinetGrotesk: 'CabinetGrotesk',
   silkscreen: 'Silkscreen',
   spaceMono: 'SpaceMono',
   spaceMonoBold: 'SpaceMonoBold',
@@ -33,15 +34,15 @@ const N = FONT_NAMES;
 
 export const fontFamilies: Record<FontStyleName, Record<FontSlot, string>> = {
   clean: {
-    brand: N.silkscreen,
-    heading: N.interBold,
+    brand: N.cabinetGrotesk,
+    heading: N.cabinetGrotesk,
     mono: N.interMedium,
     monoBold: N.interSemiBold,
     body: N.inter,
     bodyStrong: N.interSemiBold,
   },
   retro: {
-    brand: N.silkscreen,
+    brand: N.cabinetGrotesk,
     heading: N.silkscreen,
     mono: N.spaceMono,
     monoBold: N.spaceMonoBold,
@@ -49,7 +50,7 @@ export const fontFamilies: Record<FontStyleName, Record<FontSlot, string>> = {
     bodyStrong: N.interSemiBold,
   },
   mono: {
-    brand: N.silkscreen,
+    brand: N.cabinetGrotesk,
     heading: N.spaceMonoBold,
     mono: N.spaceMono,
     monoBold: N.spaceMonoBold,

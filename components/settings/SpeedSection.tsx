@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SpeedPreset } from 'maglev-engine';
+import { SpeedPreset } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import { ListRow } from '../ui';
 import {

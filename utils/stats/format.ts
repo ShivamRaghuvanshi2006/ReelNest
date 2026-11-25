@@ -130,7 +130,7 @@ export function periodName(r: StatsRange, today: number): string {
 
 export const categoryLabel = (key: string): string => CATEGORY_LABELS[key] ?? (key === 'other' ? 'Other' : 'Unsorted');
 
-const SOURCE_WORDS: Record<string, string> = { link: 'links', share: 'shared to Maglev', feed: 'feeds', watch: 'watched pages', search: 'search' };
+const SOURCE_WORDS: Record<string, string> = { link: 'links', share: 'shared to ReelNest', feed: 'feeds', watch: 'watched pages', search: 'search' };
 /** Where an item came from, in plain words. Every search provider reads "search". */
 export const sourceLabel = (s: string): string => SOURCE_WORDS[s] ?? 'search';
 

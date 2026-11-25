@@ -107,7 +107,7 @@ export const ProposalCard = memo(function ProposalCard({ view, state, onConfirm,
         </View>
       ) : null}
 
-      <Text style={styles.footer}>Sizes and space are checked by Maglev. The name comes from the source.</Text>
+      <Text style={styles.footer}>Sizes and space are checked by ReelNest. The name comes from the source.</Text>
 
       {problem ? (
         <View style={styles.problem} accessibilityRole="alert">

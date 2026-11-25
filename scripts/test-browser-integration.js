@@ -14,10 +14,10 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 
 const scr = read('app/browser.tsx');
 const tab = read('components/browser/TabWebView.tsx');
-const wrap = read('modules/maglev-engine/src/MaglevBrowser.tsx');
-const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/browser/MaglevBrowserView.kt');
-const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-const gradle = read('modules/maglev-engine/android/build.gradle');
+const wrap = read('modules/reelnest-engine/src/ReelNestBrowser.tsx');
+const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/browser/ReelNestBrowserView.kt');
+const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+const gradle = read('modules/reelnest-engine/android/build.gradle');
 const prefs = read('utils/prefs/browser.ts');
 const settings = read('app/settings/browser.tsx');
 const index = read('utils/settingsIndex.ts');
@@ -37,7 +37,7 @@ check('screen: only a video hit for the active tab opens the media menu', /onMed
 check('screen: MediaMenu is wired to save, stream, tab, copy, share, files and link options', /<MediaMenu[\s\S]*?onSave=[\s\S]*?onStream=\{streamFromHit\}[\s\S]*?onOpenNewTab=[\s\S]*?onCopy=[\s\S]*?onShare=[\s\S]*?Share\.share[\s\S]*?onShowFound=\{\(\) => setTrayOpen\(true\)\}[\s\S]*?onLinkOptions=/.test(scr));
 check('screen: Back closes the media menu', /if \(mediaHit\) \{\s*setMediaHit\(null\);\s*return true;/.test(scr));
 check('Kotlin: onMediaHit is registered in the view events and as a dispatcher', /"onFindResult", "onMediaHit"\)/.test(mod) && /private val onMediaHit by EventDispatcher/.test(kt));
-check('Kotlin: the long press asks the page for __maglevMediaHit and emits the decoded payload', /evaluateJavascript\("window\.__maglevMediaHit && window\.__maglevMediaHit\(\)"\)/.test(kt) && /JSONTokener\(value\)\.nextValue\(\) as\? String/.test(kt) && /optString\("type"\) != "maglev-media-hit"/.test(kt) && /onMediaHit\(mapOf\("json" to payload\)\)/.test(kt));
+check('Kotlin: the long press asks the page for __reelnestMediaHit and emits the decoded payload', /evaluateJavascript\("window\.__reelnestMediaHit && window\.__reelnestMediaHit\(\)"\)/.test(kt) && /JSONTokener\(value\)\.nextValue\(\) as\? String/.test(kt) && /optString\("type"\) != "reelnest-media-hit"/.test(kt) && /onMediaHit\(mapOf\("json" to payload\)\)/.test(kt));
 check('Kotlin: text selection is kept (the listener returns false for a non-image, non-link hit)', /askMediaHit\(w\)\s*return false/.test(kt));
 check('Kotlin: the media script is injected at both PageScan call sites', (kt.match(/if \(mediaHitJs\.isNotEmpty\(\)\) (?:webView|view)\.evaluateJavascript\(mediaHitJs, null\)/g) || []).length === 2 && /Prop\("mediaHitScript"/.test(mod));
 check('images stay on the link menu', /kind: 'link', url: href/.test(scr) && /hit\.kind === 'video'/.test(scr));
@@ -55,7 +55,7 @@ check('Kotlin: algorithmic darkening only when the feature is supported', /WebVi
 check('gradle: androidx.webkit dependency', /androidx\.webkit:webkit:/.test(gradle));
 check('pref: darkPages defaults on and only false turns it off', /darkPages: boolean;/.test(prefs) && /darkPages: true,/.test(prefs) && /darkPages: o\.darkPages !== false,/.test(prefs));
 check('screen: darkPages is the pref and the app being dark', /darkPages=\{prefs\.darkPages && dark\}/.test(scr) && /const \{ colors, dark \} = useTheme\(\)/.test(scr));
-check('settings: a Dark pages row with a caption', /browserTabs\.settings\.darkPages\}\s+subtitle=\{browserTabs\.settings\.darkPagesSubtitle\}/.test(settings) && /darkPages: 'Dark pages'/.test(copy) && /Darken pages that only have a light look, when Maglev is dark\./.test(copy));
+check('settings: a Dark pages row with a caption', /browserTabs\.settings\.darkPages\}\s+subtitle=\{browserTabs\.settings\.darkPagesSubtitle\}/.test(settings) && /darkPages: 'Dark pages'/.test(copy) && /Darken pages that only have a light look, when ReelNest is dark\./.test(copy));
 check('settings index: Dark pages with keywords', /"browser-dark-pages",\s*"Dark pages",\s*"browser",\s*"Browser",\s*\[[^\]]*"dark"[^\]]*"night"[^\]]*"pages"[^\]]*"websites"[^\]]*"theme"/.test(index));
 check('backup restores the pref through normalizeBrowserPrefs', /normalizeBrowserPrefs\(value\)/.test(read('utils/backup/io.ts')));
 

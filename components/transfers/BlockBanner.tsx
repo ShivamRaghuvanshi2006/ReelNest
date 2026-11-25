@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import type { ActiveBlock } from 'maglev-engine';
+import type { ActiveBlock } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { moreCount, reasonForBlock, visibleBlocks } from '../../utils/blocks/reasons';

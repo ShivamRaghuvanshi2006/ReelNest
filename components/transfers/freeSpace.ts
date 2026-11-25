@@ -1,6 +1,6 @@
 /**
  * Free up space (docs/contracts-0.19/play-and-storage.md sections 2 and 3). Pure: no React, no react-native.
- * The reserve math mirrors native/maglev-core/src/storage_guard.rs and StorageGuard.kt (shared vectors).
+ * The reserve math mirrors native/reelnest-core/src/storage_guard.rs and StorageGuard.kt (shared vectors).
  */
 
 export const RESERVE_FLOOR_BYTES = 500 * 1024 * 1024;

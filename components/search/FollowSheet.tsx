@@ -15,8 +15,8 @@ export interface FollowSheetProps {
 }
 
 const SOURCE_NOTE = {
-  anime: 'Maglev watches Nyaa for new episodes of this show.',
-  tv: "Maglev watches EZTV's latest releases. An episode posted during a very busy hour can be missed.",
+  anime: 'ReelNest watches Nyaa for new episodes of this show.',
+  tv: "ReelNest watches EZTV's latest releases. An episode posted during a very busy hour can be missed.",
 } as const;
 
 /** Confirm sheet for "Follow this". Automatic download starts off. */

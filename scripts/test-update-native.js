@@ -30,13 +30,13 @@ function body(src, re) {
   return src.slice(i);
 }
 
-const dir = 'modules/maglev-engine/android/src/main/java/com/maglev/engine/update/';
+const dir = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/update/';
 const upd = read(dir + 'AppUpdater.kt');
 const rcv = read(dir + 'UpdateInstallReceiver.kt');
 const src = read(dir + 'InstallSource.kt');
 const rep = read(dir + 'UpdateReplacedReceiver.kt');
-const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-const manifest = read('modules/maglev-engine/android/src/main/AndroidManifest.xml');
+const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+const manifest = read('modules/reelnest-engine/android/src/main/AndroidManifest.xml');
 
 console.log('[who updates]');
 check('installer comes from getInstallSourceInfo on API 30+, getInstallerPackageName below', /Build\.VERSION_CODES\.R/.test(src) && /getInstallSourceInfo\(context\.packageName\)\.installingPackageName/.test(src) && /getInstallerPackageName/.test(src));
@@ -47,8 +47,8 @@ check('module exposes getInstallSource with managedBy', /AsyncFunction\("getInst
 for (const id of ['app.accrescent.client']) check(`${id} is accrescent`, src.includes(`"${id}"`) && /installer == ACCRESCENT -> "accrescent"/.test(src));
 for (const id of ['com.aurora.store', 'com.sec.android.app.samsungapps', 'com.amazon.venezia', 'com.xiaomi.market', 'com.huawei.appmarket', 'com.heytap.market', 'com.oppo.market']) check(`${id} is store`, src.includes(`"${id}"`));
 check('store installers map to "store"', /installer in STORES -> "store"/.test(src));
-check('a sideload installer (system installer, browser, shell, Maglev) stays unmanaged', !/"com\.android\.packageinstaller"|"com\.android\.shell"|"com\.maglev"/.test(src) && /else -> null/.test(src));
-check('the bridge type and the copy know accrescent and store', /'accrescent' \| 'store'/.test(read('modules/maglev-engine/src/MaglevEngine.types.ts')) && /Updates come from Accrescent\./.test(read('constants/copy.ts')) && /the app store you installed Maglev from/.test(read('constants/copy.ts')));
+check('a sideload installer (system installer, browser, shell, ReelNest) stays unmanaged', !/"com\.android\.packageinstaller"|"com\.android\.shell"|"com\.reelnest"/.test(src) && /else -> null/.test(src));
+check('the bridge type and the copy know accrescent and store', /'accrescent' \| 'store'/.test(read('modules/reelnest-engine/src/ReelNestEngine.types.ts')) && /Updates come from Accrescent\./.test(read('constants/copy.ts')) && /the app store you installed ReelNest from/.test(read('constants/copy.ts')));
 
 console.log('\n[no updater code when managed]');
 check('download refuses with MANAGED first', /fun download\([^)]*\)[^{]*\{\s*managed\(context\)\?\.let \{ return it \}/.test(upd));
@@ -75,7 +75,7 @@ check('cleanup deletes everything but the pending file', /fun cleanup\(context: 
 console.log('\n[verify before every install]');
 const verify = body(upd, /fun verify\(/);
 check('SHA-256 of the file equals the expected one', /sha256Hex\(file\) != sha256\.lowercase\(\)/.test(verify) && /MessageDigest\.getInstance\("SHA-256"\)/.test(upd));
-check('package name is com.maglev', /PACKAGE = "com\.maglev"/.test(upd) && /archive\.packageName != PACKAGE/.test(verify));
+check('package name is com.reelnest', /PACKAGE = "com\.reelnest"/.test(upd) && /archive\.packageName != PACKAGE/.test(verify));
 check('versionCode is greater than the installed one', /versionOf\(archive\) <= versionOf\(installed\)/.test(verify) && /longVersionCode/.test(upd));
 check('signers equal the installed app (SHA-256 sets of apkContentsSigners)', /apkContentsSigners/.test(upd) && /a != own/.test(verify) && /own = signers\(installed\)/.test(verify) && /a\.isEmpty\(\)/.test(verify));
 check('a rotated key is accepted when signingCertificateHistory holds the installed signer (API 28+ guard)', /signingCertificateHistory/.test(upd) && /SDK_INT < Build\.VERSION_CODES\.P\) return emptySet\(\)/.test(upd) && /own\.intersect\(signerHistory\(archive\)\)\.isEmpty\(\)/.test(verify));
@@ -84,7 +84,7 @@ check('download verifies after the rename and deletes a bad file', /val bad = ve
 const install = body(upd, /fun install\(/);
 check('install verifies again, before opening a session', install.indexOf('verify(context, file, sha) != null') > -1 && install.indexOf('verify(context, file, sha) != null') < install.indexOf('createSession'));
 check('install only reads files inside cacheDir/updates', /inUpdatesDir\(context, path\) \?: return failure\("UPDATE_INVALID"/.test(install));
-check('the message for a failed check is the contract one', /This update didn't pass Maglev's checks, so it wasn't installed\./.test(upd));
+check('the message for a failed check is the contract one', /This update didn't pass ReelNest's checks, so it wasn't installed\./.test(upd));
 
 check('download() also refuses with BLOCKED when VPN only is set and no VPN is up', /requireVpn: Boolean = false/.test(upd) && /requireVpn && network\(context\)\["vpn"\] != true\) return failure\("BLOCKED"/.test(upd) && /requireVpn: Boolean, promise/.test(mod) && /size\.toLong\(\), requireVpn\)/.test(mod));
 check('cleanup keeps the .apk and .apk.part of the pending or available sha', /keepSha: String\? = null/.test(upd) && /"\$sha\.apk\.part"/.test(upd) && /keepSha: String\?, promise/.test(mod));
@@ -107,14 +107,14 @@ check('handles STATUS_PENDING_USER_ACTION, SUCCESS, and failures', ['STATUS_PEND
 check('starts the confirm intent in the foreground, else posts the Install notification', /if \(AppUpdater\.inForeground\)/.test(rcv) && /startActivity\(confirm\)/.test(rcv) && /UpdateNotices\.showConfirm/.test(rcv));
 check('failures reach JS as onUpdateResult {ok:false, code, message}', /"onUpdateResult"/.test(rcv) && /linkedMapOf\("ok" to false, "code" to code, "message" to message\)/.test(rcv));
 check('the receiver is declared and not exported', /<receiver\s+android:name="\.update\.UpdateInstallReceiver"\s+android:exported="false"/.test(manifest));
-check('MY_PACKAGE_REPLACED posts the updated notice only for an install Maglev started', /<receiver\s+android:name="\.update\.UpdateReplacedReceiver"\s+android:exported="false">[\s\S]*?MY_PACKAGE_REPLACED/.test(manifest) && /installingVersion\(app\) \?: return/.test(rep) && /UpdateNotices\.show\(app, "updated", version\)/.test(rep));
+check('MY_PACKAGE_REPLACED posts the updated notice only for an install ReelNest started', /<receiver\s+android:name="\.update\.UpdateReplacedReceiver"\s+android:exported="false">[\s\S]*?MY_PACKAGE_REPLACED/.test(manifest) && /installingVersion\(app\) \?: return/.test(rep) && /UpdateNotices\.show\(app, "updated", version\)/.test(rep));
 const notices = read(dir + 'UpdateNotices.kt');
 check('the ready notice Install action broadcasts to the receiver, which starts the install', /ACTION_INSTALL/.test(notices) && /PendingIntent\.getBroadcast/.test(notices) && /intent\.action == ACTION_INSTALL/.test(rcv) && /AppUpdater\.install\(app, path, false, sha\)/.test(rcv) && /goAsync\(\)/.test(rcv));
 check('the Install action falls back to About when the install did not start', /UpdateNotices\.show\(app, "ready", version\)/.test(rcv) && /val action = if \(path != null && sha256 != null\) installAction\(context, version, path, sha256\) else about/.test(notices));
 check('installing_version is cleared on failure, cancel and a different installed version', (rcv.match(/AppUpdater\.clearInstalling\(app\)/g) || []).length === 3 && /AppUpdater\.clearInstalling\(app\)/.test(rep) && /installed == version/.test(rep));
 check('the module passes path and sha to the ready notice', /path: String\?, sha256: String\?, promise/.test(mod) && /UpdateNotices\.show\(c, kind, version, path, sha256\)/.test(mod));
 check('foreground flag follows the activity', /AppUpdater\.inForeground = true/.test(mod) && /AppUpdater\.inForeground = false/.test(mod));
-check('an Updates notification channel exists', /CH_UPDATES = "maglev_updates"/.test(read(dir + 'UpdateNotices.kt')) && /"Updates"/.test(read(dir + 'UpdateNotices.kt')));
+check('an Updates notification channel exists', /CH_UPDATES = "reelnest_updates"/.test(read(dir + 'UpdateNotices.kt')) && /"Updates"/.test(read(dir + 'UpdateNotices.kt')));
 
 console.log('\n[plugin and permissions]');
 const plugin = require('../plugins/withSelfUpdate.js');
@@ -129,9 +129,9 @@ check('app.json does not block the updater permissions', !(app.android.blockedPe
 check('the plugin says a Play build must drop them', /PLAY BUILD/.test(read('plugins/withSelfUpdate.js')) && /PLAY BUILD/.test(read('scripts/test-manifest-permissions.js')));
 
 console.log('\n[bridge]');
-const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
+const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
 for (const fn of ['getInstallSource', 'downloadUpdate', 'installUpdate', 'cancelUpdateDownload', 'onUpdateProgress', 'onUpdateResult']) check(`bridge exposes ${fn}`, new RegExp(`public (async )?${fn}\\(`).test(bridge));
-const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
 check('the mock never fakes a download or install', /downloadUpdate\(\)[^\n]*\{\s*return this\.updateUnavailable\(\)/.test(mock) && /installUpdate\(\)[^\n]*\{\s*return this\.updateUnavailable\(\)/.test(mock) && /managedBy: null/.test(mock));
 
 console.log('\n[About and wiring]');

@@ -5,7 +5,7 @@
 # (Public docs; the exact per-chunk packing here is a recorded-style example, not a captured trace.)
 # Lines starting with "# " are fixture comments. The parser ignores them (no "data" field).
 
-data: {"id":"chatcmpl-g1","object":"chat.completion.chunk","created":1730000400,"model":"llama-3.3-70b-versatile","system_fingerprint":"fp_g1","choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"id":"call_g1","type":"function","function":{"name":"check_space","arguments":"{\"path\":\"Download/Maglev\"}"},"index":0}]},"finish_reason":null}]}
+data: {"id":"chatcmpl-g1","object":"chat.completion.chunk","created":1730000400,"model":"llama-3.3-70b-versatile","system_fingerprint":"fp_g1","choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"id":"call_g1","type":"function","function":{"name":"check_space","arguments":"{\"path\":\"Download/ReelNest\"}"},"index":0}]},"finish_reason":null}]}
 
 data: {"id":"chatcmpl-g1","object":"chat.completion.chunk","created":1730000400,"model":"llama-3.3-70b-versatile","system_fingerprint":"fp_g1","choices":[{"index":0,"delta":{"tool_calls":[{"id":"call_g2","type":"function","function":{"name":"get_result_details","arguments":"{\"id\":\"r7\"}"},"index":1}]},"finish_reason":null}]}
 

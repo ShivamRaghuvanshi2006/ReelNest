@@ -18,8 +18,8 @@ function check(name, cond) {
 (async () => {
   const R = await import('../utils/subtitles/requests.ts');
   const copy = await import('../utils/subtitles/copy.ts');
-  const types = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const Store = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const types = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const Store = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   const F = await import('../components/subtitles/flow.ts');
   const row = (language, group, id = language + group) => ({ group, candidate: { id, providerId: 'p', language, releaseName: id } });
   const ask = (key, extra = {}) => ({ key, title: key, detail: '', ...extra });
@@ -124,7 +124,7 @@ function check(name, cond) {
   check('links count as video by their name; every search uses effectiveLanguages', /linkNameKind\(d\.name\)/.test(runner) && /effectiveLanguages\(sub\)/.test(runner));
 
   console.log('[copy and settings]');
-  check('the settings line', copy.AUTO_NEW_VIDEOS_SUBTITLE === 'In your languages, while Maglev is open');
+  check('the settings line', copy.AUTO_NEW_VIDEOS_SUBTITLE === 'In your languages, while ReelNest is open');
   const page = read('app/settings/subtitles.tsx');
   check('the Settings switch', /title="Get subtitles for new videos"/.test(page) && /AUTO_NEW_VIDEOS_SUBTITLE/.test(page) && /autoNewVideos/.test(page) && /useSubtitleConsent/.test(page));
   const { SETTINGS_INDEX } = await import('../utils/settingsIndex.ts');
@@ -136,7 +136,7 @@ function check(name, cond) {
       Store.migrateSettings({ settings: { subtitles: { autoNewVideos: 'yes' } } }).subtitles.autoNewVideos === false &&
       Store.migrateSettings({ settings: {} }).subtitles.autoNewVideos === false,
   );
-  check('UI only: toNativeConfig never reads it', !/autoNewVideos/.test(read('modules/maglev-engine/src/toNativeConfig.ts')));
+  check('UI only: toNativeConfig never reads it', !/autoNewVideos/.test(read('modules/reelnest-engine/src/toNativeConfig.ts')));
 
   console.log('[card icon by shape, 44.8]');
   check(
@@ -274,7 +274,7 @@ function check(name, cond) {
     check('D10: it reuses the existing notice text and the single sheet accepts the same way', /privacyNotice\(names\)/.test(read('components/subtitles/useSubtitleConsent.tsx')) && /acceptPrivacy\(\)/.test(read('components/subtitles/SubtitleSheet.tsx')));
 
     console.log('[45.4 confirm before automatic mode turns on]');
-    check('45.4 copy: title, body and buttons', copy.AUTO_CONFIRM_TITLE === 'Get subtitles for new videos?' && copy.AUTO_CONFIRM_BODY === 'While Maglev is open, it sends the names of new videos you add to your subtitle sources, and saves a subtitle when one fits. Close matches wait for you.' && copy.AUTO_CONFIRM_TURN_ON === 'Turn on' && copy.AUTO_CONFIRM_NOT_NOW === 'Not now');
+    check('45.4 copy: title, body and buttons', copy.AUTO_CONFIRM_TITLE === 'Get subtitles for new videos?' && copy.AUTO_CONFIRM_BODY === 'While ReelNest is open, it sends the names of new videos you add to your subtitle sources, and saves a subtitle when one fits. Close matches wait for you.' && copy.AUTO_CONFIRM_TURN_ON === 'Turn on' && copy.AUTO_CONFIRM_NOT_NOW === 'Not now');
     check('45.4 notice already accepted: the sheet says only the confirm text', copy.autoConfirmBody(false, ['A']) === copy.AUTO_CONFIRM_BODY);
     check('45.4 notice never accepted: the privacy text comes first in the same sheet', copy.autoConfirmBody(true, ['A', 'B']) === `${copy.privacyNotice(['A', 'B'])}\n\n${copy.AUTO_CONFIRM_BODY}`);
     const hook = read('components/subtitles/useSubtitleConsent.tsx');
@@ -288,7 +288,7 @@ function check(name, cond) {
     R.markSaved('d:m1');
     R.markSaved('t:pk', 'e1.mkv');
     check('D11: the sheet\'s save makes the request saved (a pack: that episode)', R.getRequests()['d:m1'].phase === 'saved' && R.getRequests()['t:pk'].files['e1.mkv'].saved === true && R.getRequests()['t:pk'].phase === 'queued');
-    check('D11: a taken name after Maglev saved is saved, not has-already; before it, has-already', R.resolveExisting({ saved: true }) === 'saved' && R.resolveExisting({}) === 'has-already');
+    check('D11: a taken name after ReelNest saved is saved, not has-already; before it, has-already', R.resolveExisting({ saved: true }) === 'saved' && R.resolveExisting({}) === 'has-already');
     check('D11: the sheet calls markSaved', /markSaved\(t\.ownerKey/.test(read('components/subtitles/SubtitleSheet.tsx')));
 
     console.log('[44.15 D12 rename]');
@@ -374,7 +374,7 @@ function check(name, cond) {
     R.askSubtitles([askOf('t:re', { title: 'Rich (2006)', detail: '1080p · YTS' })], { auto: false });
     check('F10: the tray\'s richer ask fills the runner\'s thin one', R.getRequests()['t:re'].ask.title === 'Rich (2006)' && R.getRequests()['t:re'].ask.detail === '1080p · YTS' && !R.getRequests()['t:re'].byRunner);
     const back = R.resetEntryForReturn({ ask: askOf('t:z'), auto: false, phase: 'none', tries: 2, updatedAt: 0, files: { a: { phase: 'saved', tries: 1, saved: true, vp: '/a' }, b: { phase: 'none', tries: 2 } } });
-    check('F10: a re-added hash whose files are gone starts again; what Maglev saved is remembered', back.files.a.phase === 'queued' && back.files.a.saved === true && back.files.b.tries === 0 && back.phase === 'queued' && R.videosGone([{ path: 'a.mkv', length: 5, progressBytes: 0 }]) && !R.videosGone([{ path: 'a.mkv', length: 5, progressBytes: 2 }]));
+    check('F10: a re-added hash whose files are gone starts again; what ReelNest saved is remembered', back.files.a.phase === 'queued' && back.files.a.saved === true && back.files.b.tries === 0 && back.phase === 'queued' && R.videosGone([{ path: 'a.mkv', length: 5, progressBytes: 0 }]) && !R.videosGone([{ path: 'a.mkv', length: 5, progressBytes: 2 }]));
     check('F10: the run waits while the transfer is MOVING', !R.canWriteNow('MOVING') && R.canWriteNow('DOWNLOADING') && /canWriteNow\(t\.state\)/.test(runner));
 
     console.log('[44.15 F11 a missing video keeps needs-pick]');

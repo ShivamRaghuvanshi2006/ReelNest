@@ -75,7 +75,7 @@ function build(tag) {
   const body = sections.map((s) => `## ${s.title}\n${s.items.map((x) => `- ${x}`).join('\n')}`).join('\n\n')
     + (people.length ? `\n\n## Thanks\n${people.map((x) => `- ${x}`).join('\n')}` : '');
   return [
-    `# Maglev ${tag}`,
+    `# ReelNest ${tag}`,
     '',
     `${TAGLINE}${beta}`,
     '',
@@ -89,7 +89,7 @@ function build(tag) {
     '',
     '## Install',
     '1. Download one APK from the Assets list below.',
-    '2. Open it on your Android device to install. Installing over an older Maglev keeps your downloads and settings.',
+    '2. Open it on your Android device to install. Installing over an older ReelNest keeps your downloads and settings.',
     '3. Allow notifications so downloads keep running in the background.',
     '',
   ].join('\n');

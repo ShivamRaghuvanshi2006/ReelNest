@@ -14,7 +14,7 @@ import { useListPrefs } from '../../utils/prefs/lists';
 import { relativeTime } from '../../utils/feeds';
 import { SUBTITLE_PROVIDERS } from '../../utils/subtitles/providers';
 import { withSourceEnabled } from '../../utils/subtitles/prefs';
-import { TURNED_OFF_BY_MAGLEV } from '../../utils/subtitles/copy';
+import { TURNED_OFF_BY_REELNEST } from '../../utils/subtitles/copy';
 import { sourceRows, type SourceRow } from '../../utils/subtitleSettings';
 import { listsCopy, subtitleSettingsCopy } from '../../constants/copy';
 
@@ -41,7 +41,7 @@ export default function SubtitleSourcesSettings() {
   const setEnabled = (id: string, on: boolean) => patch({ sourceEnabled: withSourceEnabled(sub, id, on) });
   const note = (r: SourceRow): { text: string; tone: 'normal' | 'warning' } =>
     r.turnedOff
-      ? { text: r.turnedOff.note ? listsCopy.providers.turnedOffWithNote(r.turnedOff.note) : TURNED_OFF_BY_MAGLEV, tone: 'warning' }
+      ? { text: r.turnedOff.note ? listsCopy.providers.turnedOffWithNote(r.turnedOff.note) : TURNED_OFF_BY_REELNEST, tone: 'warning' }
       : { text: `${r.matches} · ${r.languages}`, tone: 'normal' };
 
   const renderRow = (r: SourceRow, i: number) => {

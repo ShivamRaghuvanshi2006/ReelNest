@@ -1,6 +1,8 @@
 // Default search sources: Gutenberg and LibriVox join the defaults, TPB stays off. Existing installs get them once;
 // turning one off afterwards sticks.
 const path = require('path');
+const { pathToFileURL } = require('node:url');
+const load = (p) => import(pathToFileURL(p).href);
 const Module = require('module');
 const root = path.join(__dirname, '..');
 let failed = 0;
@@ -22,9 +24,9 @@ const check = (name, cond) => {
       return next(url, ctx);
     },
   });
-  const { PROVIDERS } = await import(path.join(root, 'utils/search/providers/index.ts'));
-  const { normalizeSearchPrefs } = await import(path.join(root, 'utils/prefs/search.ts'));
-  const { LATER_DEFAULTS } = await import(path.join(root, 'utils/prefs/search.ts'));
+  const { PROVIDERS } = await load(path.join(root, 'utils/search/providers/index.ts'));
+  const { normalizeSearchPrefs } = await load(path.join(root, 'utils/prefs/search.ts'));
+  const { LATER_DEFAULTS } = await load(path.join(root, 'utils/prefs/search.ts'));
   const on = PROVIDERS.filter((p) => p.enabledByDefault).map((p) => p.id).sort();
   // Defaults are only safe, trusted sources. Open-upload sites and DHT/aggregator indexes stay off.
   check('defaults are archive, gutenberg, knaben, librivox, nyaa, torrentscsv, yts', on.join() === 'archive,gutenberg,knaben,librivox,nyaa,torrentscsv,yts', on.join());

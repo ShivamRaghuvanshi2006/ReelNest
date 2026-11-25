@@ -4,7 +4,7 @@ name: E2E (Maestro, report-only)
 # Report-only: nothing waits on this workflow, and release-apk.yml does not depend on it. Failing flows never fail the
 # job (owner decision 2026-11-19), so a commit is not marked red for them. They are reported as a warning and in the
 # job summary instead. Check this run after every push to main or a tag.
-# CI builds x86_64 only on main (ci.yml MAGLEV_ABIS). On other refs the artifact has no x86_64 APK and this job exits green with a notice.
+# CI builds x86_64 only on main (ci.yml REELNEST_ABIS). On other refs the artifact has no x86_64 APK and this job exits green with a notice.
 on:
   workflow_dispatch:
     inputs:

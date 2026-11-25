@@ -192,7 +192,7 @@ async function main() {
     check('body: groq omits parallel_tool_calls', !('parallel_tool_calls' in buildRequestBody(mk('groq'))));
     const g = buildRequestBody(mk('gemini'));
     check('body: gemini and custom use max_tokens', g.max_tokens === 2048 && !('max_completion_tokens' in g) && buildRequestBody(mk('custom')).max_tokens === 2048);
-    check('headers: attribution on OpenRouter only', buildHeaders(mk('openrouter'))['X-Title'] === 'Maglev' && buildHeaders(mk('openrouter'))['HTTP-Referer'] === 'https://github.com/Kaos599/Maglev' && !('X-Title' in buildHeaders(mk('openai'))) && !('HTTP-Referer' in buildHeaders(mk('groq'))));
+    check('headers: attribution on OpenRouter only', buildHeaders(mk('openrouter'))['X-Title'] === 'ReelNest' && buildHeaders(mk('openrouter'))['HTTP-Referer'] === 'https://github.com/ShivamRaghuvanshi2006/ReelNest' && !('X-Title' in buildHeaders(mk('openai'))) && !('HTTP-Referer' in buildHeaders(mk('groq'))));
     check('headers: bearer when a key exists, none for a keyless local server', buildHeaders(mk('openai')).Authorization === 'Bearer k' && !('Authorization' in buildHeaders(mk('custom', null))));
   }
 
@@ -491,7 +491,7 @@ async function main() {
   // ---- errors with a way forward (R1: no dead ends) ------------------------------------------------------
   {
     const cases = [
-      [400, 'This model does not support tools', "This model can't use Maglev's tools. Pick another model in Settings → Assistant.", 'settings'],
+      [400, 'This model does not support tools', "This model can't use ReelNest's tools. Pick another model in Settings → Assistant.", 'settings'],
       [404, '{"error":{"message":"No endpoints found"}}', "That model isn't available any more. Pick another in Settings → Assistant.", 'settings'],
       [413, '', 'That was too much for this model. Clear the chat or ask a shorter question.', 'retry'],
       [422, 'nope', 'The AI service refused this message. Try again, or pick another model in Settings.', 'retry'],
@@ -548,7 +548,7 @@ async function main() {
     s2.fetch.queue.push({ headers: { 'content-type': 'application/json; charset=utf-8' }, chunks: ['{"error":{"message":"model does not support tools"}}'] });
     s2.chat().send('hi');
     await settle();
-    check('200 JSON error without a code: mapped by its message', s2.chat().items.at(-1).message.startsWith("This model can't use Maglev's tools"), s2.chat().items.at(-1));
+    check('200 JSON error without a code: mapped by its message', s2.chat().items.at(-1).message.startsWith("This model can't use ReelNest's tools"), s2.chat().items.at(-1));
     const s3 = setup();
     s3.fetch.queue.push({ headers: { 'content-type': 'text/html; charset=utf-8' }, chunks: ['<html>Sign in to Wi-Fi</html>'] });
     s3.chat().send('hi');

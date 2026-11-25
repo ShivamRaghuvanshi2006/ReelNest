@@ -93,7 +93,7 @@ export const distrowatch: SearchProvider = {
   async resolveMagnet(result, signal) {
     if (!result.infoHash.startsWith(PREFIX)) throw new ProviderError('parse', 'No torrent file for this result');
     const file = result.infoHash.slice(PREFIX.length);
-    const bytes = await fetchTorrentBytes(`${distrowatch.mirrors[0]}/dwres/torrents/${encodeURIComponent(file)}`, signal, 'Maglev/0.1.0 (Android)');
+    const bytes = await fetchTorrentBytes(`${distrowatch.mirrors[0]}/dwres/torrents/${encodeURIComponent(file)}`, signal, 'ReelNest/0.1.0 (Android)');
     const { infoHash, announce } = readTorrent(bytes);
     return { magnet: buildMagnet(infoHash, result.name, announce ? [announce] : []), infoHash };
   },

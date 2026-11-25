@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { bookmarkCopy } from '../../constants/bookmarkCopy';
 import { useBookmarks, findBookmark, renameBookmark } from '../../utils/browser/bookmarks';
@@ -24,7 +24,7 @@ export interface BookmarkSheetProps {
 export function BookmarkSheet({ visible, onClose, url, title }: BookmarkSheetProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const list = useBookmarks();
   const existing = findBookmark(list, url);
   const [name, setName] = useState('');

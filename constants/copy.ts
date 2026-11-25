@@ -48,7 +48,7 @@ export const glossary = {
 export const ACRONYMS = ['VPN', 'URL', 'RSS', 'SD', 'DHT', 'IP', 'ID', 'USB', 'UI', 'OK', 'API', 'VLC', 'HTTP', 'HTTPS', 'UPnP'] as const;
 
 /** Capitalised words that may appear mid-sentence. */
-export const PROPER_WORDS = ['Maglev', "Maglev's", 'Android', 'Transfers', 'Wi-Fi', 'Atom', 'Settings', 'Search', 'Feeds', 'Undo', 'Retry'] as const;
+export const PROPER_WORDS = ['ReelNest', "ReelNest's", 'Android', 'Transfers', 'Wi-Fi', 'Atom', 'Settings', 'Search', 'Feeds', 'Undo', 'Retry'] as const;
 
 const toName = (s: string | number) => String(s);
 
@@ -67,7 +67,7 @@ export const notices = {
     clipboardEmpty: 'Your clipboard is empty.',
     startDownloadFailed: "Couldn't start this download.",
     folderPickerFailed: "Couldn't open the folder picker. Try again.",
-    folderNotDirect: "Maglev can't save straight into that folder. Pick another one.",
+    folderNotDirect: "ReelNest can't save straight into that folder. Pick another one.",
     storageRefused: 'Storage access was refused. Files are saved in app storage instead.',
     readFileFailed: "Couldn't read that file. Pick another one.",
     removeTorrentFailed: "Couldn't remove this torrent. Try again.",
@@ -100,8 +100,8 @@ export const notices = {
     popup: 'Blocked a pop-up.',
     scheme: 'Blocked a link that opens another app.',
     permission: 'Blocked a request for your camera, mic or location.',
-    drm: "This video is protected. Maglev can't save it.",
-    blob: "This player streams in a way Maglev can't save.",
+    drm: "This video is protected. ReelNest can't save it.",
+    blob: "This player streams in a way ReelNest can't save.",
     linkCopied: 'Link copied.',
     linkCopyFailed: "Couldn't copy the link.",
     addedToTransfers: 'Added to Transfers.',
@@ -174,16 +174,16 @@ export const banners = {
     legacyStorageDenied: { title: 'Storage access denied', body: 'Files are saved in app storage instead.' },
   },
   storage: {
-    folderAccessLost: { title: 'Folder access lost', body: 'Maglev can no longer write to your chosen folder.' },
+    folderAccessLost: { title: 'Folder access lost', body: 'ReelNest can no longer write to your chosen folder.' },
     appStorageFallback: { title: 'Files are saved in app storage', body: "The download folder isn't available right now." },
   },
   browser: {
     installer: { title: 'This is an app installer', body: 'Only download it if you trust the site.' },
-    sslRefused: { title: "Couldn't open this page securely", body: "The site's certificate isn't trusted, so Maglev stopped." },
+    sslRefused: { title: "Couldn't open this page securely", body: "The site's certificate isn't trusted, so ReelNest stopped." },
     localRefused: { title: 'Blocked a device on your network', body: "Pages can't send you there. Type the address yourself if you trust it." },
     streamProtected: { title: 'This video is protected' },
     streamLive: { title: 'This is a live stream' },
-    streamUnsupported: { title: "Maglev can't save this kind of stream" },
+    streamUnsupported: { title: "ReelNest can't save this kind of stream" },
     streamFailed: { title: "Couldn't read this stream" },
   },
   addDownload: {
@@ -225,7 +225,7 @@ export const empty = {
   transfers: {
     none: { title: 'Nothing downloading', body: 'Add a link or a .torrent file, or find something.' },
     /** Under the finder tiles: the Share route, which the screen's buttons don't cover. */
-    shareHint: 'In another app, tap "Share", then Maglev.',
+    shareHint: 'In another app, tap "Share", then ReelNest.',
     noMatch: { title: 'No matching transfers', body: 'Try a different search.' },
     noneInFilter: (filter: string | number) => ({
       title: `No ${toName(filter).toLowerCase()} transfers`,
@@ -254,7 +254,7 @@ export const empty = {
     noFiles: { title: 'No files listed', body: 'This torrent has no files to choose from.' },
     duplicate: { title: 'Already in Transfers', body: 'This torrent is already added.' },
     timedOut: { title: "Couldn't find torrent info" },
-    timedOutMagnet: 'No peers answered in time. Retry, or add it anyway and Maglev keeps looking.',
+    timedOutMagnet: 'No peers answered in time. Retry, or add it anyway and ReelNest keeps looking.',
     timedOutFile: 'No peers answered in time.',
     readFailed: { title: "Couldn't read this torrent" },
   },
@@ -279,12 +279,12 @@ export const empty = {
   browser: {
     start: { title: 'Nothing open yet', body: 'Type an address or search for something above.' },
     crashed: { title: 'This page stopped working', body: 'Reload to try it again.' },
-    noFiles: { title: 'No files found yet', body: 'Play a video or open a page with files. Maglev lists what it finds here.' },
+    noFiles: { title: 'No files found yet', body: 'Play a video or open a page with files. ReelNest lists what it finds here.' },
     noAllowedSites: { title: 'No sites allowed', body: 'Sites you allow ads on show up here.' },
     historyEmpty: { title: 'No history yet', body: 'Pages you open in the browser show up here.' },
     historyOff: { title: 'History is off', body: 'Turn it on in the browser settings to keep pages you open.' },
     historyNoResults: { title: 'No matches', body: 'Try another word or part of an address.' },
-    historyFailed: { title: "History isn't available", body: "Maglev couldn't open it. Try again." },
+    historyFailed: { title: "History isn't available", body: "ReelNest couldn't open it. Try again." },
   },
   engineError: {
     title: "The downloader didn't start",
@@ -327,8 +327,8 @@ export const historyCopy = {
     saveSubtitle: 'Keeps the pages you open on this phone.',
     suggest: 'Suggest from history',
     suggestSubtitle: 'Shows matching pages while you type an address.',
-    clearOnClose: 'Clear history when Maglev closes',
-    clearOnCloseSubtitle: 'Clears history when you close Maglev, and again when it next starts.',
+    clearOnClose: 'Clear history when ReelNest closes',
+    clearOnCloseSubtitle: 'Clears history when you close ReelNest, and again when it next starts.',
     open: 'History',
     clear: 'Clear history',
   },
@@ -408,7 +408,7 @@ export const browserTabs = {
     swipeTabs: 'Swipe the address bar to switch tabs',
     swipeTabsSubtitle: 'Swipe left or right on the address bar to move between tabs, or down to see all tabs.',
     darkPages: 'Dark pages',
-    darkPagesSubtitle: 'Darken pages that only have a light look, when Maglev is dark.',
+    darkPagesSubtitle: 'Darken pages that only have a light look, when ReelNest is dark.',
   },
 } as const;
 
@@ -467,13 +467,13 @@ export const streamSheet = {
 // ---------------------------------------------------------------------------------------------
 export const onboarding = {
   welcome: {
-    title: 'Maglev',
+    title: 'ReelNest',
     body: 'Torrents, web links and videos in one place.',
     detail: 'Search many sources at once, find videos in the browser, and follow feeds for new releases.',
   },
   notifications: {
     title: 'Know when it is done',
-    body: 'Maglev tells you when a download finishes, and shows progress while it runs in the background.',
+    body: 'ReelNest tells you when a download finishes, and shows progress while it runs in the background.',
   },
   folder: {
     title: 'Download folder',
@@ -481,7 +481,7 @@ export const onboarding = {
   },
   background: {
     title: 'Keep running',
-    body: 'Android may stop downloads to save battery. Allow Maglev to keep running?',
+    body: 'Android may stop downloads to save battery. Allow ReelNest to keep running?',
   },
   mobileData: {
     title: 'Download on mobile data?',
@@ -549,7 +549,7 @@ export const tabsCopy = {
 /** Settings > Appearance > App icon. The hint is linted like a banner body: at most 16 words, ends with a period. */
 export const appIconCopy = {
   label: 'App icon',
-  hint: 'Changes when you leave Maglev. Your home screen may take a moment to update.',
+  hint: 'Changes when you leave ReelNest. Your home screen may take a moment to update.',
   /** "Teal app icon, selected" */
   a11y: (name: string, selected: boolean) => `${name} app icon${selected ? ', selected' : ''}`,
 } as const;
@@ -557,7 +557,7 @@ export const appIconCopy = {
 /** The screen shown when a screen crashes, and the crash log row in Settings > About. */
 export const errorScreenCopy = {
   title: 'Something went wrong',
-  body: 'Maglev hit a problem on this screen. Reload to try again.',
+  body: 'ReelNest hit a problem on this screen. Reload to try again.',
   reload: 'Reload',
   copy: 'Copy crash report',
   copied: 'Report copied',
@@ -631,7 +631,7 @@ export const backupCopy = {
     torrents: 'Torrents',
     downloads: 'Downloads',
   },
-  torrentsNote: 'Torrents and downloads are added paused. Files are not in the backup, so Maglev checks the saved folder first.',
+  torrentsNote: 'Torrents and downloads are added paused. Files are not in the backup, so ReelNest checks the saved folder first.',
   settingsConfirm: {
     title: 'Replace your settings?',
     body: 'The settings in this backup replace the ones on this phone. Bookmarks are added to yours.',
@@ -644,7 +644,7 @@ export const backupCopy = {
   skipped: (n: number) => `${n} already here, skipped`,
   failed: (n: number) => `${n} couldn't be added`,
   defaultFolder: (n: number) => `${n} saved to the default folder, because the old folder isn't on this phone`,
-  restartNote: 'Some changes show after you restart Maglev.',
+  restartNote: 'Some changes show after you restart ReelNest.',
   startAll: 'Start all',
   started: (n: number) => `Started ${n}`,
   done: 'Done',
@@ -665,17 +665,17 @@ export const quickShareCopy = {
   savesTo: 'Saves to',
   download: 'Download',
   downloadAnyway: 'Download anyway',
-  openInMaglev: 'Open in Maglev',
+  openInReelNest: 'Open in ReelNest',
   freeUpSpace: 'Free up space',
   findVideos: 'Find videos on this page',
   close: 'Close',
   webPage: 'This is a web page, not a file',
   noLink: 'No link in what you shared',
-  alreadyIn: 'Already in Maglev',
-  added: 'Added to Maglev',
-  addedServiceLater: 'Added to Maglev. It starts when you open the app.',
+  alreadyIn: 'Already in ReelNest',
+  added: 'Added to ReelNest',
+  addedServiceLater: 'Added to ReelNest. It starts when you open the app.',
   couldNotAdd: "Couldn't add that. Try again.",
-  engineFailed: "Maglev couldn't start. Open the app and try again.",
+  engineFailed: "ReelNest couldn't start. Open the app and try again.",
 } as const;
 // endregion quick share
 
@@ -685,7 +685,7 @@ export const watchCopy = {
   title: 'Watches',
   rowTitle: 'Watches',
   rowValue: (n: number) => (n === 0 ? 'None' : n === 1 ? '1 title' : `${n} titles`),
-  intro: 'Maglev checks for new copies of a title in the background and tells you when one shows up.',
+  intro: 'ReelNest checks for new copies of a title in the background and tells you when one shows up.',
   empty: 'You are not watching anything yet. Search for a title and tap Watch.',
   watchButton: 'Watch',
   watchHint: 'Watch this search',
@@ -704,7 +704,7 @@ export const watchCopy = {
   lastNew: (name: string) => `Last new: ${name}`,
   noneNew: 'Nothing new yet',
   every: 'Check every',
-  backgroundNote: 'Android decides the exact time, so a check can come later than you chose. It does not run after you force-stop Maglev, until you open it again.',
+  backgroundNote: 'Android decides the exact time, so a check can come later than you chose. It does not run after you force-stop ReelNest, until you open it again.',
 } as const;
 // endregion watch
 
@@ -713,21 +713,21 @@ export const watchCopy = {
 export const updateCopy = {
   versionBadge: 'Update available',
   check: { title: 'Check for updates', checking: 'Checking…', upToDate: "You're up to date", failed: "Couldn't check. Try again." },
-  available: (version: string) => `Maglev ${version} is available`,
+  available: (version: string) => `ReelNest ${version} is available`,
   managedBy: (by: 'fdroid' | 'obtainium' | 'play' | 'accrescent' | 'store') =>
     by === 'accrescent'
       ? 'Updates come from Accrescent.'
       : by === 'store'
-        ? 'Updates come from the app store you installed Maglev from.'
+        ? 'Updates come from the app store you installed ReelNest from.'
         : `Updates come from ${by === 'fdroid' ? 'F-Droid' : by === 'obtainium' ? 'Obtainium' : 'Google Play'}.`,
-  updatesRow: { title: 'Updates', autoCheck: 'Check automatically', autoCheckHint: 'Once a day, Maglev asks GitHub for the latest version.' },
+  updatesRow: { title: 'Updates', autoCheck: 'Check automatically', autoCheckHint: 'Once a day, ReelNest asks GitHub for the latest version.' },
   modes: [
     { value: 'ask', title: 'Tell me', description: 'Get a notification when a new version is out.' },
     { value: 'download', title: 'Download on Wi-Fi, then ask', description: 'The file downloads on Wi-Fi. You choose when to install.' },
     { value: 'auto', title: 'Install automatically', description: 'Downloads on Wi-Fi, then installs when nothing is transferring.' },
   ],
   card: {
-    title: (version: string) => `Maglev ${version}`,
+    title: (version: string) => `ReelNest ${version}`,
     whatsNew: "What's new",
     noNotes: 'No release notes.',
     download: 'Download',
@@ -740,12 +740,12 @@ export const updateCopy = {
     waitingForWifi: 'Waiting for Wi-Fi',
     installing: 'Installing',
     confirm: 'Confirm on the screen Android shows.',
-    ready: (version: string) => `Maglev ${version} is ready`,
+    ready: (version: string) => `ReelNest ${version} is ready`,
   },
   notices: {
-    invalid: "This update didn't pass Maglev's checks, so it wasn't installed.",
-    needsPermission: 'To install updates, allow Maglev to install apps.',
-    restartWarning: 'Maglev restarts to finish. Downloads pick up where they left off.',
+    invalid: "This update didn't pass ReelNest's checks, so it wasn't installed.",
+    needsPermission: 'To install updates, allow ReelNest to install apps.',
+    restartWarning: 'ReelNest restarts to finish. Downloads pick up where they left off.',
     downloadFailed: "Couldn't download the update. Try again.",
     blocked: 'Your network settings block this download right now.',
     storageFull: "There isn't enough space for the update.",
@@ -786,12 +786,12 @@ export const listsCopy = {
   /** Sentences shown under a row. */
   hints: {
     autoUpdateSubtitle: 'Ad block list, search sources and trackers, once a day.',
-    rejected: "The list didn't pass Maglev's checks, so it wasn't used.",
+    rejected: "The list didn't pass ReelNest's checks, so it wasn't used.",
     blocked: 'Your network settings block this download right now.',
   },
   providers: {
-    turnedOff: 'Turned off by Maglev',
-    turnedOffWithNote: (note: string) => `Turned off by Maglev. ${note}`,
+    turnedOff: 'Turned off by ReelNest',
+    turnedOffWithNote: (note: string) => `Turned off by ReelNest. ${note}`,
   },
   browser: {
     upToDate: 'The block list is already up to date.',
@@ -824,7 +824,7 @@ export const textSizeCopy = {
 
 // region star prompt (docs/NATIVE_CONTRACT.md section 33)
 export const starCopy = {
-  title: 'Enjoying Maglev?',
+  title: 'Enjoying ReelNest?',
   body: 'A star on GitHub helps other people find it.',
   star: 'Star on GitHub',
   notNow: 'Not now',
@@ -836,7 +836,7 @@ export const starCopy = {
 export const subtitleSettingsCopy = {
   languages: {
     title: 'Languages',
-    caption: 'Maglev looks for the first language on the list, then the next. Leave it empty to follow your phone.',
+    caption: 'ReelNest looks for the first language on the list, then the next. Leave it empty to follow your phone.',
     yours: 'Your languages',
     all: 'All languages',
     search: 'Search languages',
@@ -853,13 +853,13 @@ export const subtitleSettingsCopy = {
   sources: {
     title: 'Subtitle sources',
     pageTitle: 'Subtitle sources',
-    caption: 'Maglev asks the sources you turn on when you tap Find subtitles.',
+    caption: 'ReelNest asks the sources you turn on when you tap Find subtitles.',
     empty: 'No sources yet',
     emptyBody: 'Sources arrive with app and list updates.',
     on: (n: number) => `On · ${n}`,
     off: 'Off',
     nothingOn: 'Nothing is on. Turn on a source below.',
-    footer: "Maglev doesn't host any subtitles. Sources are third-party websites.",
+    footer: "ReelNest doesn't host any subtitles. Sources are third-party websites.",
     listLine: (when: string) => `Source list: ${when}`,
     toggle: (name: string) => `Use ${name} for subtitles`,
     matchesBy: 'Finds subtitles',

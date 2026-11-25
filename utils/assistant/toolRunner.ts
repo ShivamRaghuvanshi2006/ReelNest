@@ -15,9 +15,9 @@
  */
 import { formatBytes, formatSpeed } from '../../constants/format.ts';
 import type {
-  Detail, DetailFile, DownloadSnapshot, EngineResult, FilePriorityEntry, FreeSpace, MaglevEngineApi, Metadata,
+  Detail, DetailFile, DownloadSnapshot, EngineResult, FilePriorityEntry, FreeSpace, ReelNestEngineApi, Metadata,
   MetadataFile, PlaybackSupport, Snapshot,
-} from '../../modules/maglev-engine/src/MaglevEngine.types.ts';
+} from '../../modules/reelnest-engine/src/ReelNestEngine.types.ts';
 import { ADMISSION_RESERVE_BYTES, admit, pendingNeedOf } from '../admission.ts';
 import type { AdmissionOutcome } from '../admission.ts';
 import { buildMagnet, infoHashFromMagnet, normalizeInfoHash } from '../search/magnet.ts';
@@ -46,9 +46,9 @@ import { MESSAGE_MAX, NAME_MAX, QUERY_MAX, filterModelOutput, looksLikeInstructi
 
 // ---------------------------------------------------------------- dependencies
 
-/** The engine calls the runner uses. A subset of `MaglevEngineApi`, with the same signatures. */
+/** The engine calls the runner uses. A subset of `ReelNestEngineApi`, with the same signatures. */
 export type RunnerEngine = Pick<
-  MaglevEngineApi,
+  ReelNestEngineApi,
   | 'listTorrents' | 'getDetail' | 'resolveMetadata' | 'cancelResolve' | 'addTorrent' | 'setFilePriorities'
   | 'pause' | 'resume' | 'removeFiles' | 'delete' | 'getFreeSpace'
   | 'pauseDownload' | 'resumeDownload' | 'removeDownload'
@@ -99,7 +99,7 @@ const DL_PREFIX = 'dl:';
 
 /** Same cap as utils/watch/logic.ts MAX_WATCHES (this file stays free of app imports). */
 const WATCH_MAX = 20;
-const NO_SPACE_READ = "Couldn't check free space, so Maglev can't add this right now.";
+const NO_SPACE_READ = "Couldn't check free space, so ReelNest can't add this right now.";
 const GONE = 'That download is gone.';
 
 /** Plain English for engine error codes (SM-36 copy). Never the raw engine message. */
@@ -114,7 +114,7 @@ function plainEngineError(code: string): string {
     case 'TRACKER': return "Can't reach anyone right now.";
     case 'NOT_FOUND': return GONE;
     case 'DISK_FULL': return 'Storage full.';
-    case 'PERMISSION': return "Maglev can't write to this folder.";
+    case 'PERMISSION': return "ReelNest can't write to this folder.";
     case 'FILES_MISSING': return 'Some files are missing.';
     case 'NOT_INITIALIZED':
     case 'ENGINE_UNAVAILABLE':
@@ -294,7 +294,7 @@ const DETAIL_FILES_SHOWN = 8;
 // ---------------------------------------------------------------- internal state
 
 const STALE_CARD = 'This card is no longer valid. Ask me again.';
-const LINK_MISMATCH = "The source's link doesn't match this result, so Maglev won't use it.";
+const LINK_MISMATCH = "The source's link doesn't match this result, so ReelNest won't use it.";
 
 interface Stored {
   hash: string;
@@ -450,7 +450,7 @@ export function createToolRunner(deps: ToolRunnerDeps): ToolRunner {
 
   const savesTo = (s: Space): string =>
     s.mode === 'staging' ? 'Saves to your chosen folder'
-      : /(^|[\\/])Download[\\/]Maglev[\\/]?$/.test(s.path) ? 'Saves to Download/Maglev'
+      : /(^|[\\/])Download[\\/]ReelNest[\\/]?$/.test(s.path) ? 'Saves to Download/ReelNest'
         : 'Saves to your download folder';
 
   function finishedList(s: Space): FinishedDownload[] {
@@ -1473,7 +1473,7 @@ export function createToolRunner(deps: ToolRunnerDeps): ToolRunner {
       case 'storage_full': return { plain: 'Storage full.', fixes: ['Free up space', 'Move the download to another folder'] };
       case 'storage_unavailable': return { plain: "The SD card isn't there.", fixes: ['Put the SD card back', 'Move the download'] };
       case 'files_missing':
-      case 'files_changed': return { plain: 'Files were deleted or changed outside Maglev.', fixes: ['Restore the files', 'Stop downloading the missing ones', 'Recheck'] };
+      case 'files_changed': return { plain: 'Files were deleted or changed outside ReelNest.', fixes: ['Restore the files', 'Stop downloading the missing ones', 'Recheck'] };
       case 'no_peers': return { plain: 'No one is sharing this yet.', fixes: ['Keep trying', 'Remove it'] };
       default: return { plain: 'It is paused.', fixes: ['Resume'] };
     }
@@ -1550,7 +1550,7 @@ export function createToolRunner(deps: ToolRunnerDeps): ToolRunner {
     const files = stored.files;
     if (!files || !stored.magnet) return { error: `Look inside ${handle} first with get_result_details, then propose it.` };
     const can = canPropose({ safety: stored.safety, flags: stored.ranked?.flags }); // R1-8: red is enforced here, not in the prompt.
-    if (!can.ok) return { error: can.reason ?? "Maglev won't add this." };
+    if (!can.ok) return { error: can.reason ?? "ReelNest won't add this." };
     if (!space.known) return { error: NO_SPACE_READ };
 
     const requested = Array.isArray(args.file_indices) ? (args.file_indices as number[]) : null;
@@ -1930,7 +1930,7 @@ export function createToolRunner(deps: ToolRunnerDeps): ToolRunner {
         if (!stored || !stored.files || !stored.magnet) return 'That result is no longer available. Ask me to search again.';
         if (!verifiedMagnet(stored)) return LINK_MISMATCH;
         const can = canPropose({ safety: stored.safety, flags: stored.ranked?.flags });
-        if (!can.ok) return can.reason ?? "Maglev won't add this.";
+        if (!can.ok) return can.reason ?? "ReelNest won't add this.";
         const valid = new Set(stored.files.map((f) => f.index));
         if (a.indices.some((i) => !valid.has(i))) return 'The file list changed. Ask me for a fresh card.';
         if (!space.known) return "Couldn't check free space. Try again.";
@@ -2136,7 +2136,7 @@ export function createToolRunner(deps: ToolRunnerDeps): ToolRunner {
   }
 
   /**
-   * The magnet Maglev hands to the engine: rebuilt from the verified hash and our own trackers, never the
+   * The magnet ReelNest hands to the engine: rebuilt from the verified hash and our own trackers, never the
    * provider's raw string (it can carry xs, ws or other parameters). Null when the link's hash differs from
    * the verified hash (or, before the result is opened, from the hash the result is keyed by).
    */

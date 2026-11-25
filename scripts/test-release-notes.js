@@ -28,7 +28,7 @@ for (const f of fs.readdirSync(path.join(root, 'release-notes')).filter((f) => /
 }
 
 const body = build(`v${version}-beta`);
-t('release text has the title and tagline', body.startsWith(`# Maglev v${version}-beta`) && body.includes('Beta build.'));
+t('release text has the title and tagline', body.startsWith(`# ReelNest v${version}-beta`) && body.includes('Beta build.'));
 t('release text has install steps', body.includes('## Which APK?') && body.includes('## Install'));
 t('no old torrent-client tagline', !/minimal[^\n]{0,20}torrent client/i.test(body));
 t('only sections the file has', (() => {
@@ -46,7 +46,7 @@ const wf = fs.readFileSync(path.join(root, '.github/workflows/release-apk.yml'),
 t('release workflow checks notes before building', /release-notes\.js build "\$\{\{ github\.ref_name \}\}" > \/dev\/null/.test(wf));
 t('release body comes from the notes file', wf.includes('body_path: release-body.md') && !/^\s+body: \|/m.test(wf));
 t('publish job checks out the notes', /sparse-checkout: \|[\s\S]*release-notes[\s\S]*scripts\/release-notes\.js/.test(wf));
-t('release writes SHA256SUMS for every published file', /name: Write SHA256SUMS[\s\S]*cd build-artifacts[\s\S]*sha256sum Maglev-\*\.apk[\s\S]*> SHA256SUMS/.test(wf));
+t('release writes SHA256SUMS for every published file', /name: Write SHA256SUMS[\s\S]*cd build-artifacts[\s\S]*sha256sum ReelNest-\*\.apk[\s\S]*> SHA256SUMS/.test(wf));
 t('SHA256SUMS is written after the APK set is named', wf.indexOf('name: Write SHA256SUMS') > wf.indexOf('name: Name APK set'));
 t('SHA256SUMS is attached to the release', /files: \|[\s\S]*build-artifacts\/SHA256SUMS/.test(wf));
 t('old tagline gone from the workflow', !/Minimal Android torrent client/i.test(wf));

@@ -3,7 +3,7 @@
 # Notifications, Backup and restore), Finding things (Search sources, Auto-download), Downloads (Downloads, Speed and sharing, Storage,
 # Scheduling, Watches), Network and power (Network, Power, Browser). subflows/open-settings-row.yaml scrolls to a row before tapping it.
 # Pages are left with the in-app "Go back" button (components/ui/Screen.tsx:38).
-appId: com.maglev
+appId: com.ReelNest
 name: settings-screens
 ---
 - runFlow: subflows/onboard-if-needed.yaml
@@ -89,7 +89,7 @@ name: settings-screens
     file: subflows/open-settings-row.yaml
     env:
       ROW: "Watches"
-- assertVisible: "Maglev checks for new copies.*"
+- assertVisible: "ReelNest checks for new copies.*"
 - takeScreenshot: settings-watches
 - tapOn: "Go back"
 - runFlow:

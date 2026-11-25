@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { FreeSpace } from 'maglev-engine';
+import type { FreeSpace } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, type } from '../../constants/theme';
 import { formatBytes } from '../../constants/format';
@@ -23,7 +23,7 @@ export function SpaceStrip({ selectedBytes, totalBytes, free, tooBig }: Props) {
   const freeLine = !free
     ? null
     : staging
-      ? `Free in Maglev storage ${formatBytes(free.freeBytes)}${
+      ? `Free in ReelNest storage ${formatBytes(free.freeBytes)}${
           free.targetFreeBytes != null ? ` · Target folder ${formatBytes(free.targetFreeBytes)}` : ''
         }`
       : `Free on device ${formatBytes(free.freeBytes)}`;

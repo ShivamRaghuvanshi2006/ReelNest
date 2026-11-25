@@ -4,7 +4,7 @@ import type { SubtitleProvider } from './types.ts';
 import { SUBTITLE_PROVIDERS, listTurnedOff, providerEnabled, type ListOverrides } from './providers/index.ts';
 import { effectiveLanguages } from './prefs.ts';
 import { parseName } from './parseName.ts';
-import type { SubtitleSettings } from '../../modules/maglev-engine/src/MaglevSettings.types.ts';
+import type { SubtitleSettings } from '../../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 
 export interface OffSources {
   /** How many sources are off and cover at least one of the user's languages. */

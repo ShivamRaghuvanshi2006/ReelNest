@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const KT = 'modules/maglev-engine/android/src/main/java/com/maglev/engine';
+const KT = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine';
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 const stripKotlinComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
@@ -31,7 +31,7 @@ const must = (cond, msg) => {
 const sig = stripKotlinComments(read(`${KT}/lists/ListSignature.kt`));
 const keys = stripKotlinComments(read(`${KT}/lists/ListKeys.kt`));
 const store = stripKotlinComments(read(`${KT}/browser/BlocklistStore.kt`));
-const mod = stripKotlinComments(read(`${KT}/MaglevEngineModule.kt`));
+const mod = stripKotlinComments(read(`${KT}/ReelNestEngineModule.kt`));
 const pages = read('.github/workflows/pages.yml');
 
 check('ListSignature verifies SHA256withECDSA with an EC key from X509EncodedKeySpec', () => {
@@ -78,12 +78,12 @@ check('an unchanged address is fetched in full when another changed', () => {
   must(/fetch\(u, null\)/.test(store), 'no unconditional refetch');
 });
 check('the TS binding passes the options and types the result', () => {
-  const b = read('modules/maglev-engine/src/MaglevBrowser.tsx');
+  const b = read('modules/reelnest-engine/src/ReelNestBrowser.tsx');
   must(/updateBlocklist = \(urls: string\[\], options: \{ conditional: boolean \}/.test(b), 'updateBlocklist options');
   must(/changed\?: boolean/.test(b), 'changed type');
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
   must(/'verifyListSignature'/.test(bridge), 'bridge call');
-  const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   must(/verifyListSignature\(\): Promise<boolean> \{\s*return false;/.test(mock), 'the mock must verify nothing');
 });
 check('pages.yml signs only with the secret, and the key never lands under _site', () => {

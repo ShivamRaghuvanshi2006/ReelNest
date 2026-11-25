@@ -2,7 +2,7 @@
 # between visits and is long (App, General, Finding things, Downloads, Network and power), so the row may be above or below.
 # A row can be only partly on screen (under the bottom fade and tab bar): "visible" is true for it but a tap misses.
 # So the scrolls always run and ask for the whole row (visibilityPercentage 100), centred.
-appId: com.maglev
+appId: com.ReelNest
 ---
 - scrollUntilVisible:
     element: ${ROW}

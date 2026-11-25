@@ -211,7 +211,7 @@ const base = (over = {}) => ({ schema: 1, serial: 2026111402, generatedAt: '2026
   let h = harness();
   check('runs and applies', (await C.runListCheck(h.d, { manual: false })) && h.log.applied[0] === 10 && eq(h.state().sources, { kind: 'applied', changed: 1 }));
   check('fetches the file and its signature with credentials omitted and no custom headers', h.log.fetched.length === 2 && h.log.fetched.every((f) => f.init.credentials === 'omit' && !f.init.headers) && eq(h.log.fetched.map((f) => f.url).sort(), [C.SIGNATURE_URL, C.SOURCES_URL].sort()));
-  check('both go to harshdayal.dev/maglev/lists', C.SOURCES_URL === 'https://harshdayal.dev/maglev/lists/sources.json' && C.SIGNATURE_URL === `${C.SOURCES_URL}.sig`);
+  check('both go to harshdayal.dev/reelnest/lists', C.SOURCES_URL === 'https://harshdayal.dev/reelnest/lists/sources.json' && C.SIGNATURE_URL === `${C.SOURCES_URL}.sig`);
   check('the 24 h gate moves when a check starts', eq(h.log.marked, [5000]));
   check('then the ad list runs, conditional', eq(h.log.ad, [true]) && eq(h.state().ad, { kind: 'updated', domains: 9 }));
   h = harness({ serial: 10 });
@@ -278,7 +278,7 @@ const base = (over = {}) => ({ schema: 1, serial: 2026111402, generatedAt: '2026
   h = harness({ body: signed, sig: 'not base64 !!', verify: verifyWith(publicKey) });
   await C.runListCheck(h.d, { manual: false });
   check('garbage in place of a signature is never applied', h.log.applied.length === 0);
-  const embedded = Buffer.from(fs.readFileSync(path.join(__dirname, '..', 'modules/maglev-engine/android/src/main/java/com/maglev/engine/lists/ListKeys.kt'), 'utf8').match(/"([A-Za-z0-9+/=]{100,})"/)[1], 'base64');
+  const embedded = Buffer.from(fs.readFileSync(path.join(__dirname, '..', 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/lists/ListKeys.kt'), 'utf8').match(/"([A-Za-z0-9+/=]{100,})"/)[1], 'base64');
   const embeddedKey = crypto.createPublicKey({ key: embedded, format: 'der', type: 'spki' });
   check('the embedded key is a P-256 public key', embeddedKey.asymmetricKeyType === 'ec' && embeddedKey.asymmetricKeyDetails.namedCurve === 'prime256v1');
 

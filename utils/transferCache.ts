@@ -3,7 +3,7 @@
  * app runs and read at boot so the list paints before the engine answers.
  * Only facts the engine reported are stored; speeds and peers are never cached.
  */
-import type { TorrentState, TorrentTelemetry, PausedBy } from 'maglev-engine';
+import type { TorrentState, TorrentTelemetry, PausedBy } from 'reelnest-engine';
 import { kvGet, kvSet } from './prefs/kv';
 
 export interface CachedTorrent {
@@ -20,7 +20,7 @@ export interface CachedTorrent {
   addedAt: number | null;
 }
 
-const KEY = 'maglev.transfers.cache.v1';
+const KEY = 'reelnest.transfers.cache.v1';
 const STATES: readonly string[] = ['INITIALIZING', 'QUEUED', 'DOWNLOADING', 'SEEDING', 'PAUSED', 'CHECKING', 'ERROR', 'COMPLETED', 'MOVING'];
 
 const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : 0);

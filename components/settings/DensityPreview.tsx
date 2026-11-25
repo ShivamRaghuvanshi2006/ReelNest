@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import type { TelemetryDensity } from 'maglev-engine';
+import type { TelemetryDensity } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type, radius } from '../../constants/theme';
 import { formatProgressPercent } from '../../constants/format';
@@ -109,7 +109,7 @@ export function DensityPreview({ kind, density }: { kind: PreviewKind; density: 
               <Button label="Open folder" icon="folder" variant="secondary" fullWidth onPress={noop} />
             </View>
             {!compact ? <View style={s.block}>{link ? <DownloadStats download={LINK_SAMPLE} /> : <TorrentStats {...TORRENT_SAMPLE} />}</View> : null}
-            <ListRow title="Saved to" value={link ? 'Download/Maglev' : 'Download/Maglev/Sintel'} icon="folder" />
+            <ListRow title="Saved to" value={link ? 'Download/ReelNest' : 'Download/ReelNest/Sintel'} icon="folder" />
           </View>
         </View>
       ) : null}

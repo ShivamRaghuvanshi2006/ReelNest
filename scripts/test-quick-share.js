@@ -16,13 +16,13 @@ function check(name, cond, extra) {
 }
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-const ENGINE_KT = 'modules/maglev-engine/android/src/main/java/com/maglev/engine/';
+const ENGINE_KT = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/';
 
 async function main() {
   // --- classification: fixture shared with ShareClassifyTest.kt ---
   console.log('classification');
-  const { classifyShare } = await import('../modules/maglev-engine/src/shareClassify.ts');
-  const vectors = JSON.parse(read('modules/maglev-engine/src/shareClassify.fixture.json'));
+  const { classifyShare } = await import('../modules/reelnest-engine/src/shareClassify.ts');
+  const vectors = JSON.parse(read('modules/reelnest-engine/src/shareClassify.fixture.json'));
   check('fixture has the five kinds', ['magnet', 'torrent_file', 'file_link', 'web_page', 'none'].every((k) => vectors.some((v) => v.kind === k)));
   for (const v of vectors) {
     const got = classifyShare(v.text, v.mime);
@@ -36,14 +36,14 @@ async function main() {
   }
   const kt = read(ENGINE_KT + 'share/ShareClassify.kt');
   check('Kotlin classifier exists with the same entry point', /object ShareClassify/.test(kt) && /fun classify\(text: String\?, mime: String\?\)/.test(kt));
-  const ktTest = read('modules/maglev-engine/android/src/test/java/com/maglev/engine/share/ShareClassifyTest.kt');
+  const ktTest = read('modules/reelnest-engine/android/src/test/java/com/reelnest/engine/share/ShareClassifyTest.kt');
   check('Kotlin test reads the shared fixture', /shareClassify\.fixture\.json/.test(ktTest));
 
   // --- the setting round trip (AGENTS.md rule 6) ---
   console.log('setting: add without asking');
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const { migrateSettings, MaglevSettingsStore } = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
-  const { toGovernance } = await import('../modules/maglev-engine/src/toNativeConfig.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const { migrateSettings, ReelNestSettingsStore } = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
+  const { toGovernance } = await import('../modules/reelnest-engine/src/toNativeConfig.ts');
   check('default is off', DEFAULT_SETTINGS.storage.addWithoutAsking === false);
   check('governance carries it (off)', toGovernance(DEFAULT_SETTINGS).quickAdd === false);
   const on = migrateSettings({ version: 3, settings: { storage: { addWithoutAsking: true }, appearance: { mode: 'light' } } });
@@ -51,13 +51,13 @@ async function main() {
   check('migrate fills an old payload with false', migrateSettings({ version: 2, settings: { storage: {} } }).storage.addWithoutAsking === false);
   check('migrate ignores a wrong type', migrateSettings({ settings: { storage: { addWithoutAsking: 'yes' } } }).storage.addWithoutAsking === false);
   check('governance carries it (on) and the appearance mode', toGovernance(on).quickAdd === true && toGovernance(on).appearanceMode === 'light');
-  const store = MaglevSettingsStore.getInstance();
+  const store = ReelNestSettingsStore.getInstance();
   store.updateSettings({ storage: { ...store.getSettings().storage, addWithoutAsking: true } });
   check('store update sticks', store.getSettings().storage.addWithoutAsking === true && toGovernance(store.getSettings()).quickAdd === true);
   store.resetToDefaults();
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
   check('GovernanceConfig types the new fields', /quickAdd\??: boolean/.test(types) && /appearanceMode\??: /.test(types));
-  const module_ = read(ENGINE_KT + 'MaglevEngineModule.kt');
+  const module_ = read(ENGINE_KT + 'ReelNestEngineModule.kt');
   check('setGovernance saves quick share prefs', /QuickSharePrefs\.save\(/.test(module_));
   const prefs = read(ENGINE_KT + 'share/QuickSharePrefs.kt');
   check('Kotlin reads add_without_asking, default false', /add_without_asking/.test(prefs) && /getBoolean\(KEY_ADD_WITHOUT_ASKING, false\)/.test(prefs));
@@ -67,7 +67,7 @@ async function main() {
   const copy = read('constants/copy.ts');
   const m = /\/\/ region quick share[\s\S]*?\/\/ endregion quick share/.exec(copy);
   check('copy block is marked', !!m);
-  check('copy has the card strings', m && /No link in what you shared/.test(m[0]) && /This is a web page, not a file/.test(m[0]) && /Added to Maglev/.test(m[0]));
+  check('copy has the card strings', m && /No link in what you shared/.test(m[0]) && /This is a web page, not a file/.test(m[0]) && /Added to ReelNest/.test(m[0]));
   const text = read(ENGINE_KT + 'share/QuickShareText.kt');
   const plain = m ? m[0].slice(m[0].indexOf('gettingDetails')) : '';
   const strings = [...plain.matchAll(/'([^'\n]{6,})'|"([^"\n]{6,})"/g)].map((x) => x[1] || x[2]).filter((s) => /^[A-Z]/.test(s));
@@ -78,7 +78,7 @@ async function main() {
   console.log('plugin manifest');
   const plugin = require('../plugins/withShareIntents.js');
   check('plugin exports applyQuickShareManifest', typeof plugin.applyQuickShareManifest === 'function');
-  const ACT = 'com.maglev.engine.share.QuickShareActivity';
+  const ACT = 'com.reelnest.engine.share.QuickShareActivity';
   const fromAppJson = JSON.parse(read('app.json')).expo.android.intentFilters;
   const asXml = (f) => ({
     action: [{ $: { 'android:name': `android.intent.action.${f.action}` } }],
@@ -87,7 +87,7 @@ async function main() {
   });
   const mainFilters = [
     ...fromAppJson.map(asXml),
-    { action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }], category: [{ $: { 'android:name': 'android.intent.category.DEFAULT' } }], data: [{ $: { 'android:scheme': 'maglev' } }] },
+    { action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }], category: [{ $: { 'android:name': 'android.intent.category.DEFAULT' } }], data: [{ $: { 'android:scheme': 'reelnest' } }] },
   ];
   const manifest = () => ({
     manifest: {
@@ -101,7 +101,7 @@ async function main() {
   const main = acts.find((a) => a.$['android:name'] === '.MainActivity');
   check('activity declared', !!quick);
   check('activity is exported, off the recents list, own affinity', quick && quick.$['android:exported'] === 'true' && quick.$['android:excludeFromRecents'] === 'true' && quick.$['android:taskAffinity'] === '');
-  check('activity uses the translucent theme', quick && quick.$['android:theme'] === '@style/MaglevQuickShare');
+  check('activity uses the translucent theme', quick && quick.$['android:theme'] === '@style/ReelNestQuickShare');
   const flat = (a) => (a['intent-filter'] || []).map((f) => ({
     actions: (f.action || []).map((x) => x.$['android:name'].split('.').pop()),
     cats: (f.category || []).map((x) => x.$['android:name'].split('.').pop()),
@@ -137,7 +137,7 @@ async function main() {
   const exts = new Set(suffixes.map((p) => p.slice(1)));
   check('picker filter covers rar (the Kiwi probe), zip, mp4, iso, torrent', ['rar', 'zip', 'mp4', 'iso', 'torrent'].every((e) => exts.has(e)), [...exts].join(','));
   check('picker filter has no apk', !exts.has('apk') && !paths.some((p) => /apk$/.test(p)));
-  const ktExt = (read('modules/maglev-engine/android/src/main/java/com/maglev/engine/share/ShareClassify.kt').match(/FILE_EXTENSIONS = setOf\(([\s\S]*?)\)/) || [])[1] || '';
+  const ktExt = (read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/share/ShareClassify.kt').match(/FILE_EXTENSIONS = setOf\(([\s\S]*?)\)/) || [])[1] || '';
   const classifyExts = [...ktExt.matchAll(/"([a-z0-9]+)"/g)].map((m) => m[1]).filter((e) => e !== 'apk');
   check('picker extensions are the classifier list (minus apk) plus torrent', classifyExts.length > 20 && classifyExts.every((e) => exts.has(e)) && exts.size === classifyExts.length + 1, `${exts.size} vs ${classifyExts.length}`);
   // PatternMatcher's ".*" stops at the first later dot, so "/v1.2/a.rar" needs ".*\..*\.rar". pathSuffix fixes it on API 31+.
@@ -149,18 +149,18 @@ async function main() {
   check('MainActivity has no http(s) filter', flat(main).filter(isHttp).length === 0);
   const mf = flat(main);
   check('MainActivity lost SEND, SEND_MULTIPLE, magnet and torrent filters', mf.every((f) => !f.actions.some((a) => /^SEND/.test(a)) && !f.data.some((d) => d['android:scheme'] === 'magnet' || /torrent/.test(d['android:mimeType'] || '') || /torrent/.test(d['android:pathPattern'] || ''))));
-  check('MainActivity keeps its own scheme filter', mf.some((f) => f.data.some((d) => d['android:scheme'] === 'maglev')));
+  check('MainActivity keeps its own scheme filter', mf.some((f) => f.data.some((d) => d['android:scheme'] === 'reelnest')));
   const twice = run(out);
   check('plugin is idempotent', twice.manifest.application[0].activity.filter((a) => a.$['android:name'] === ACT).length === 1 && flat(twice.manifest.application[0].activity.find((a) => a.$['android:name'] === ACT)).length === qf.length);
   assert.throws(() => run({ manifest: { application: [{ activity: [] }] } }), /MainActivity/);
 
   console.log('native wiring');
   {
-    const qa = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/share/QuickShareActivity.kt');
+    const qa = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/share/QuickShareActivity.kt');
     check('VIEW hand-offs use the browser file name (8.1)', /ACTION_VIEW\) cls = ShareClassify\.withHandOffName\(cls, handOffName\(original\)\)/.test(qa) && /"com\.android\.extra\.filename"/.test(qa));
   }
-  const styles = read('modules/maglev-engine/android/src/main/res/values/quick_share.xml');
-  check('theme resource', /name="MaglevQuickShare"/.test(styles) && /windowIsTranslucent/.test(styles));
+  const styles = read('modules/reelnest-engine/android/src/main/res/values/quick_share.xml');
+  check('theme resource', /name="ReelNestQuickShare"/.test(styles) && /windowIsTranslucent/.test(styles));
   const act = read(ENGINE_KT + 'share/QuickShareActivity.kt');
   check('activity finishes without starting MainActivity for the card', !/startActivity[\s\S]{0,40}MainActivity\.class/.test(act));
   check('activity adds through EngineHost add paths', /EngineHost\.addTorrent|QuickShareAdd\.add/.test(act + read(ENGINE_KT + 'share/QuickShareAdd.kt')));
@@ -168,8 +168,8 @@ async function main() {
   check('add path reuses addTorrent and addDownload', /EngineHost\.addTorrent\(/.test(add) && /EngineHost\.addDownload\(/.test(add));
   check('add path starts the engine and the service', /EngineHost\.ensureStarted\(\)/.test(add) && /BackgroundStart\.start\(/.test(add));
   check('EngineHost exposes ensureStarted', /fun ensureStarted\(/.test(read(ENGINE_KT + 'EngineHost.kt')));
-  check('routes: browser prefill and free space', /maglev:\/\/browser\?url=/.test(act) && /maglev:\/\/free-space/.test(act));
-  check('Toast text', /Added to Maglev/.test(text));
+  check('routes: browser prefill and free space', /reelnest:\/\/browser\?url=/.test(act) && /reelnest:\/\/free-space/.test(act));
+  check('Toast text', /Added to ReelNest/.test(text));
   check('no Compose in the share code', !/androidx\.compose/.test(act + read(ENGINE_KT + 'share/QuickShareCard.kt')));
   check('no system monospace', !/Typeface\.MONOSPACE|"monospace"/.test(read(ENGINE_KT + 'share/QuickShareCard.kt')));
 

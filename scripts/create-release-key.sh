@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Creates Maglev's release signing key and stores it in the repo's GitHub Actions secrets.
+# Creates ReelNest's release signing key and stores it in the repo's GitHub Actions secrets.
 # Run it yourself in a normal Terminal (not through an AI assistant), once:
 #
 #   bash scripts/create-release-key.sh
@@ -9,9 +9,9 @@
 # over the current one, so keep both safe before you close the window.
 set -euo pipefail
 
-OUT="${HOME}/maglev-release.jks"
-ALIAS="maglev"
-REPO="Kaos599/Maglev"
+OUT="${HOME}/reelnest-release.jks"
+ALIAS="reelnest"
+REPO="ShivamRaghuvanshi2006/ReelNest"
 
 if [ -e "$OUT" ]; then
   echo "$OUT already exists. Move it away first; this script never overwrites a key." >&2
@@ -29,15 +29,15 @@ export PASS
 keytool -genkeypair -v \
   -keystore "$OUT" -storetype PKCS12 \
   -alias "$ALIAS" -keyalg RSA -keysize 4096 -validity 10000 \
-  -dname "CN=Maglev, O=Maglev" \
+  -dname "CN=ReelNest, O=ReelNest" \
   -storepass:env PASS -keypass:env PASS >/dev/null 2>&1
 chmod 600 "$OUT"
 
 # Secrets go in through stdin, so they never appear in the process list or shell history.
-base64 -i "$OUT" | tr -d '\n' | gh secret set MAGLEV_KEYSTORE_B64 --repo "$REPO"
-printf '%s' "$PASS"  | gh secret set MAGLEV_KEYSTORE_PASSWORD --repo "$REPO"
-printf '%s' "$PASS"  | gh secret set MAGLEV_KEY_PASSWORD --repo "$REPO"
-printf '%s' "$ALIAS" | gh secret set MAGLEV_KEY_ALIAS --repo "$REPO"
+base64 -i "$OUT" | tr -d '\n' | gh secret set REELNEST_KEYSTORE_B64 --repo "$REPO"
+printf '%s' "$PASS"  | gh secret set REELNEST_KEYSTORE_PASSWORD --repo "$REPO"
+printf '%s' "$PASS"  | gh secret set REELNEST_KEY_PASSWORD --repo "$REPO"
+printf '%s' "$ALIAS" | gh secret set REELNEST_KEY_ALIAS --repo "$REPO"
 
 SHA=$(keytool -list -v -keystore "$OUT" -alias "$ALIAS" -storepass:env PASS | sed -n 's/.*SHA256: //p' | head -1)
 

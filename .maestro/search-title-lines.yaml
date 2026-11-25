@@ -1,7 +1,7 @@
 # Long torrent names: screenshot the default, then Result name lines 1 and Full name, and restore 2.
 # NEW: depends on result-name-lines change (Settings, Search sources, "Result name lines" chips in
 # app/settings/search-providers.tsx:245; prefs in utils/prefs/search.ts; wrap in components/search/ResultRow.tsx:64).
-appId: com.maglev
+appId: com.ReelNest
 name: search-title-lines
 ---
 - runFlow: subflows/onboard-if-needed.yaml

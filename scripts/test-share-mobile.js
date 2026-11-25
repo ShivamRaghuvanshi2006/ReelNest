@@ -16,12 +16,12 @@ function check(name, cond, extra) {
 const read = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 
 async function main() {
-  const module_ = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
-  const host = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
-  const actions = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/storage/FileActions.kt');
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-  const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const module_ = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
+  const host = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
+  const actions = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/storage/FileActions.kt');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+  const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   const index = read('app/(tabs)/index.tsx');
   const ctx = read('context/EngineContext.tsx');
   const addDl = read('app/add-download.tsx');
@@ -36,7 +36,7 @@ async function main() {
   check('bridge routes shareDownload', /shareDownload\(id: string\)[\s\S]{0,80}route\('shareDownload'/.test(bridge));
   check('mock has shareDownload', /async shareDownload\(/.test(mock));
   const dlHook = read('components/transfers/useDownloadActions.ts');
-  check('the page wires Share to the shared handler, which calls shareDownload', /actions\.share\(/.test(read('app/download/[id].tsx')) && /maglevEngine\.shareDownload\(/.test(dlHook));
+  check('the page wires Share to the shared handler, which calls shareDownload', /actions\.share\(/.test(read('app/download/[id].tsx')) && /reelnestEngine\.shareDownload\(/.test(dlHook));
   check('share failure text lives in downloadCopy', /export const SHARE_FAILED_TEXT/.test(dlCopy) && /SHARE_FAILED_TEXT/.test(dlHook));
 
   console.log('mobile data awareness');

@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { DetailFile } from 'maglev-engine';
+import type { DetailFile } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, radius, spacing, touch, type } from '../../constants/theme';
 import { formatBytes } from '../../constants/format';
@@ -18,7 +18,7 @@ interface Props {
   hasActions: boolean;
   /** The torrent is paused: unfinished files show the paused colour and label. */
   paused?: boolean;
-  /** SM-32: the file was deleted outside Maglev. */
+  /** SM-32: the file was deleted outside ReelNest. */
   missing?: boolean;
   onPress: (file: DetailFile) => void;
   onLongPress: (file: DetailFile) => void;

@@ -3,7 +3,7 @@
  * `size` null when the page gave none). Direct files: HEAD, then a one-byte ranged GET. Streams: the engine's
  * probeStream gives an estimate. Anything unknown stays null and the UI shows an em dash.
  */
-import type { StreamVariant } from '../modules/maglev-engine/src/MaglevEngine.types';
+import type { StreamVariant } from '../modules/reelnest-engine/src/ReelNestEngine.types';
 
 /** How long one size request may take before it counts as unknown. */
 export const PROBE_TIMEOUT_MS = 6000;

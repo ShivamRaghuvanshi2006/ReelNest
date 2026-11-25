@@ -11,10 +11,10 @@ import {
   type BrowserPageEvent,
   type BrowserRefusalReason,
   type FoundItem,
-  type MaglevBrowserRef,
-} from 'maglev-engine';
+  type ReelNestBrowserRef,
+} from 'reelnest-engine';
 import { useTheme } from '../context/ThemeContext';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { ThemeColors, radius, spacing, touch, type } from '../constants/theme';
 import { haptic } from '../constants/haptics';
 import { bookmarkCopy } from '../constants/bookmarkCopy';
@@ -89,7 +89,7 @@ export default function BrowserScreen({ inTab = false }: { inTab?: boolean }) {
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
   const params = useLocalSearchParams<{ url?: string; prefill?: string; open?: string; newTab?: string }>();
-  const { showNotice, downloads, probeUrl, startDownload } = useMaglevEngine();
+  const { showNotice, downloads, probeUrl, startDownload } = useReelNestEngine();
   const [prefs] = useBrowserPrefs();
   const tabs = useTabs();
   const tabsState = tabs.state;
@@ -111,8 +111,8 @@ export default function BrowserScreen({ inTab = false }: { inTab?: boolean }) {
 
   const inputRef = useRef<TextFieldRef>(null);
   // One view ref per live tab.
-  const viewRefs = useRef(new Map<string, React.RefObject<MaglevBrowserRef | null>>());
-  const registerView = useCallback((id: string, r: React.RefObject<MaglevBrowserRef | null> | null) => {
+  const viewRefs = useRef(new Map<string, React.RefObject<ReelNestBrowserRef | null>>());
+  const registerView = useCallback((id: string, r: React.RefObject<ReelNestBrowserRef | null> | null) => {
     if (r) viewRefs.current.set(id, r);
     else viewRefs.current.delete(id);
   }, []);
@@ -159,7 +159,7 @@ export default function BrowserScreen({ inTab = false }: { inTab?: boolean }) {
   const [target, setTarget] = useState<DownloadTarget | null>(null);
   const [batchItems, setBatchItems] = useState<FoundItem[] | null>(null);
   const [streamItem, setStreamItem] = useState<FoundItem | null>(null);
-  // 24.11: a one-line "Maglev found N files" note, once per page, until the tray opens or a few seconds pass.
+  // 24.11: a one-line "ReelNest found N files" note, once per page, until the tray opens or a few seconds pass.
   const [hintTab, setHintTab] = useState<string | null>(null);
   const hintShown = hintTab === activeId && data.hint === 'shown' && found.length > 0 && !trayOpen;
   useEffect(() => {
@@ -280,7 +280,7 @@ export default function BrowserScreen({ inTab = false }: { inTab?: boolean }) {
   );
 
   // `url` comes from this app (Add download, Open in browser) and opens in a new active tab (the active one when it is blank).
-  // `prefill` comes from maglev://browser and only fills the bar of a blank tab.
+  // `prefill` comes from reelnest://browser and only fills the bar of a blank tab.
   const handled = useRef<string | null>(null);
   useEffect(() => {
     if (!ready) return;

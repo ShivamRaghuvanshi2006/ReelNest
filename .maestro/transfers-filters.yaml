@@ -1,7 +1,7 @@
 # The Transfers filter pills and the name filter change what is shown, then reset.
 # Pills: components/FilterPills.tsx and components/transfers/model.ts:9-16. A Chip with a count is labelled "<label>, <count>" (components/ui/Chip.tsx:29).
 # Empty copy: constants/copy.ts empty.transfers.noneInFilter ("No done transfers").
-appId: com.maglev
+appId: com.ReelNest
 name: transfers-filters
 ---
 - runFlow: subflows/onboard-if-needed.yaml

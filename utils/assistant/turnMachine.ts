@@ -45,13 +45,13 @@ export const COPY = {
   rateLimited: 'Rate limited. Try again in a minute.',
   rateLimitedLong: "You've hit this model's limit for now. Try again later, or pick another model.",
   dailyLimit: "You've used today's free requests on OpenRouter (50 a day). They reset tomorrow, or adding $10 of credit there raises the limit to 1000 a day.",
-  noTools: "This model can't use Maglev's tools. Pick another model in Settings → Assistant.",
+  noTools: "This model can't use ReelNest's tools. Pick another model in Settings → Assistant.",
   modelGone: "That model isn't available any more. Pick another in Settings → Assistant.",
   tooMuch: 'That was too much for this model. Clear the chat or ask a shorter question.',
   toolBroken: 'The model sent a broken request. Try again.',
   portal: "Couldn't reach the AI service. If you're on public Wi-Fi, open your browser to sign in to it.",
   noAnswer: "The model didn't answer. Try again.",
-  stoppedAway: 'Stopped when you left Maglev.',
+  stoppedAway: 'Stopped when you left ReelNest.',
   stopped: "I hit my limit for one question. Here's what I found. Ask me to keep going.",
   answerTooLong: 'The answer was too long. Ask a narrower question.',
   oneDelete: 'Only one delete per question. Ask again after this one.',
@@ -716,10 +716,10 @@ function send(s: TurnState, e: Extract<TurnEvent, { type: 'Send' }>): TurnStep {
   };
 }
 
-/** "[Maglev: User confirmed c2: Added.]" lines in front of the user's text. Empty list: the text as it is. */
+/** "[ReelNest: User confirmed c2: Added.]" lines in front of the user's text. Empty list: the text as it is. */
 function withCardFacts(facts: readonly string[], text: string): string {
   if (facts.length === 0) return text;
-  return `${facts.map((f) => `[Maglev: ${f}]`).join('\n')}\n\n${text}`;
+  return `${facts.map((f) => `[ReelNest: ${f}]`).join('\n')}\n\n${text}`;
 }
 
 function retryTurn(s: TurnState, e: Extract<TurnEvent, { type: 'Retry' }>): TurnStep {

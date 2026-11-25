@@ -1,5 +1,5 @@
 # Add a magnet, let it start, kill the process, relaunch, expect it listed and downloading again.
-appId: com.maglev
+appId: com.ReelNest
 name: add-and-resume
 ---
 - runFlow: subflows/onboard-if-needed.yaml

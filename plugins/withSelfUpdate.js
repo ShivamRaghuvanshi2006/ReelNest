@@ -1,5 +1,5 @@
 // Expo config plugin: the permissions the in-app updater needs (docs/NATIVE_CONTRACT.md section 27.5).
-//   REQUEST_INSTALL_PACKAGES              lets Maglev hand a downloaded APK to PackageInstaller.
+//   REQUEST_INSTALL_PACKAGES              lets ReelNest hand a downloaded APK to PackageInstaller.
 //   UPDATE_PACKAGES_WITHOUT_USER_ACTION   (API 31+) lets an update by the installer of record skip the confirm screen.
 //   ENFORCE_UPDATE_OWNERSHIP              (API 34+, normal permission) lets setRequestUpdateOwnership(true) work.
 // PLAY BUILD: a Play build must remove the updater and all three permissions (Play does not allow self-updating

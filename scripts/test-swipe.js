@@ -72,13 +72,13 @@ function check(name, cond, extra) {
   check('needs_link -> none', d('needs_link') === null);
 
   console.log('[setting]');
-  const types = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const Store = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const types = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const Store = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   check('default is on', types.DEFAULT_SETTINGS.appearance.swipeActions === true);
   check('older payload without the field gets on', Store.migrateSettings({ settings: { appearance: { mode: 'dim' } } }).appearance.swipeActions === true);
   check('a saved off survives migrate', Store.migrateSettings({ settings: { appearance: { swipeActions: false } } }).appearance.swipeActions === false);
   check('a non-boolean becomes on', Store.migrateSettings({ settings: { appearance: { swipeActions: 'no' } } }).appearance.swipeActions === true);
-  const nativeCfg = read('modules/maglev-engine/src/toNativeConfig.ts');
+  const nativeCfg = read('modules/reelnest-engine/src/toNativeConfig.ts');
   check('UI only: toNativeConfig never reads it', !/swipeActions/.test(nativeCfg));
 
   const ui = read('app/settings/interface.tsx');

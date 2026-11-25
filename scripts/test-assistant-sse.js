@@ -145,7 +145,7 @@ async function main() {
     const r = feedWhole(make(), load('sse-openai-tool.txt'));
     assert.strictEqual(r.outcome.ok, true);
     assert.deepStrictEqual(r.outcome.toolCalls, [
-      { id: 'call_abc123', name: 'get_disk_space', arguments: { path: 'Download/Maglev' } },
+      { id: 'call_abc123', name: 'get_disk_space', arguments: { path: 'Download/ReelNest' } },
     ]);
     const t = feedWhole(make(), load('sse-openai-text.txt'));
     assert.strictEqual(t.outcome.finishReason, 'stop');

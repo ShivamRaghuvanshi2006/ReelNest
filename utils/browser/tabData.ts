@@ -3,7 +3,7 @@
  * reported (page, found list, blocked count, ...), the address each view loaded when it mounted, the pop-up prompts,
  * and who owns the native views. View refs are not here; they stay per screen instance.
  */
-import type { BrowserPageEvent, FoundItem } from 'maglev-engine';
+import type { BrowserPageEvent, FoundItem } from 'reelnest-engine';
 import { emptyPopups, type PopupsState } from './popups.ts';
 import type { FoundHintState } from './hardening.ts';
 
@@ -18,7 +18,7 @@ export type TabData = {
   refused: 'ssl' | 'local' | null;
   lastUrl: string;
   notes: Set<string>;
-  // The "Maglev found N files" hint: once per page load (24.11).
+  // The "ReelNest found N files" hint: once per page load (24.11).
   hint: FoundHintState;
 };
 

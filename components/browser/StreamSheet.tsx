@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { sanitizeFileName, type FoundItem, type StreamProbe } from 'maglev-engine';
+import { sanitizeFileName, type FoundItem, type StreamProbe } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { haptic } from '../../constants/haptics';
 import { banners, mobileDataLine, notices, streamSheet } from '../../constants/copy';
@@ -43,7 +43,7 @@ interface Props {
 export function StreamSheet({ item, pageTitle, userAgent = '', pageUrl = '', onClose, onStarted, onCopyLink }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { probeStream, startDownload, showNotice, onMeteredNetwork } = useMaglevEngine();
+  const { probeStream, startDownload, showNotice, onMeteredNetwork } = useReelNestEngine();
   const { settings } = useSettings();
   const last = useRef<FoundItem | null>(item);
   if (item) last.current = item;

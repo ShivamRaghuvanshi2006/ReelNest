@@ -3,7 +3,7 @@
  * Select all never takes a stream (it needs its quality sheet) or an installer (it needs a warning). The user
  * can still tick an installer by hand; the batch sheet then shows the installer warning. A stream cannot be ticked.
  */
-import type { FoundItem } from '../../modules/maglev-engine/src/MaglevBrowser';
+import type { FoundItem } from '../../modules/reelnest-engine/src/ReelNestBrowser';
 import { isInstaller } from './foundFilter.ts';
 
 /** The most files one batch starts. Keeps the admission check and the notifications sane. */

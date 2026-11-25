@@ -2,9 +2,9 @@
  * Reads a backup file: validates the shape and version, then runs every part through the same
  * normalisers the app uses for its own stored data. Pure TypeScript.
  */
-import { migrateSettings } from '../../modules/maglev-engine/src/MaglevSettingsStore.ts';
+import { migrateSettings } from '../../modules/reelnest-engine/src/ReelNestSettingsStore.ts';
 import { parseStatsSection } from '../stats/backup.ts';
-import { normalizeInfoHash } from '../../modules/maglev-engine/src/magnet.ts';
+import { normalizeInfoHash } from '../../modules/reelnest-engine/src/magnet.ts';
 import {
   BACKUP_FORMAT,
   BACKUP_VERSION,
@@ -19,8 +19,8 @@ import {
 } from './format.ts';
 
 const MESSAGES = {
-  notBackup: "That isn't a Maglev backup.",
-  tooNew: 'This backup is from a newer Maglev. Update the app and try again.',
+  notBackup: "That isn't a ReelNest backup.",
+  tooNew: 'This backup is from a newer ReelNest. Update the app and try again.',
 } as const;
 
 export type ParseResult = { ok: true; backup: Backup } | { ok: false; reason: 'not_backup' | 'too_new'; message: string };

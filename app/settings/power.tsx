@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { BatteryCutoffThreshold } from 'maglev-engine';
+import { BatteryCutoffThreshold } from 'reelnest-engine';
 import { useSettings } from '../../context/SettingsContext';
 import { ListRow, Toggle } from '../../components/ui';
 import { Card, ChipGroup, SettingsPage } from '../../components/settings/SettingsParts';

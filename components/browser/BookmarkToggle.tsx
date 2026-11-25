@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { bookmarkCopy } from '../../constants/bookmarkCopy';
 import { haptic } from '../../constants/haptics';
 import { findBookmark, useBookmarks } from '../../utils/browser/bookmarks';
@@ -17,7 +17,7 @@ export interface BookmarkToggleProps {
 
 /** A page-menu row: "Add bookmark", or "Remove bookmark" (with Undo) when the page is already saved. */
 export function BookmarkToggle({ url, title, onDone }: BookmarkToggleProps) {
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const saved = findBookmark(useBookmarks(), url);
   const webPage = /^https?:\/\//i.test(url);
   const c = bookmarkCopy.toggle;

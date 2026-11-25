@@ -15,7 +15,7 @@ import { admit } from '../admission.ts';
 import type { AdmissionResult } from '../admission.ts';
 import { riskySources } from '../search/safety.ts';
 import type { Category, MergedResult } from '../search/types.ts';
-import type { PlaybackSupport } from '../../modules/maglev-engine/src/MaglevEngine.types';
+import type { PlaybackSupport } from '../../modules/reelnest-engine/src/ReelNestEngine.types';
 import type { SafetyLevel, SafetyResult } from './fileSafety.ts';
 import { playbackVerdict } from './playback.ts';
 import { detectLanguages, hasAudioLanguage, languageLabel, parseRelease } from './releaseName.ts';
@@ -57,7 +57,7 @@ export interface ScoreContext {
   wantsMultiAudio?: boolean;
   /**
    * Extra. The audio language the user asked for, from normalizeLanguage ("hindi", "multi" for dual audio, or a plain
-   * word Maglev doesn't list). Rows whose name gives it rank first; the rest stay in the list, lower, with a reason.
+   * word ReelNest doesn't list). Rows whose name gives it rank first; the rest stay in the list, lower, with a reason.
    */
   audioLanguage?: LanguageWant;
   /** Extra. Subtitles the user asked for: "any", or a language. Rows whose name gives them rank first. */
@@ -616,7 +616,7 @@ function extraReasons(
       case 'risky_source': {
         const names = riskySources(r, ctx.providers, ctx.warnUnsafe);
         const list = names && names.length > 0 ? names.join(' and ') : 'some sites';
-        out.push(`Maglev flags ${list} as unsafe, and only ${names && names.length > 1 ? 'those sites list' : `${list} lists`} this one.`);
+        out.push(`ReelNest flags ${list} as unsafe, and only ${names && names.length > 1 ? 'those sites list' : `${list} lists`} this one.`);
         break;
       }
       case 'size_unknown': out.push('The site gave no size, so the fit and the size check could not run.'); break;
@@ -897,10 +897,10 @@ export function canPropose(
 ): ProposeCheck {
   const level = result?.safety?.level ?? result?.level;
   if (level === 'red' || result?.flags?.includes('unsafe_files')) {
-    return { ok: false, reason: "The file list has a serious warning sign, so Maglev won't add it." };
+    return { ok: false, reason: "The file list has a serious warning sign, so ReelNest won't add it." };
   }
   if (result?.flags?.includes('too_small_for_claim')) {
-    return { ok: false, reason: "The file is far smaller than the name claims, so Maglev won't add it." };
+    return { ok: false, reason: "The file is far smaller than the name claims, so ReelNest won't add it." };
   }
   return { ok: true };
 }

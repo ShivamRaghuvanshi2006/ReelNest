@@ -3,7 +3,7 @@
  * Pure: no storage and no network. The Search tab persists the plan through utils/feeds.ts
  * and utils/prefs/feedAutomation.ts.
  */
-import type { FeedRule } from 'maglev-engine';
+import type { FeedRule } from 'reelnest-engine';
 import type { Feed } from './feeds';
 import { parseEpisodeKey } from './feedRules.ts';
 import { parseRelease } from './assistant/releaseName.ts';

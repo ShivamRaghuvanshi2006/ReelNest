@@ -269,12 +269,12 @@ export function watchNotificationText(w: Watch, r: MergedResult): { title: strin
 }
 
 export function openUrl(w: Pick<Watch, 'query' | 'category'>): string {
-  return `maglev://search?q=${encodeURIComponent(w.query)}&c=${w.category}`;
+  return `reelnest://search?q=${encodeURIComponent(w.query)}&c=${w.category}`;
 }
 
 /** The Add screen, which runs the usual space and safety checks. Nothing is added from the notification itself. */
 export function downloadUrl(r: Pick<MergedResult, 'magnet'>): string | undefined {
-  return /^magnet:\?/i.test(r.magnet ?? '') ? `maglev://add-torrent?source=${encodeURIComponent(r.magnet)}` : undefined;
+  return /^magnet:\?/i.test(r.magnet ?? '') ? `reelnest://add-torrent?source=${encodeURIComponent(r.magnet)}` : undefined;
 }
 
 /** Same as Kotlin: 7000 + (String.hashCode() and 0xFFFF). */

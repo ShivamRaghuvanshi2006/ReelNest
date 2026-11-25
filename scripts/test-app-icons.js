@@ -139,12 +139,12 @@ async function main() {
   check('other activities are untouched', app.activity.some((a) => a.$['android:name'] === '.OtherActivity'));
   const aliases = app['activity-alias'];
   check('one alias per icon', aliases.length === 20, String(aliases.length));
-  check('aliases follow the id order', same(aliases.map((a) => a.$['android:name']), OWNER_IDS.map((id) => `com.maglev.MaglevIcon_${rid(id)}`)));
+  check('aliases follow the id order', same(aliases.map((a) => a.$['android:name']), OWNER_IDS.map((id) => `com.reelnest.ReelNestIcon_${rid(id)}`)));
   check('every alias targets MainActivity and is exported', aliases.every((a) => a.$['android:targetActivity'] === '.MainActivity' && a.$['android:exported'] === 'true'));
   check('every alias carries MAIN and LAUNCHER', aliases.every((a) => a['intent-filter'].length === 1 && a['intent-filter'][0].action[0].$['android:name'] === 'android.intent.action.MAIN' && a['intent-filter'][0].category[0].$['android:name'] === 'android.intent.category.LAUNCHER'));
   check('every alias has its own icon and round icon', aliases.every((a, i) => a.$['android:icon'] === `@mipmap/ic_launcher_alt_${rid(OWNER_IDS[i])}` && a.$['android:roundIcon'] === a.$['android:icon']));
   const enabled = aliases.filter((a) => a.$['android:enabled'] === 'true').map((a) => a.$['android:name']);
-  check('exactly one alias is enabled, and it is teal', same(enabled, ['com.maglev.MaglevIcon_teal']), enabled.join(','));
+  check('exactly one alias is enabled, and it is teal', same(enabled, ['com.reelnest.ReelNestIcon_teal']), enabled.join(','));
   check('the manifest transform is idempotent', same(plugin.applyManifest(JSON.parse(JSON.stringify(out))), out));
   let threw = false;
   try { plugin.applyManifest({ manifest: { application: [{ activity: [] }] } }); } catch (e) { threw = /MainActivity/.test(e.message); }
@@ -156,32 +156,32 @@ async function main() {
   }
 
   // ---- Kotlin
-  const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/appicon/AppIconManager.kt');
+  const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/appicon/AppIconManager.kt');
   const ktList = kt.slice(kt.indexOf('val IDS'), kt.indexOf('private const val PACKAGE'));
   const ktIds = [...ktList.matchAll(/"([a-z-]+)"/g)].map((m) => m[1]);
   check('AppIconManager lists the same ids in order', same(ktIds, OWNER_IDS), ktIds.join(','));
-  check('AppIconManager alias class matches the plugin', kt.includes('"$PACKAGE.MaglevIcon_" + id.replace(\'-\', \'_\')') && kt.includes('const val DEFAULT = "teal"'));
+  check('AppIconManager alias class matches the plugin', kt.includes('"$PACKAGE.ReelNestIcon_" + id.replace(\'-\', \'_\')') && kt.includes('const val DEFAULT = "teal"'));
   const apply = kt.slice(kt.indexOf('fun apply('));
   check('setAppIcon enables the target', /setComponentEnabledSetting\(target, PackageManager\.COMPONENT_ENABLED_STATE_ENABLED, PackageManager\.DONT_KILL_APP\)/.test(apply));
   check('setAppIcon disables every other alias', /for \(other in IDS\)[\s\S]*if \(other == id\) continue[\s\S]*COMPONENT_ENABLED_STATE_DISABLED, PackageManager\.DONT_KILL_APP/.test(apply));
   check('the target is enabled before the others are disabled', apply.indexOf('COMPONENT_ENABLED_STATE_ENABLED') < apply.indexOf('COMPONENT_ENABLED_STATE_DISABLED'));
   check('unknown ids are rejected', kt.includes('fun request(id: String): String?') && kt.includes('Unknown app icon'));
-  const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
+  const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
   check('module exposes getAppIcon and setAppIcon', mod.includes('AsyncFunction("getAppIcon")') && mod.includes('AsyncFunction("setAppIcon")'));
   check('setAppIcon only records the choice', /AsyncFunction\("setAppIcon"\)[\s\S]*?AppIconManager\.request\(id\)/.test(mod) && !/AsyncFunction\("setAppIcon"\)[\s\S]{0,200}applyPending/.test(mod));
   check('the switch applies when the app goes to the background and on destroy', /OnActivityEntersBackground\s*\{[^}]*AppIconManager\.applyPending/.test(mod) && /OnDestroy\s*\{[^}]*AppIconManager\.applyPending/.test(mod));
 
   // ---- TS bridge and mock
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-  const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-  const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+  const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+  const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   check('API type declares getAppIcon and setAppIcon', /getAppIcon\(\): Promise<string>/.test(types) && /setAppIcon\(id: string\): Promise<EngineResult>/.test(types));
   check('bridge calls the native functions', bridge.includes("callNative<{ ok?: boolean; id?: string }>('getAppIcon')") && bridge.includes("callNative<EngineResult>('setAppIcon', id)"));
   check('mock keeps the choice in memory', /private appIcon = 'teal'/.test(mock) && /async setAppIcon\(id: string\)/.test(mock));
 
   // ---- picker and copy
   const copy = await import('../constants/copy.ts');
-  check('copy has the picker caption', /leave Maglev/.test(copy.appIconCopy.hint) && copy.appIconCopy.hint.split(/\s+/).length <= 16 && /\.$/.test(copy.appIconCopy.hint));
+  check('copy has the picker caption', /leave ReelNest/.test(copy.appIconCopy.hint) && copy.appIconCopy.hint.split(/\s+/).length <= 16 && /\.$/.test(copy.appIconCopy.hint));
   check('accessibility label reads "Teal app icon, selected"', copy.appIconCopy.a11y('Teal', true) === 'Teal app icon, selected' && copy.appIconCopy.a11y('Teal', false) === 'Teal app icon');
   const ui = read('components/settings/AppIconSection.tsx');
   check('picker is Android only', /Platform\.OS !== 'android'\) return null/.test(ui));

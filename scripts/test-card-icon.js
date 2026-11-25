@@ -35,14 +35,14 @@ function check(name, cond) {
   check('nothing to go on -> file', t('Random stuff') === 'file');
 
   console.log('[setting]');
-  const types = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const Store = await import('../modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const types = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const Store = await import('../modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   const mig = (a) => Store.migrateSettings({ settings: { appearance: a } }).appearance.showFileIcons;
   check('default is on', types.DEFAULT_SETTINGS.appearance.showFileIcons === true);
   check('older payload gets on', mig({ mode: 'dim' }) === true);
   check('saved off survives', mig({ showFileIcons: false }) === false);
   check('non-boolean becomes on', mig({ showFileIcons: 'no' }) === true);
-  check('UI only: toNativeConfig never reads it', !/showFileIcons/.test(read('modules/maglev-engine/src/toNativeConfig.ts')));
+  check('UI only: toNativeConfig never reads it', !/showFileIcons/.test(read('modules/reelnest-engine/src/toNativeConfig.ts')));
   const ui = read('app/settings/interface.tsx');
   check('Interface has the switch with the agreed copy', /Show file type icons in Transfers/.test(ui) && /Show an icon for the kind of file on each download\./.test(ui) && /showFileIcons/.test(ui));
 
@@ -58,9 +58,9 @@ function check(name, cond) {
   check('a torrent named without extension takes its biggest file', t('Big Buck Bunny', [{ path: 'Big Buck Bunny.mp4', length: 1 }]) === 'file-video');
   check('the card passes mainFile to the choice', /torrentCardGlyph\(t\.name, t\.mainFile/.test(card));
   check('the memo compares mainFile', /x\.mainFile === y\.mainFile/.test(card.split('function sameCard')[1]));
-  const map = read('modules/maglev-engine/src/snapshotMapping.ts');
+  const map = read('modules/reelnest-engine/src/snapshotMapping.ts');
   check('the mapping carries main_file', /mainFile: s\.mainFile \?\? null/.test(map));
-  const rs = read('native/maglev-core/src/types.rs') + read('native/maglev-core/src/engine.rs');
+  const rs = read('native/reelnest-core/src/types.rs') + read('native/reelnest-core/src/engine.rs');
   check('Rust snapshot has main_file and sets it in every snapshot', /pub main_file: Option<String>/.test(rs) && (rs.match(/main_file: (main_file\(h\)|None),/g) || []).length === 3);
   check('no hex in the cards', !/#[0-9A-Fa-f]{6}\b/.test(card + dl));
   if (failed) {

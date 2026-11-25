@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'expo-router';
-import { maglevEngine, type DownloadSnapshot, type EngineResult } from 'maglev-engine';
+import { reelnestEngine, type DownloadSnapshot, type EngineResult } from 'reelnest-engine';
 import { useEngineActions } from '../../context/EngineContext';
 import { notices } from '../../constants/copy';
 import {
@@ -50,7 +50,7 @@ export function useDownloadActions(): DownloadActions {
 
   const open = useCallback(
     (id: string) => {
-      void maglevEngine.openDownload(id).then((res) => {
+      void reelnestEngine.openDownload(id).then((res) => {
         if (!res.ok) showNotice({ message: openFailureText(res.code, res.message) });
       });
     },
@@ -58,7 +58,7 @@ export function useDownloadActions(): DownloadActions {
   );
   const openFolder = useCallback(
     (id: string) => {
-      void maglevEngine.openDownloadFolder(id).then((res) => {
+      void reelnestEngine.openDownloadFolder(id).then((res) => {
         if (!res.ok) showNotice({ message: res.message || OPEN_FOLDER_FAILED_TEXT });
       });
     },
@@ -66,7 +66,7 @@ export function useDownloadActions(): DownloadActions {
   );
   const share = useCallback(
     (id: string) => {
-      void maglevEngine.shareDownload(id).then((res) => {
+      void reelnestEngine.shareDownload(id).then((res) => {
         if (!res.ok) showNotice({ message: res.message || SHARE_FAILED_TEXT });
       });
     },
@@ -75,7 +75,7 @@ export function useDownloadActions(): DownloadActions {
   const retry = useCallback((id: string) => void retryDownload(id), [retryDownload]);
   const allowDevice = useCallback(
     (id: string) => {
-      void maglevEngine.allowLanHost(id).then((res) => {
+      void reelnestEngine.allowLanHost(id).then((res) => {
         if (!res.ok) showNotice({ message: allowDeviceFailureText(res.code, res.message) });
         else retry(id);
       });
@@ -84,7 +84,7 @@ export function useDownloadActions(): DownloadActions {
   );
   const resumeAnyway = useCallback(
     (id: string) => {
-      void maglevEngine.resumeDownloadAnyway(id).then((res) => {
+      void reelnestEngine.resumeDownloadAnyway(id).then((res) => {
         if (!res.ok) showNotice({ message: res.message || notices.common.retryFailed });
       });
     },

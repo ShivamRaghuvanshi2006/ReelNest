@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { maglevEngine, type DetailFile, type PausedBy, type TorrentState } from 'maglev-engine';
+import { reelnestEngine, type DetailFile, type PausedBy, type TorrentState } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { formatBytes } from '../../constants/format';
@@ -87,7 +87,7 @@ export function SavedTorrentSheet({ saved, onClose }: SavedTorrentSheetProps) {
   const share = async () => {
     if (!saved) return;
     try {
-      const res = await maglevEngine.shareExportedTorrent(saved.path);
+      const res = await reelnestEngine.shareExportedTorrent(saved.path);
       if (!res.ok) setError(res.message || notices.inline.shareFailed);
       else onClose();
     } catch {
@@ -159,12 +159,12 @@ export function FileActionsSheet({ id, file, torrentState, pausedBy, onResume, o
         setError(notices.inline.resumeFailed);
         return;
       }
-      const url = await maglevEngine.streamUrl(id, file.index);
+      const url = await reelnestEngine.streamUrl(id, file.index);
       if (!url.ok) {
         setError(url.message || notices.inline.streamFailed);
         return;
       }
-      const res = await maglevEngine.openStream(url.url, url.mime, fileName(file.path));
+      const res = await reelnestEngine.openStream(url.url, url.mime, fileName(file.path));
       if (!res.ok) {
         setError(res.message || notices.inline.noPlayer);
         return;
@@ -191,8 +191,8 @@ export function FileActionsSheet({ id, file, torrentState, pausedBy, onResume, o
       {error ? <Banner tone="danger" title={banners.detail.actionFailed.title} body={error} /> : null}
       {file && done ? (
         <>
-          <ListRow title="Open" icon="file" onPress={() => run(maglevEngine.openFile(id, file.index), 'No app can open this file.')} />
-          <ListRow title="Share" icon="share" onPress={() => run(maglevEngine.shareFile(id, file.index), 'Sharing failed.')} />
+          <ListRow title="Open" icon="file" onPress={() => run(reelnestEngine.openFile(id, file.index), 'No app can open this file.')} />
+          <ListRow title="Share" icon="share" onPress={() => run(reelnestEngine.shareFile(id, file.index), 'Sharing failed.')} />
         </>
       ) : null}
       {file && streamable ? (

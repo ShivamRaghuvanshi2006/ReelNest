@@ -42,7 +42,7 @@ async function main() {
   colors = plugin.applyColors(colors, voidHex, AndroidConfig.Colors.assignColorValue);
   const colorObj = AndroidConfig.Colors.getColorsAsObject(colors);
   check('splashscreen_background (pre-12 splash base) is Void', colorObj.splashscreen_background === voidHex, colorObj.splashscreen_background);
-  check('maglev_window_background is Void', colorObj[plugin.COLOR_NAME] === voidHex);
+  check('reelnest_window_background is Void', colorObj[plugin.COLOR_NAME] === voidHex);
   const again = plugin.applyColors(colors, voidHex, AndroidConfig.Colors.assignColorValue);
   check('colors transform is idempotent', JSON.stringify(again) === JSON.stringify(colors));
 

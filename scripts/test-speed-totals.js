@@ -23,10 +23,10 @@ function check(name, cond, extra) {
 
 (async () => {
   console.log('[setting]');
-  const types = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
+  const types = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
   check('default is off', types.DEFAULT_SETTINGS.appearance.showSpeedTotals === false);
 
-  const store = read('modules/maglev-engine/src/MaglevSettingsStore.ts');
+  const store = read('modules/reelnest-engine/src/ReelNestSettingsStore.ts');
   check('migrate coerces a non-boolean to false', /showSpeedTotals\s*!==\s*true|typeof merged\.appearance\.showSpeedTotals/.test(store));
 
   console.log('[transfers screen]');
@@ -38,7 +38,7 @@ function check(name, cond, extra) {
   check('Appearance has a "Speed totals" toggle', /Speed totals/.test(ui) && /showSpeedTotals/.test(ui) && /<Toggle/.test(ui));
 
   console.log('[notification keeps Pause all]');
-  const notif = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/service/Notifications.kt');
+  const notif = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/service/Notifications.kt');
   check('notification still offers Pause all', /Pause all/.test(notif));
 
   console.log(`\n${passed} passed, ${failed} failed`);

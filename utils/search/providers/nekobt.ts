@@ -1,5 +1,5 @@
 // Ported from prajwalch/TorrentSearch (MIT), https://github.com/prajwalch/TorrentSearch/blob/main/app/src/main/kotlin/com/prajwalch/torrentsearch/providers/NekoBT.kt
-// TorrentSearch scrapes the HTML and has a TODO for the JSON API. Maglev uses the JSON API.
+// TorrentSearch scrapes the HTML and has a TODO for the JSON API. ReelNest uses the JSON API.
 import type { ParseContext, SearchProvider, SearchResult } from '../types.ts';
 import { httpText, parseJson, ProviderError } from '../http.ts';
 import { buildMagnet, normalizeInfoHash } from '../magnet.ts';

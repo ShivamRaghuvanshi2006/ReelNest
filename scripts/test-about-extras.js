@@ -19,7 +19,7 @@ const exists = (p) => fs.existsSync(path.join(root, p));
 
 (async () => {
   const app = JSON.parse(read('app.json')).expo;
-  check('app.json extra.homepage is the Maglev page', app.extra && app.extra.homepage === 'https://harshdayal.dev/maglev');
+  check('app.json extra.homepage is the ReelNest project page', app.extra && app.extra.homepage === 'https://github.com/ShivamRaghuvanshi2006/ReelNest');
   check('no privacyUrl while that page is broken', !(app.extra && app.extra.privacyUrl));
 
   const licenceFile = read('LICENSE');
@@ -48,7 +48,7 @@ const exists = (p) => fs.existsSync(path.join(root, p));
   check('react-native is MIT', find('react-native') && find('react-native').license === 'MIT');
   check('librqbit is Apache-2.0 (from vendored Cargo.toml)', find('librqbit') && find('librqbit').license === 'Apache-2.0');
   const pkg = JSON.parse(read('package.json'));
-  check('every runtime dependency is listed', Object.keys(pkg.dependencies).filter((d) => d !== 'maglev-engine').every((d) => find(d)));
+  check('every runtime dependency is listed', Object.keys(pkg.dependencies).filter((d) => d !== 'reelnest-engine').every((d) => find(d)));
 
   check('Release notes row in About shows installed version', /Release notes/.test(copy) && /aboutExtrasCopy\.releaseNotes\b/.test(about) && /value=\{appVersion\}/.test(about) && about.includes('/settings/whats-new'));
   check('whats-new page exists and is registered', exists('app/settings/whats-new.tsx') && layout.includes('name="settings/whats-new"'));

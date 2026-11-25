@@ -1,5 +1,5 @@
 /**
- * Regenerates modules/maglev-engine/android/src/main/assets/blocklist.txt (docs/NATIVE_CONTRACT.md section 24.4).
+ * Regenerates modules/reelnest-engine/android/src/main/assets/blocklist.txt (docs/NATIVE_CONTRACT.md section 24.4).
  *
  *   node scripts/build-blocklist.js            fetch the upstream list once and write the asset
  *   node scripts/build-blocklist.js <file>     build from a local copy of the hosts file instead
@@ -14,7 +14,7 @@ const zlib = require('zlib');
 
 const SOURCE_URL = 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts';
 const LICENSE = 'MIT (StevenBlack/hosts, https://github.com/StevenBlack/hosts/blob/master/license.txt)';
-const OUT = path.join(__dirname, '..', 'modules/maglev-engine/android/src/main/assets/blocklist.txt');
+const OUT = path.join(__dirname, '..', 'modules/reelnest-engine/android/src/main/assets/blocklist.txt');
 const MAX_GZ = 400 * 1024;
 const LOCAL = new Set(['localhost', 'localhost.localdomain', 'local', 'broadcasthost', 'ip6-localhost', 'ip6-loopback',
   'ip6-localnet', 'ip6-mcastprefix', 'ip6-allnodes', 'ip6-allrouters', 'ip6-allhosts', '0.0.0.0']);
@@ -57,7 +57,7 @@ async function main() {
   const domains = collapse(parsed);
   const date = new Date().toISOString().slice(0, 10);
   const header = [
-    '# Maglev ad and tracker block list',
+    '# ReelNest ad and tracker block list',
     `# Source: ${SOURCE_URL}`,
     `# License: ${LICENSE}`,
     `# Date: ${date}`,

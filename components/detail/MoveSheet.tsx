@@ -20,7 +20,7 @@ export function MoveSheet({ visible, onClose, currentFolder, busy, error, pickAg
   return (
     <Sheet visible={visible} onClose={onClose} title="Move to…" subtitle={`Now in ${currentFolder}`}>
       {error ? <Banner tone="danger" title={banners.detail.moveFailed.title} body={error} actionLabel={pickAgain ? 'Pick a folder again' : undefined} onAction={pickAgain ? onPick : undefined} /> : null}
-      <ListRow title="Download/Maglev (default)" icon="folder" disabled={busy} onPress={onDefault} />
+      <ListRow title="Download/ReelNest (default)" icon="folder" disabled={busy} onPress={onDefault} />
       <ListRow title="Pick a folder" icon="move" disabled={busy} onPress={onPick} />
     </Sheet>
   );

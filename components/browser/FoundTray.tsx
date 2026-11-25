@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import type { FoundItem } from 'maglev-engine';
+import type { FoundItem } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
-import { useMaglevEngine } from '../../context/EngineContext';
+import { useReelNestEngine } from '../../context/EngineContext';
 import { ThemeColors, radius, spacing, type, touch } from '../../constants/theme';
 import { haptic } from '../../constants/haptics';
 import { banners, empty, foundTray, notices } from '../../constants/copy';
@@ -51,7 +51,7 @@ function Row({
 }) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { probeStream } = useMaglevEngine();
+  const { probeStream } = useReelNestEngine();
   const [thumbFailed, setThumbFailed] = useState(false);
   const installer = isInstaller(item);
   const probed = useFoundSize(item, userAgent, probeStream);
@@ -142,7 +142,7 @@ export interface FoundTrayProps {
 export function FoundTray({ visible, items, onClose, onPick, onPickStream, onRemove, onClear, onScanAgain, onDownloadSelected, undo = null, onUndo, transfers, onOpenTransfer, userAgent = '' }: FoundTrayProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { showNotice } = useMaglevEngine();
+  const { showNotice } = useReelNestEngine();
   const { height } = useWindowDimensions();
   const [prefs, updatePrefs] = useBrowserPrefs();
   const [choice, setChoice] = useState<{ key: string; filter: FoundFilter } | null>(null);

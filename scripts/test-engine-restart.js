@@ -55,9 +55,9 @@ globalThis.__DEV__ = false;
 globalThis.__fake = { Platform: { OS: 'android' }, native };
 
 (async () => {
-  const { MaglevEngineBridge } = await import('../modules/maglev-engine/src/MaglevNativeBridge.ts');
-  const { DEFAULT_SETTINGS } = await import('../modules/maglev-engine/src/MaglevSettings.types.ts');
-  const { toNativeConfig } = await import('../modules/maglev-engine/src/toNativeConfig.ts');
+  const { ReelNestEngineBridge } = await import('../modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+  const { DEFAULT_SETTINGS } = await import('../modules/reelnest-engine/src/ReelNestSettings.types.ts');
+  const { toNativeConfig } = await import('../modules/reelnest-engine/src/toNativeConfig.ts');
   const { addErrorNotice, engineFailureAction } = await import('../utils/addErrorNotice.ts');
   const cfg = toNativeConfig(DEFAULT_SETTINGS);
 
@@ -66,7 +66,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
     running = true;
     initResult = { ok: true };
     initDelay = 0;
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     await b.start(DEFAULT_SETTINGS);
     calls.length = 0;
     return b;
@@ -162,7 +162,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
     calls.length = 0;
     running = false;
     initResult = { ok: false, code: 'PERMISSION', message: 'No access to the folder.' };
-    const b = new MaglevEngineBridge();
+    const b = new ReelNestEngineBridge();
     await b.start(DEFAULT_SETTINGS);
     check('h: unavailable status carries the init code', b.engineStatus.kind === 'unavailable' && b.engineStatus.code === 'PERMISSION', b.engineStatus);
     initResult = { ok: true };
@@ -176,7 +176,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
 
 // Notification and tile actions start the engine first when Android killed it (Pause all / Resume all).
 {
-  const host = require('fs').readFileSync(require('path').join(__dirname, '../modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt'), 'utf8');
+  const host = require('fs').readFileSync(require('path').join(__dirname, '../modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt'), 'utf8');
   const body = (name) => { const i = host.indexOf(`fun ${name}()`); return i < 0 ? '' : host.slice(i, host.indexOf('\n    }\n', i)); };
   for (const fn of ['pauseAllFromNotification', 'resumeAllFromNotification']) {
     const b = body(fn);
@@ -193,7 +193,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
 {
   const fs = require('fs');
   const path = require('path');
-  const dir = path.join(__dirname, '../modules/maglev-engine/android/src/main/java/com/maglev/engine');
+  const dir = path.join(__dirname, '../modules/reelnest-engine/android/src/main/java/com/reelnest/engine');
   const host = fs.readFileSync(path.join(dir, 'EngineHost.kt'), 'utf8');
   const ok = (name, cond) => {
     if (!cond) { console.error(`  FAIL ${name}`); process.exitCode = 1; } else console.log(`  ok   ${name}`);
@@ -219,7 +219,7 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   ok('a stale headless start stops the service only while the engine is not running', /shutdownEpoch\.get\(\) != epochAtCall\)\s*\{[^}]*if \(!initialized\) stopService\(\)\s*return/.test(locked));
   ok('shutdownEngineLocked raises the epoch first', /private fun shutdownEngineLocked\(\)[^{]*\{\s*shutdownEpoch\.incrementAndGet\(\)/.test(host));
   ok('callers of headlessStart stay non-user paths (service restart, scheduleResume)',
-    fs.readFileSync(path.join(dir, 'service/MaglevTorrentService.kt'), 'utf8').includes('EngineHost.headlessStart(') && /fun scheduleResume\(\)[\s\S]*?headlessStart\(countKill = false\)/.test(host));
+    fs.readFileSync(path.join(dir, 'service/ReelNestTorrentService.kt'), 'utf8').includes('EngineHost.headlessStart(') && /fun scheduleResume\(\)[\s\S]*?headlessStart\(countKill = false\)/.test(host));
 
   // Notification actions follow the service (contract 8.2).
   const notif = fs.readFileSync(path.join(dir, 'service/Notifications.kt'), 'utf8');
@@ -230,25 +230,25 @@ globalThis.__fake = { Platform: { OS: 'android' }, native };
   const completed = fnBody(notif, 'fun notifyCompleted(');
   ok('"Downloaded" notice is a CH_COMPLETED notice: no Pause/Resume/Shut down', completed.includes('CH_COMPLETED') && !/Pause all|Resume all|Shut down/.test(completed));
   ok('the foreground service always starts with the actionful ongoing() notification',
-    fs.readFileSync(path.join(dir, 'service/MaglevTorrentService.kt'), 'utf8').includes('Notifications.ongoing(this, summary)'));
+    fs.readFileSync(path.join(dir, 'service/ReelNestTorrentService.kt'), 'utf8').includes('Notifications.ongoing(this, summary)'));
   ok('service refreshes the notification when the paused-by-user state flips (buttons change)',
-    /s\.busy > 0, s\.pausedByUser > 0/.test(fs.readFileSync(path.join(dir, 'service/MaglevTorrentService.kt'), 'utf8')));
+    /s\.busy > 0, s\.pausedByUser > 0/.test(fs.readFileSync(path.join(dir, 'service/ReelNestTorrentService.kt'), 'utf8')));
 }
 
-// Tile and plain notification taps open maglev://from/... so the launch is not "plain" (no new-feature dialog).
+// Tile and plain notification taps open reelnest://from/... so the launch is not "plain" (no new-feature dialog).
 {
   const fs = require('fs');
   const path = require('path');
-  const dir = path.join(__dirname, '../modules/maglev-engine/android/src/main/java/com/maglev/engine/service');
-  const tile = fs.readFileSync(path.join(dir, 'MaglevTileService.kt'), 'utf8');
+  const dir = path.join(__dirname, '../modules/reelnest-engine/android/src/main/java/com/reelnest/engine/service');
+  const tile = fs.readFileSync(path.join(dir, 'ReelNestTileService.kt'), 'utf8');
   const notif = fs.readFileSync(path.join(dir, 'Notifications.kt'), 'utf8');
   const ok = (n, c) => { if (!c) { console.error(`  FAIL ${n}`); process.exitCode = 1; } else console.log(`  ok   ${n}`); };
   const open = tile.slice(tile.indexOf('private fun openApp()'));
-  ok('tile opens maglev://from/tile with ACTION_VIEW, package and NEW_TASK',
-    /Intent\(Intent\.ACTION_VIEW, Uri\.parse\("maglev:\/\/from\/tile"\)\)\s*\.setPackage\(packageName\)\s*\.addFlags\(Intent\.FLAG_ACTIVITY_NEW_TASK\)/.test(open) && tile.includes('import android.net.Uri'));
+  ok('tile opens reelnest://from/tile with ACTION_VIEW, package and NEW_TASK',
+    /Intent\(Intent\.ACTION_VIEW, Uri\.parse\("reelnest:\/\/from\/tile"\)\)\s*\.setPackage\(packageName\)\s*\.addFlags\(Intent\.FLAG_ACTIVITY_NEW_TASK\)/.test(open) && tile.includes('import android.net.Uri'));
   ok('tile keeps the API 34 PendingIntent branch', /SDK_INT >= 34[\s\S]*startActivityAndCollapse\(PendingIntent\.getActivity\(/.test(open) && /startActivityAndCollapse\(launch\)/.test(open));
   ok('tile no longer uses the launcher intent', !tile.includes('getLaunchIntentForPackage'));
-  ok('no-route notification tap opens maglev://from/notification', /Intent\(Intent\.ACTION_VIEW, Uri\.parse\("maglev:\/\/from\/notification"\)\)\.setPackage\(context\.packageName\)/.test(notif) && !notif.includes('getLaunchIntentForPackage'));
+  ok('no-route notification tap opens reelnest://from/notification', /Intent\(Intent\.ACTION_VIEW, Uri\.parse\("reelnest:\/\/from\/notification"\)\)\.setPackage\(context\.packageName\)/.test(notif) && !notif.includes('getLaunchIntentForPackage'));
   const nat = fs.readFileSync(path.join(__dirname, '../app/+native-intent.tsx'), 'utf8');
   ok('JS maps both hosts to "/"', /from\\\/\(tile\|notification\)/.test(nat));
 }

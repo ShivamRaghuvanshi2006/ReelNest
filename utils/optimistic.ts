@@ -11,7 +11,7 @@
  * No numbers are invented: a pause shows zero speed (the user asked for it), a resume keeps the
  * engine's state and only sets `pending`, a remove hides the row.
  */
-import type { TorrentState, PausedBy } from 'maglev-engine';
+import type { TorrentState, PausedBy } from 'reelnest-engine';
 
 export type PendingKind = 'pause' | 'resume' | 'remove';
 

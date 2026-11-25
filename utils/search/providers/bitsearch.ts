@@ -5,7 +5,7 @@ import { decodeEntities, parseSize, stripTags, toInt, toMs } from '../text.ts';
 
 export const ID = 'bitsearch';
 
-// BitSearch category label -> Maglev category (keyword match on its "Group/Sub" label).
+// BitSearch category label -> ReelNest category (keyword match on its "Group/Sub" label).
 function categoryFromLabel(label: string | undefined): Category | undefined {
   if (!label) return undefined;
   const l = label.toLowerCase();

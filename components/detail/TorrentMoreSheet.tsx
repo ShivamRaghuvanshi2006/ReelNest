@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PausedBy, TorrentState } from 'maglev-engine';
+import type { PausedBy, TorrentState } from 'reelnest-engine';
 import { ListRow, Sheet } from '../ui';
 import { entrySubtitle, type EntryMode } from '../subtitles/flow';
 import { FIND_SUBTITLES } from '../../utils/subtitles/copy';

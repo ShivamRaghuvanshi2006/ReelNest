@@ -8,7 +8,7 @@ export const aboutExtrasCopy = {
   releaseNotesFor: (version: string) => `Release notes for ${version}`,
   licences: {
     title: 'Licences',
-    intro: 'Maglev is free software under the GNU General Public License v3.0.',
+    intro: 'ReelNest is free software under the GNU General Public License v3.0.',
     read: 'Read the licence',
     readHint: 'Opens the licence text on GitHub',
     builtWith: 'Built with',

@@ -35,7 +35,7 @@ function check(name, cond, extra) {
   check('with the master switch off the other rows stay visible but are disabled', /const off = !sub\.enabled/.test(page) && /pointerEvents=\{off \? 'none' : 'auto'\}/.test(page) && /opacity: 0\.45/.test(page) && (page.match(/disabled=\{off\}/g) || []).length >= 2);
   check('the privacy line is the contract text', copy.PRIVACY_LINE === "Looking up subtitles sends the video's file name and a fingerprint of the file to the source you use. Nothing is sent until you tap Find subtitles.");
   check('the OpenSubtitles row is gated by hasOpenSubtitlesKey, which is false without a build key', /hasOpenSubtitlesKey\(\) \? \(/.test(page) && S.hasOpenSubtitlesKey() === false);
-  check('settings are UI only: written through updateSettings({subtitles}), never toNativeConfig', /subtitles: \{ \.\.\.prev\.subtitles/.test(read('components/subtitles-settings/useSubtitleSettings.ts')) && !/subtitle/i.test(read('modules/maglev-engine/src/toNativeConfig.ts')));
+  check('settings are UI only: written through updateSettings({subtitles}), never toNativeConfig', /subtitles: \{ \.\.\.prev\.subtitles/.test(read('components/subtitles-settings/useSubtitleSettings.ts')) && !/subtitle/i.test(read('modules/reelnest-engine/src/toNativeConfig.ts')));
   const tab = read('app/(tabs)/settings.tsx');
   check('the Settings tab lists Subtitles under Finding things', /findRows: RowSpec\[\][\s\S]*title: 'Subtitles'[^}]*route: 'subtitles'[\s\S]*?\];/.test(tab) && /icon: 'subtitles'/.test(tab));
   check('the subtitles icon exists', read('components/icons.generated.ts').includes('"subtitles":') && /subtitles: 'badge-captions'/.test(read('scripts/gen-icons.js')));
@@ -63,7 +63,7 @@ function check(name, cond, extra) {
   console.log('[sources: wiring]');
   const src = read('app/settings/subtitle-sources.tsx');
   const search = read('app/settings/search-providers.tsx');
-  check('built like Search sources: same page shell, rows, section headers and cards', /SettingsPage/.test(src) && /ProviderRow/.test(src) && /SectionHeader/.test(src) && /Card/.test(src) && /ProviderRow/.test(search) && /listsCopy\.providers\.turnedOff/.test(src) && /TURNED_OFF_BY_MAGLEV/.test(src));
+  check('built like Search sources: same page shell, rows, section headers and cards', /SettingsPage/.test(src) && /ProviderRow/.test(src) && /SectionHeader/.test(src) && /Card/.test(src) && /ProviderRow/.test(search) && /listsCopy\.providers\.turnedOff/.test(src) && /TURNED_OFF_BY_REELNEST/.test(src));
   check('the row component is shared, not copied', exists('components/search-providers/ProviderRow.tsx') && !exists('components/subtitles-settings/SourceRow.tsx') && /toggleLabel/.test(read('components/search-providers/ProviderRow.tsx')));
   check('switches are stored in sourceEnabled through withSourceEnabled', /withSourceEnabled\(sub, id, on\)/.test(src) && /patch\(\{ sourceEnabled/.test(src));
   check('a turned-off source is locked and shows the note', /locked=\{!!r\.turnedOff\}/.test(src) && /turnedOffWithNote\(r\.turnedOff\.note\)/.test(src));
@@ -87,8 +87,8 @@ function check(name, cond, extra) {
   check('and off', mine2[0].on === false);
   const ov = { alpha: { enabled: false, note: 'Back next week' }, beta: { enabled: false } };
   const off = S.sourceRows([A, B, C], { sourceEnabled: { alpha: true, beta: true } }, ov);
-  check('"Turned off by Maglev": the list wins over the user switch and carries its note', off[0].on === false && off[0].turnedOff.note === 'Back next week' && off[1].on === false && off[1].turnedOff.note === null && off[2].turnedOff === null);
-  check('turned-off text is the contract wording', copy.TURNED_OFF_BY_MAGLEV === 'Turned off by Maglev');
+  check('"Turned off by ReelNest": the list wins over the user switch and carries its note', off[0].on === false && off[0].turnedOff.note === 'Back next week' && off[1].on === false && off[1].turnedOff.note === null && off[2].turnedOff === null);
+  check('turned-off text is the contract wording', copy.TURNED_OFF_BY_REELNEST === 'Turned off by ReelNest');
   check('the rows agree with enabledProviders (what actually runs)', eq(S.sourceRows([A, B, C], { sourceEnabled: { beta: true } }, ov).filter((r) => r.on).map((r) => r.id), reg.enabledProviders({ enabled: true, sourceEnabled: { beta: true } }, ov, [A, B, C]).map((p) => p.id)));
   check('the page value counts sources that are on, and says so when there are none', S.sourcesValue(rows) === '2 on' && S.sourcesValue(off) === '1 on' && S.sourcesValue([]) === 'None yet');
   check('with the shipped registry the rows build without error', Array.isArray(S.sourceRows(reg.SUBTITLE_PROVIDERS, { sourceEnabled: {} }, null)));

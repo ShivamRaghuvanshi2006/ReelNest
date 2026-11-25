@@ -2,9 +2,9 @@
  * Restore: turns a parsed backup into changes. Pure: the engine, the stores and the file system are injected.
  * Settings and prefs replace what is there; torrents and downloads are only added, always paused.
  */
-import type { MaglevSettings } from '../../modules/maglev-engine/src/MaglevSettings.types.ts';
+import type { ReelNestSettings } from '../../modules/reelnest-engine/src/ReelNestSettings.types.ts';
 import type { StatsSection } from '../stats/store.ts';
-import type { AddTorrentOptions, DownloadOptions, EngineResult } from '../../modules/maglev-engine/src/MaglevEngine.types.ts';
+import type { AddTorrentOptions, DownloadOptions, EngineResult } from '../../modules/reelnest-engine/src/ReelNestEngine.types.ts';
 import {
   PART_PREFS,
   mergeDeviceBound,
@@ -32,8 +32,8 @@ export interface ImportDeps {
   existingHashes: ReadonlySet<string>;
   /** Link downloads already in the engine, as shown by the engine (`urlDisplay`). */
   existingUrls: readonly string[];
-  currentSettings: MaglevSettings;
-  applySettings: (settings: MaglevSettings) => void;
+  currentSettings: ReelNestSettings;
+  applySettings: (settings: ReelNestSettings) => void;
   /** Hands a pref to the store that owns it (it normalises and notifies). */
   applyPref: (key: PrefKey, value: unknown) => void;
   /** Pushes schedule and feed rules to the engine. */

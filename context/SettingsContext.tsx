@@ -1,19 +1,19 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import {
   DEFAULT_SETTINGS,
-  MaglevSettings,
+  ReelNestSettings,
   SpeedPreset,
   ThemeMode,
-  maglevEngine,
+  reelnestEngine,
   settingsStore,
-} from 'maglev-engine';
+} from 'reelnest-engine';
 import { kvGet, kvSet } from '../utils/prefs/kv';
 
 interface SettingsContextType {
-  settings: MaglevSettings;
+  settings: ReelNestSettings;
   theme: ThemeMode;
   isOledBlack: boolean;
-  updateSettings: (updater: Partial<MaglevSettings> | ((prev: MaglevSettings) => Partial<MaglevSettings>)) => void;
+  updateSettings: (updater: Partial<ReelNestSettings> | ((prev: ReelNestSettings) => Partial<ReelNestSettings>)) => void;
   resetSettings: () => void;
   setSpeedPreset: (type: 'download' | 'upload', preset: SpeedPreset, customBps?: number) => void;
   loadIpFilter: (content: string) => Promise<number>;
@@ -21,13 +21,13 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 
-const WIFI_DEFAULT_KEY = 'maglev.defaults.wifiOnly.v1';
+const WIFI_DEFAULT_KEY = 'reelnest.defaults.wifiOnly.v1';
 
 /**
  * A fresh install defaults to Wi-Fi only (UI_SPEC_PHASE2 S10.7). This runs once.
  * Anyone who already finished onboarding keeps their value; nothing changes silently.
  */
-function readSettingsWithFreshDefaults(): MaglevSettings {
+function readSettingsWithFreshDefaults(): ReelNestSettings {
   const current = settingsStore.getSettings();
   if (kvGet(WIFI_DEFAULT_KEY)) return current;
   kvSet(WIFI_DEFAULT_KEY, '1');
@@ -36,19 +36,19 @@ function readSettingsWithFreshDefaults(): MaglevSettings {
 }
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<MaglevSettings>(readSettingsWithFreshDefaults);
+  const [settings, setSettings] = useState<ReelNestSettings>(readSettingsWithFreshDefaults);
 
   useEffect(() => {
     // Subscribe to store updates (< 1ms dispatch)
     const unsubscribe = settingsStore.subscribe((newSettings) => {
       setSettings(newSettings);
-      maglevEngine.applySettings(newSettings);
+      reelnestEngine.applySettings(newSettings);
     });
     return () => unsubscribe();
   }, []);
 
   const updateSettings = useCallback(
-    (updater: Partial<MaglevSettings> | ((prev: MaglevSettings) => Partial<MaglevSettings>)) => {
+    (updater: Partial<ReelNestSettings> | ((prev: ReelNestSettings) => Partial<ReelNestSettings>)) => {
       const updated = settingsStore.updateSettings(updater);
       setSettings(updated);
     },
@@ -86,7 +86,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const loadIpFilter = useCallback(async (content: string) => {
-    return await maglevEngine.loadIpFilterDat(content);
+    return await reelnestEngine.loadIpFilterDat(content);
   }, []);
 
   const theme = settings.appearance.theme;

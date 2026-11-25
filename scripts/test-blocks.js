@@ -25,7 +25,7 @@ async function main() {
   const copy = await import('../utils/downloadCopy.ts');
 
   // 1. Every PausedBy value, every ActiveBlockTag and 'queued' have copy.
-  const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
+  const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
   const pausedBlock = /export type PausedBy =([\s\S]*?);/.exec(types)[1];
   const pausedBy = [...pausedBlock.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
   const health = [...(/HEALTH_TAGS[^=]*=\s*\[([\s\S]*?)\]/.exec(types)[1]).matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
@@ -60,9 +60,9 @@ async function main() {
   check('schedule copy drops a time that has passed', past.body === "Your schedule doesn't allow transfers now.", past.body);
   check('schedule copy drops a time that is exactly now', R.reasonFor('schedule', { ...ctx([{ tag: 'schedule', resumesAtMs: at, sinceMs: 1 }]), nowMs: at }).body === "Your schedule doesn't allow transfers now.");
   check('schedule copy without a time', R.reasonFor('schedule').body === "Your schedule doesn't allow transfers now.");
-  check('storage copy', R.reasonFor('storage_full').title === 'Storage almost full' && R.reasonFor('storage_full').body === 'Maglev keeps some space free on your phone. Free up space to continue.');
+  check('storage copy', R.reasonFor('storage_full').title === 'Storage almost full' && R.reasonFor('storage_full').body === 'ReelNest keeps some space free on your phone. Free up space to continue.');
   check('seed_metered copy', R.reasonFor('seed_metered').title === 'Sharing waits for Wi-Fi' && R.reasonFor('seed_metered').body === 'Seeding on mobile data is off.');
-  check('fgs_timeout copy', R.reasonFor('fgs_timeout').title === 'Stopped in the background' && R.reasonFor('fgs_timeout').body === 'Android stopped Maglev after running a long time in the background. Tap Resume.');
+  check('fgs_timeout copy', R.reasonFor('fgs_timeout').title === 'Stopped in the background' && R.reasonFor('fgs_timeout').body === 'Android stopped ReelNest after running a long time in the background. Tap Resume.');
   const q = R.reasonFor('queued', ctx([], 3));
   check('queued copy', q.title === 'Queued' && q.body === '3 downloads run at a time. This one starts when one finishes.' && q.short === 'Queued · 3 at a time');
   check('no jargon or dots in copy', keys.every((k) => { const r = R.reasonFor(k); return !/[●•]|\bpaused_by\b|\bgovernance\b/i.test(`${r.short}${r.title}${r.body}`); }));
@@ -171,17 +171,17 @@ async function main() {
   check('link detail shows "Why it\'s paused"', /<WhyHeld/.test(sheet));
 
   // 11. Native and mock sources.
-  const diff = await import('../modules/maglev-engine/src/blocksDiff.ts');
+  const diff = await import('../modules/reelnest-engine/src/blocksDiff.ts');
   const b1 = [{ tag: 'battery', thresholdPct: 20, levelPct: 15, sinceMs: 1 }];
   check('mock: a battery level change alone is a change', diff.blocksChanged([{ ...b1[0], levelPct: 5 }], b1) && !diff.blocksChanged([{ ...b1[0] }], b1));
   check('mock: a new or removed block is a change', diff.blocksChanged([], b1) && diff.blocksChanged(b1, []));
-  const kt = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/EngineHost.kt');
-  const mod = read('modules/maglev-engine/android/src/main/java/com/maglev/engine/MaglevEngineModule.kt');
+  const kt = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/EngineHost.kt');
+  const mod = read('modules/reelnest-engine/android/src/main/java/com/reelnest/engine/ReelNestEngineModule.kt');
   check('Kotlin: getActiveBlocks function and event registered', /AsyncFunction\("getActiveBlocks"\)/.test(mod) && /Events\([^)]*"onBlocksChanged"/.test(mod) && /fun activeBlocksList/.test(kt));
   check('Kotlin: setBlock reports a levelPct change', !/it != "levelPct"/.test(kt) && /keys\.any \{ old\[it\] != fields\[it\] \}/.test(kt));
   check('Kotlin: onBlocksChanged', /onBlocksChanged/.test(kt));
   check('Kotlin: ssid branch', /"ssid"/.test(kt));
-  const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+  const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
   check('mock engine: getActiveBlocks and addBlocksListener', /getActiveBlocks/.test(mock) && /addBlocksListener/.test(mock));
 }
 

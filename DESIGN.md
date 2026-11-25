@@ -1,18 +1,18 @@
-# Maglev design guide
+# ReelNest design guide
 
-This guide is for people designing or building a new screen in Maglev. It describes what the app looks like today and the rules the existing screens follow, so a new screen reads as part of the same app. Every value below is copied from code. When the code and this page disagree, the code is right and this page has a bug: `scripts/test-design-system.js` catches most drift, and you can open an issue for the rest.
+This guide is for people designing or building a new screen in ReelNest. It describes what the app looks like today and the rules the existing screens follow, so a new screen reads as part of the same app. Every value below is copied from code. When the code and this page disagree, the code is right and this page has a bug: `scripts/test-design-system.js` catches most drift, and you can open an issue for the rest.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) first for the process. Open an issue before building a new screen.
 
-Maglev is an Android app that downloads videos from web pages, ordinary links and torrents. It is meant to feel minimal, quick and a little playful, with a retro touch that stays readable for anyone.
+ReelNest is an Android app that downloads videos from web pages, ordinary links and torrents. It is meant to feel minimal, quick and a little playful, with a retro touch that stays readable for anyone.
 
 ## Principles
 
 1. **Minimal and quick.** A screen shows what the person needs now and nothing else. Rows are one or two lines, surfaces are flat, and nothing waits on an animation. Do: one `ProgressBar` and one status line per transfer card. Don't: add a second line of stats because the data exists.
 2. **Playful, not noisy.** The fun is in small pixel details and short, honest copy, not in motion or colour. Press feedback is a 0.97 scale; entrances are one 220 ms ease-out run. Do: let the finish check hold for a moment (`motion.finishHold`). Don't: add glows, pulsing dots, bounces or springs.
-3. **Retro, but readable.** The look comes from pixel icons and, optionally, the Retro font style. Reading text is always Inter or Space Mono at normal sizes. The MAGLEV wordmark is the only place Silkscreen is fixed (`type.brand`, used by `HeaderBar`). Do: `...type.heading` for a title. Don't: name a font file or set `fontFamily: 'monospace'`.
+3. **Retro, but readable.** The look comes from pixel icons and, optionally, the Retro font style. Reading text is always Inter or Space Mono at normal sizes. The REELNEST wordmark always uses Cabinet Grotesk (`type.brand`, used by `HeaderBar`). Do: `...type.heading` for a title. Don't: name a font file or set `fontFamily: 'monospace'`.
 4. **Plain words.** Say "Add torrent", "Resume", "Waiting for Wi-Fi", "Storage full". Raw info-hashes appear only under Detail, "Copy magnet". Do: "Couldn't pause this torrent. Try again." Don't: "Network policy gate engaged."
-5. **One primary action.** Each screen or sheet has one `Button variant="primary"`. Everything else is `secondary`, `ghost` or an `IconButton`. Do: one lime button at the bottom of a sheet. Don't: two lime buttons side by side.
+5. **One primary action.** Each screen or sheet has one `Button variant="primary"`. Everything else is `secondary`, `ghost` or an `IconButton`. Do: one yellow button at the bottom of a sheet. Don't: two yellow buttons side by side.
 6. **State is never colour alone.** Pair every colour with text or an icon. A failed transfer has danger-coloured text and the word that says what failed. A selected chip has a different fill and `accessibilityState`. Do: `Banner` draws an icon per tone. Don't: mark an error with a red dot.
 7. **No fake status.** Unknown is shown as unknown ("—"). No `● CORE OK` badges, no version strings in headers, no simulated values. Do: show "—" for an unknown ETA. Don't: show "0 B/s" for a speed the engine has not reported.
 
@@ -61,24 +61,24 @@ Rules that follow from it:
 
 ### Colour roles
 
-Colours come from `ThemeColors` in `constants/theme.ts`. The table shows the default OLED theme with the default lime accent. The app also has `dim` and `light` themes and eight accents (lime, cyan, pink, orange, violet, blue, amber, mint), so never assume a role is a particular colour. A new role or a changed value must keep the contrast table in `constants/theme.ts` true; `scripts/test-accents.js` enforces the accent rules and the palette contrast limits.
+Colours come from `ThemeColors` in `constants/theme.ts`. The table shows the default OLED theme with the default yellow accent. The app also has `dim` and `light` themes and eight accents (yellow, cyan, pink, orange, violet, blue, amber, mint), so never assume a role is a particular colour. A new role or a changed value must keep the contrast table in `constants/theme.ts` true; `scripts/test-accents.js` enforces the accent rules and the palette contrast limits.
 
 | Role | OLED value | Use it for |
 |---|---|---|
-| `bg` | `#05070A` | Screen background. |
-| `surface` | `#0D1117` | Cards, sheets, rows. |
-| `surfaceRaised` | `#161B22` | Pressed rows and raised pieces inside a card. |
-| `border` | `#1F2937` | The 1px hairline around cards and between rows. |
+| `bg` | `#171e19` | Screen background. |
+| `surface` | `#1e2522` | Cards, sheets, rows. |
+| `surfaceRaised` | `#232a25` | Pressed rows and raised pieces inside a card. |
+| `border` | `#2d3630` | The 1px hairline around cards and between rows. |
 | `borderStrong` | `#6B7280` | Outlines of controls the user can operate (3:1 or better). |
 | `outline` | `rgba(255, 255, 255, 0.1)` | The thin edge on thumbnails and other images. |
 | `text` | `#F3F4F6` | Primary text. |
 | `textMuted` | `#9CA3AF` | Telemetry, secondary lines, captions. |
 | `textFaint` | `#7D8590` | Disabled and placeholder text only. |
-| `accent` | `#CCFF00` | Primary fills, active state, done. A fill, not a text colour. |
+| `accent` | `#ffe17c` | Primary fills, active state, done. A fill, not a text colour. |
 | `onAccent` | dark on dark themes, white on light | Text and icons on an `accent` fill. |
-| `accentText` | `#CCFF00` | Accent-coloured text and icons on `bg` or `surface`. |
+| `accentText` | `#ffe17c` | Accent-coloured text and icons on `bg` or `surface`. |
 | `download` | `#00E5FF` | Downloading and inbound speed. Becomes blue when the accent is cyan, so it never matches "active". |
-| `upload` | `#CCFF00` | Uploading, seeding. |
+| `upload` | `#ffe17c` | Uploading, seeding. |
 | `paused` | `#8B949E` | Paused and idle. |
 | `success` | `#3DDC84` | A confirmed good outcome in a `Banner`. |
 | `warning` | `#FFB020` | Something needs attention but nothing is lost. |
@@ -112,7 +112,7 @@ Screens never name a font file. They spread a slot from `type` in `constants/the
 | `type.body` | Copy: sentences, descriptions, button labels. |
 | `type.bodyStrong` | Emphasis inside copy. |
 | `type.mono` | File names, sizes, speeds, counts: anything that is telemetry. Includes `tabular-nums`. |
-| `type.brand` | The MAGLEV wordmark only. Silkscreen in every style. |
+| `type.brand` | The REELNEST wordmark only. Cabinet Grotesk in every style. |
 
 `type.monoBold` also exists, for emphasised telemetry. Sizes are `type.size`: xs 11, sm 12, md 13, base 14, lg 15, xl 17, xxl 22, display 32. `base` is body copy in sheets and dialogs, `display` a hero number. Any other size needs a `// design-exception: <reason>` comment on its line.
 
@@ -120,7 +120,7 @@ The person picks one of three font styles in Settings, Interface (`constants/fon
 
 | Style | Headings | Filenames and telemetry | Copy |
 |---|---|---|---|
-| Clean (default) | Inter Bold | Inter Medium and SemiBold | Inter |
+| Clean (default) | Cabinet Grotesk | Inter Medium and SemiBold | Inter |
 | Retro | Silkscreen | Space Mono | Inter |
 | Mono | Space Mono Bold | Space Mono | Inter |
 

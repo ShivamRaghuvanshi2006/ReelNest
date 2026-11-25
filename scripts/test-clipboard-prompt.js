@@ -3,6 +3,8 @@
 process.removeAllListeners('warning');
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('node:url');
+const load = (p) => import(pathToFileURL(p).href);
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 let failed = 0;
@@ -12,13 +14,13 @@ function check(name, cond) {
 }
 
 (async () => {
-  const copy = await import(path.join(root, 'constants/clipboardCopy.ts'));
-  const prefs = await import(path.join(root, 'utils/prefs/clipboard.ts'));
+  const copy = await load(path.join(root, 'constants/clipboardCopy.ts'));
+  const prefs = await load(path.join(root, 'utils/prefs/clipboard.ts'));
 
   check('title', copy.clipboardCopy.title === 'Download the copied link?');
   check('buttons', copy.clipboardCopy.download === 'Download' && copy.clipboardCopy.notNow === 'Not now');
   check('setting title', copy.clipboardCopy.settingTitle === 'Offer to download copied links');
-  check('setting subtitle', /when you open Maglev with a link copied/i.test(copy.clipboardCopy.settingSubtitle) && /Android shows a notice/.test(copy.clipboardCopy.settingSubtitle) && copy.clipboardCopy.settingSubtitle.length <= 90);
+  check('setting subtitle', /when you open ReelNest with a link copied/i.test(copy.clipboardCopy.settingSubtitle) && /Android shows a notice/.test(copy.clipboardCopy.settingSubtitle) && copy.clipboardCopy.settingSubtitle.length <= 90);
 
   const hash = 'magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567';
   check('magnet without name never shows the hash', copy.clipboardLabel(hash) === 'Torrent from your clipboard');
@@ -40,7 +42,7 @@ function check(name, cond) {
   prefs.dismissClip(http);
   check('dismissed text remembered', prefs.isDismissedClip(http) === true && prefs.isDismissedClip(' ' + http + ' ') === true);
   check('another text is not dismissed', prefs.isDismissedClip('https://e.com/other.zip') === false);
-  const { kvGet } = await import(path.join(root, 'utils/prefs/kv.ts'));
+  const { kvGet } = await load(path.join(root, 'utils/prefs/kv.ts'));
   check('stored in kv (survives restart)', typeof kvGet(prefs.DISMISSED_CLIP_KEY) === 'string');
 
   const ctx = read('context/EngineContext.tsx');

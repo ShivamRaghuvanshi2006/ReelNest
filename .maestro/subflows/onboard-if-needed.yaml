@@ -1,5 +1,5 @@
 # Starts the app (no state clearing) and finishes onboarding only when it is showing.
-appId: com.maglev
+appId: com.ReelNest
 ---
 - launchApp
 - runFlow:

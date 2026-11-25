@@ -1,6 +1,6 @@
 # Remove a transfer and keep its files, then add it again and remove it with its files. Check the empty state.
 # Sheet copy: components/transfers/DeleteSheet.tsx:44-48. Undo notice: context/EngineContext.tsx:753.
-appId: com.maglev
+appId: com.ReelNest
 name: transfers-remove
 ---
 - runFlow: subflows/onboard-if-needed.yaml

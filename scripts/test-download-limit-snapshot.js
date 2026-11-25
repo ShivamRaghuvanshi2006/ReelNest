@@ -10,11 +10,11 @@ function check(name, cond) {
   else { failed++; console.error(`  FAIL ${name}`); }
 }
 
-const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
+const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
 const snap = (types.match(/export interface DownloadSnapshot \{[\s\S]*?\n\}/) || [''])[0];
 check('DownloadSnapshot declares downLimitBps: number', /\n\s+downLimitBps: number;/.test(snap));
 
-const mock = read('modules/maglev-engine/src/MaglevMockDownloads.ts');
+const mock = read('modules/reelnest-engine/src/ReelNestMockDownloads.ts');
 const mockSnap = (mock.match(/snapshots\(\): DownloadSnapshot\[\] \{[\s\S]*?\n  \}/) || [''])[0];
 check('mock snapshot fills downLimitBps from its own limit', /downLimitBps: i\.limit/.test(mockSnap));
 
@@ -23,7 +23,7 @@ check('download page reads the typed field', /d\.downLimitBps/.test(sheet));
 check('download page no longer casts to read the limit', !/as \{ downLimitBps\?: number \}/.test(sheet));
 check('download page does not fall back to a session-only value', !/downLimitBps \?\? chosen/.test(sheet));
 
-const rs = read('native/maglev-core/src/http_dl/driver.rs');
+const rs = read('native/reelnest-core/src/http_dl/driver.rs');
 const fn = (rs.match(/pub fn snapshots\(&self\)[\s\S]*?\n    \}\n/) || [''])[0];
 check('Rust snapshot serialises down_limit_bps', /"down_limit_bps": r\.down_limit_bps/.test(fn));
 check('Rust test covers the snapshot field', /snapshot_carries_the_download_limit_and_it_survives_a_restart/.test(rs));

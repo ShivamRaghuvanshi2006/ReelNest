@@ -62,7 +62,7 @@ async function main() {
   check('suggestions: picks first, offer to search; new or popular now browses', /two or three picks, then offer to search/.test(ap) && /new, recent or popular now, browse instead/.test(ap));
   check('meaning questions: no tools', /Answer from knowledge, no tools\n- Meaning or comparison/.test(ap));
   check('availability opens with yes, no or not yet; cinema recordings flagged', /yes, no or not yet/.test(ap) && /cinema recordings/.test(ap));
-  check('how-to follows the app and names Download/Maglev', /Choose files/.test(ap) && /Download\/Maglev/.test(ap));
+  check('how-to follows the app and names Download/ReelNest', /Choose files/.test(ap) && /Download\/ReelNest/.test(ap));
   check('downloads use list_transfers status_text and action_hint', /list_transfers[^\n]*status_text and action_hint/.test(ap));
   check('already in that state: say so, no card', /already in the state asked for/.test(ap));
   check('settings questions go to open_screen', /open_screen/.test(ap));

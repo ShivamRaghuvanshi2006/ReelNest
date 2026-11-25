@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Stack } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { Banner, Button, ListRow, Toggle } from '../../components/ui';
@@ -29,7 +29,7 @@ function availableParts(b: Backup): BackupPart[] {
       case 'search':
         return p.searchSources > 0;
       case 'feeds':
-        return p.feeds > 0 || b.prefs['maglev.feeds.automation.v1'] !== undefined;
+        return p.feeds > 0 || b.prefs['reelnest.feeds.automation.v1'] !== undefined;
       case 'schedule':
         return p.hasSchedule;
       case 'assistant':
@@ -93,7 +93,7 @@ export default function BackupSettings() {
   };
 
   const startAll = async (st: Extract<Step, { kind: 'done' }>) => {
-    const started = await startAdded(st.result, maglevEngine);
+    const started = await startAdded(st.result, reelnestEngine);
     setStep({ ...st, started });
   };
 

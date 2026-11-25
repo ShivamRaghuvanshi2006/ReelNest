@@ -6,7 +6,7 @@ import { absUrl, cells, firstMagnet, parseBinarySize, parseDmy, tableRows } from
 
 export const ID = 'torrent9';
 
-// Maglev category -> Torrent9 category slug.
+// ReelNest category -> Torrent9 category slug.
 const SLUG: Partial<Record<Category, string>> = {
   apps: 'logiciels',
   books: 'ebook',
@@ -16,7 +16,7 @@ const SLUG: Partial<Record<Category, string>> = {
   tv: 'series',
 };
 
-// Font Awesome icon on each row -> Maglev category (as TorrentSearch maps it).
+// Font Awesome icon on each row -> ReelNest category (as TorrentSearch maps it).
 const BY_ICON: Record<string, Category> = {
   'fa-desktop': 'tv',
   'fa-video-camera': 'movies',

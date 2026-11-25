@@ -7,7 +7,7 @@ import { absUrl, cells, parseBinarySize, parseRuDate, tableRows } from './nicheT
 
 export const ID = 'rutor';
 
-// Maglev category -> Rutor category id (0 = all).
+// ReelNest category -> Rutor category id (0 = all).
 const CATEGORY_ID: Record<Category, number> = {
   all: 0, movies: 1, music: 2, other: 3, tv: 4, games: 8, apps: 9, anime: 10, books: 11, adult: 0,
 };

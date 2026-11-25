@@ -1,4 +1,4 @@
-import { maglevEngine, type DetailFile } from 'maglev-engine';
+import { reelnestEngine, type DetailFile } from 'reelnest-engine';
 import { playCopy, notices } from '../../constants/copy';
 import { fileName } from './torrentLabels';
 import { pickPlayFile, playPlan } from './play';
@@ -24,14 +24,14 @@ export async function playFile(
   try {
     const plan = playPlan(file, torrent);
     if (plan.kind === 'open') {
-      const res = await maglevEngine.openFile(id, file.index);
+      const res = await reelnestEngine.openFile(id, file.index);
       return res.ok ? { ok: true } : { ok: false, message: res.message || notices.inline.openFileFailed };
     }
     if (plan.kind === 'blocked') return { ok: false, message: plan.reason === 'storageFull' ? playCopy.storageFull : playCopy.needsResume };
     if (plan.resumeFirst && !(await resume())) return { ok: false, message: notices.inline.resumeFailed };
-    const url = await maglevEngine.streamUrl(id, file.index);
+    const url = await reelnestEngine.streamUrl(id, file.index);
     if (!url.ok) return { ok: false, message: url.message || notices.inline.streamFailed };
-    const res = await maglevEngine.openStream(url.url, url.mime, fileName(file.path));
+    const res = await reelnestEngine.openStream(url.url, url.mime, fileName(file.path));
     if (!res.ok) return { ok: false, message: res.message || notices.inline.noPlayer };
     return { ok: true, resumed: plan.resumeFirst };
   } catch {
@@ -46,7 +46,7 @@ export async function playTorrentById(
   resume: () => Promise<boolean>,
 ): Promise<PlayResult> {
   try {
-    const detail = await maglevEngine.getDetail(id);
+    const detail = await reelnestEngine.getDetail(id);
     if (!detail.ok) return { ok: false, message: playCopy.failed };
     const file = pickPlayFile(detail.files);
     if (!file) return { ok: false, message: playCopy.noFile };

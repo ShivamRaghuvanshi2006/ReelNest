@@ -1,15 +1,15 @@
-// Smart Download for the Maglev site. Hand-written, no dependencies.
+// Smart Download for the ReelNest site. Hand-written, no dependencies.
 // In the browser it points every Download button at the right APK of the newest release.
 // In node it exports the same pure functions for scripts/test-site-download.js.
 // Without this file, or if GitHub's API is down, the buttons keep the link baked in by build-site.mjs.
 (function (root, factory) {
   var api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  else { root.MaglevDownload = api; if (typeof document !== 'undefined') api.init(); }
+  else { root.ReelNestDownload = api; if (typeof document !== 'undefined') api.init(); }
 })(typeof self !== 'undefined' ? self : this, function () {
-  var API = 'https://api.github.com/repos/Kaos599/Maglev/releases?per_page=6';
-  var ALL_RELEASES = 'https://github.com/Kaos599/Maglev/releases';
-  var CACHE_KEY = 'maglev-releases-v1';
+  var API = 'https://api.github.com/repos/ShivamRaghuvanshi2006/ReelNest/releases?per_page=6';
+  var ALL_RELEASES = 'https://github.com/ShivamRaghuvanshi2006/ReelNest/releases';
+  var CACHE_KEY = 'reelnest-releases-v1';
   var TIMEOUT_MS = 5000;
   var BASE = ''; // folder this script was loaded from, for the QR image (set in the browser)
   var WORDS = { arm64: 'For most phones', universal: 'For any device', x86_64: 'For Chromebooks and emulators', desktop: 'For any device' };
@@ -92,7 +92,7 @@
 
   function buttonTitle(release, asset) {
     var size = formatSize(asset && asset.size);
-    return 'Download Maglev ' + versionOf(release.tag_name) + (size ? ', ' + size : '');
+    return 'Download ReelNest ' + versionOf(release.tag_name) + (size ? ', ' + size : '');
   }
 
   function fileLabel(kind) {
@@ -133,9 +133,9 @@
     var version = versionOf(release.tag_name);
     // Desktop: nothing is downloaded, so no "started" or "tap the file" lines; the QR leads.
     return {
-      heading: desktop ? 'Get Maglev on your phone' : 'Downloading Maglev ' + version,
+      heading: desktop ? 'Get ReelNest on your phone' : 'Downloading ReelNest ' + version,
       summary: desktop ? '' : [WORDS[picked.kind], part, size].filter(Boolean).join(' \u00b7 '),
-      released: desktop ? 'Latest: Maglev ' + version + (date ? ' \u00b7 Released ' + date : '') : (date ? 'Released ' + date : ''),
+      released: desktop ? 'Latest: ReelNest ' + version + (date ? ' \u00b7 Released ' + date : '') : (date ? 'Released ' + date : ''),
       retryUrl: desktop ? '' : picked.asset.browser_download_url,
       next: desktop ? '' : 'Next: tap the file to install. Step 2 below shows how.',
       pickTitle: desktop ? 'Or download a file' : 'Pick a different file',
@@ -144,21 +144,21 @@
       older: older,
       allReleasesUrl: ALL_RELEASES,
       desktop: desktop,
-      qr: desktop ? { title: 'Scan with your Android phone', text: 'Maglev is an Android app. Scan this with your phone to get it.' } : null,
+      qr: desktop ? { title: 'Scan with your Android phone', text: 'ReelNest is an Android app. Scan this with your phone to get it.' } : null,
     };
   }
 
   /** The dialog when GitHub's API has not answered: the baked version and link, no file list. */
   function fallbackDialog(version, url, desktop) {
     return {
-      heading: desktop ? 'Get Maglev on your phone' : 'Downloading Maglev ' + version,
+      heading: desktop ? 'Get ReelNest on your phone' : 'Downloading ReelNest ' + version,
       summary: desktop ? '' : 'For any device \u00b7 universal',
-      released: desktop ? 'Latest: Maglev ' + version : '',
+      released: desktop ? 'Latest: ReelNest ' + version : '',
       retryUrl: desktop ? '' : url,
       next: desktop ? '' : 'Next: tap the file to install. Step 2 below shows how.',
       pickTitle: '', files: [], olderTitle: '', older: [],
       allReleasesUrl: ALL_RELEASES, desktop: !!desktop,
-      qr: desktop ? { title: 'Scan with your Android phone', text: 'Maglev is an Android app. Scan this with your phone to get it.' } : null,
+      qr: desktop ? { title: 'Scan with your Android phone', text: 'ReelNest is an Android app. Scan this with your phone to get it.' } : null,
     };
   }
 
@@ -230,7 +230,7 @@
     if (d.qr) {
       var q = el('div', 'dlg-qr');
       var img = el('img');
-      img.src = BASE + 'qr-maglev.svg'; img.width = 176; img.height = 176; img.alt = 'QR code that opens this page on a phone';
+      img.src = BASE + 'qr-reelnest.svg'; img.width = 176; img.height = 176; img.alt = 'QR code that opens this page on a phone';
       q.appendChild(img);
       var qt = el('div');
       qt.appendChild(el('p', 'dlg-qr-title', d.qr.title));
@@ -258,7 +258,7 @@
       d.older.forEach(function (r) {
         var v = el('div', 'ver');
         var head = el('p', 'ver-head');
-        head.appendChild(el('span', 'ver-name', 'Maglev ' + r.version));
+        head.appendChild(el('span', 'ver-name', 'ReelNest ' + r.version));
         if (r.date) head.appendChild(el('span', 'ver-date', ' ' + r.date));
         v.appendChild(head);
         var row = el('ul', 'ver-row');

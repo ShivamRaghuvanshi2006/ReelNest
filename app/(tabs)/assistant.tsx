@@ -36,7 +36,7 @@ const NOTICE: { icon: PixelIconName; title: string; body: string }[] = [
   {
     icon: 'bandwidth',
     title: 'Your provider may charge',
-    body: 'Each message uses tokens on your provider account. Maglev shows the count, not the cost.',
+    body: 'Each message uses tokens on your provider account. ReelNest shows the count, not the cost.',
   },
 ];
 

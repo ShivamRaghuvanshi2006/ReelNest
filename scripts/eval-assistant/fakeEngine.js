@@ -8,7 +8,7 @@ const hash = (c) => c.repeat(40);
 const snap = (o) => ({
   id: 'x', name: 'x', state: 'PAUSED', pausedBy: 'user', finished: false, progressBytes: 0, totalBytes: 1 * GB, uploadedBytes: 0,
   downBps: 0, upBps: 0, peersLive: 0, peersSeen: 0, webSeeds: 0, etaSecs: -1, ratio: 0, seedingSecs: 0, addedAt: 1762900000,
-  outputFolder: '/storage/emulated/0/Download/Maglev', error: null, downLimitBps: 0, upLimitBps: 0, moveProgress: null,
+  outputFolder: '/storage/emulated/0/Download/ReelNest', error: null, downLimitBps: 0, upLimitBps: 0, moveProgress: null,
   health: null, includedBytes: 1 * GB, resolvingSecs: null, ...o,
 });
 const file = (index, path, length, o = {}) => ({
@@ -86,7 +86,7 @@ function createWorld(opts = {}) {
     async resume(id) { log('resume', id); const t = find(id); if (t) { t.snap.state = 'DOWNLOADING'; t.snap.pausedBy = null; } return { ok: true }; },
     async removeFiles(id, idx) { log('removeFiles', id, idx); return { ok: true, freedBytes: 0 }; },
     async delete(id, del) { log('delete', id, del); const i = transfers.findIndex((t) => t.snap.id === id); if (i >= 0) transfers.splice(i, 1); return { ok: true }; },
-    async getFreeSpace() { return { ok: true, path: '/storage/emulated/0/Download/Maglev', freeBytes, totalBytes: 128 * GB, mode: 'direct' }; },
+    async getFreeSpace() { return { ok: true, path: '/storage/emulated/0/Download/ReelNest', freeBytes, totalBytes: 128 * GB, mode: 'direct' }; },
     async pauseDownload(id) { log('pauseDownload', id); return { ok: true }; },
     async resumeDownload(id) { log('resumeDownload', id); return { ok: true }; },
     async removeDownload(id, del) { log('removeDownload', id, del); return { ok: true }; },

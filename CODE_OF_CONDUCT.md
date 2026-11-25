@@ -1,6 +1,6 @@
 # Code of conduct
 
-Maglev's issues, pull requests and discussions are for building a download app together. People come from many countries and many levels of experience, and English is not everyone's first language. Treat them the way you would want to be treated when you are new and asking a basic question.
+ReelNest's issues, pull requests and discussions are for building a download app together. People come from many countries and many levels of experience, and English is not everyone's first language. Treat them the way you would want to be treated when you are new and asking a basic question.
 
 ## Expected
 
@@ -15,12 +15,12 @@ Maglev's issues, pull requests and discussions are for building a download app t
 - Harassment, including repeated unwanted contact or following someone across issues.
 - Posting someone's private information.
 - Sexual language or imagery.
-- Asking for or sharing help to download material the requester has no right to, or links to it. Maglev is a tool; this tracker is not a place to trade content.
+- Asking for or sharing help to download material the requester has no right to, or links to it. ReelNest is a tool; this tracker is not a place to trade content.
 - Spam, including AI-generated issues or comments posted without reading them.
 
 ## Reporting
 
-[Open a conduct report](https://github.com/Kaos599/Maglev/issues/new?template=conduct.yml) that links to the comment, thread or pull request. Describe what happened, but don't repeat the abuse itself.
+[Open a conduct report](https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/new?template=conduct.yml) that links to the comment, thread or pull request. Describe what happened, but don't repeat the abuse itself.
 
 ## What happens
 

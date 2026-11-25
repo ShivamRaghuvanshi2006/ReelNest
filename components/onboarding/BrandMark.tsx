@@ -1,12 +1,12 @@
 import React from 'react';
-import { MaglevMark } from '../brand/MaglevMark';
+import { ReelNestMark } from '../brand/ReelNestMark';
 
 export interface BrandMarkProps {
-  /** Rendered height in dp; width follows the mark's ratio. */
+  /** Rendered height in dp; width equals height for the square emblem. */
   height?: number;
 }
 
-/** The onboarding hero: the Maglev mark, arriving from the left the first time, then cruising. */
+/** The onboarding hero: the ReelNest emblem, tappable for a small haptic. */
 export function BrandMark({ height = 96 }: BrandMarkProps) {
-  return <MaglevMark height={height} cruising tappable arrive />;
+  return <ReelNestMark height={height} tappable />;
 }

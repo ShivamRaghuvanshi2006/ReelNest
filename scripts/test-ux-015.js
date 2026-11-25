@@ -32,11 +32,11 @@ check('empty state uses no raw hex', !/#[0-9a-fA-F]{3,8}\b/.test(emptyState));
 // 2. Star ticket and About
 const ticket = read('components/settings/StarTicket.tsx');
 const about = read('app/settings/about.tsx');
-check('REPO_URL is the Maglev repo', /export const REPO_URL = 'https:\/\/github\.com\/Kaos599\/Maglev'/.test(ticket));
-for (const t of ['FREE · NO ADS · OPEN SOURCE', 'Like Maglev? Give it a star', 'It takes a second on GitHub and helps others find the app.', 'STAR', 'Opens Maglev on GitHub']) {
+check('REPO_URL is the ReelNest repo', /export const REPO_URL = 'https:\/\/github\.com\/ShivamRaghuvanshi2006\/ReelNest'/.test(ticket));
+for (const t of ['FREE · NO ADS · OPEN SOURCE', 'Like ReelNest? Give it a star', 'It takes a second on GitHub and helps others find the app.', 'STAR', 'Opens ReelNest on GitHub']) {
   check(`ticket copy: ${t}`, ticket.includes(t));
 }
-check('ticket label for screen readers', ticket.includes('Like Maglev? Give it a star on GitHub') && /accessibilityRole="button"/.test(ticket));
+check('ticket label for screen readers', ticket.includes('Like ReelNest? Give it a star on GitHub') && /accessibilityRole="button"/.test(ticket));
 check('ticket opens the repo and is one PressableScale', /Linking\.openURL\(REPO_URL\)/.test(ticket) && /<PressableScale/.test(ticket));
 check('ticket title is one line', /numberOfLines=\{1\}\s+adjustsFontSizeToFit/.test(ticket));
 check('ticket burst respects reduce motion', /useReduceMotion/.test(ticket) && /if \(!reduceMotion\)/.test(ticket));
@@ -49,7 +49,7 @@ check('About row says "Built by Kaos" with source subtitle', /title="Built by Ka
 const settings = read('app/(tabs)/settings.tsx');
 const more = read('components/settings/MoreBelow.tsx');
 const hint = require(path.join(root, 'utils/prefs/moreHint.ts'));
-check('hint flag key', hint.MORE_HINT_KEY === 'maglev.settings.moreHintSeen.v2');
+check('hint flag key', hint.MORE_HINT_KEY === 'reelnest.settings.moreHintSeen.v2');
 check('hint flag starts unseen and sticks once marked', hint.getMoreHintSeen() === false && (hint.markMoreHintSeen(), hint.getMoreHintSeen() === true));
 check('near the end within 24px', hint.nearEnd(976, 600, 1600) && !hint.nearEnd(900, 600, 1600) && hint.nearEnd(0, 800, 700));
 check('pill says "More below" with a chevron-down', /More below/.test(more) && /chevron-down/.test(more));

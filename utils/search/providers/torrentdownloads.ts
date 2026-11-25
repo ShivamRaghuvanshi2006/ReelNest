@@ -6,7 +6,7 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'torrentdownloads';
 
-// Maglev category -> the site's `s_cat` value (0 = all). "Other" also covers anything unmapped.
+// ReelNest category -> the site's `s_cat` value (0 = all). "Other" also covers anything unmapped.
 const CAT_ID: Partial<Record<Category, number>> = {
   all: 0,
   anime: 1,
@@ -19,7 +19,7 @@ const CAT_ID: Partial<Record<Category, number>> = {
   other: 9,
 };
 
-// Row icon "menu_icon<N>.png" -> Maglev category.
+// Row icon "menu_icon<N>.png" -> ReelNest category.
 const ICON: Record<string, Category> = { '1': 'anime', '2': 'books', '3': 'games', '4': 'movies', '5': 'music', '7': 'apps', '8': 'tv', '9': 'other' };
 
 /**

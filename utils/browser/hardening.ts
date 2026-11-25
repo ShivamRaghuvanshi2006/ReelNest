@@ -140,4 +140,4 @@ export type FoundHintState = 'idle' | 'shown' | 'done';
 /** The hint is due once per page: files found, the tray not opened, not shown yet. */
 export const foundHintDue = (count: number, state: FoundHintState, trayOpen: boolean): boolean => count > 0 && state === 'idle' && !trayOpen;
 
-export const foundHintText = (count: number): string => `Maglev found ${count} ${count === 1 ? 'file' : 'files'} on this page`;
+export const foundHintText = (count: number): string => `ReelNest found ${count} ${count === 1 ? 'file' : 'files'} on this page`;

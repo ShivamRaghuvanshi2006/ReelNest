@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Stack } from 'expo-router';
-import { maglevEngine } from 'maglev-engine';
-import type { ScheduleRule, ScheduleStatus } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
+import type { ScheduleRule, ScheduleStatus } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { Button, ListRow, SectionHeader, Toggle } from '../../components/ui';
@@ -42,7 +42,7 @@ export default function SchedulingSettings() {
 
   const refresh = useCallback(async () => {
     try {
-      setStatus(await maglevEngine.getScheduleStatus());
+      setStatus(await reelnestEngine.getScheduleStatus());
     } catch {
       setStatus(null);
     }

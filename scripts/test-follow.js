@@ -18,7 +18,7 @@ const kv = new Map();
 const pushed = [];
 const stubs = {
   'expo-sqlite/kv-store': `export default { getItemSync: (k) => globalThis.__kv.has(k) ? globalThis.__kv.get(k) : null, setItemSync: (k, v) => { globalThis.__kv.set(k, v); } };`,
-  'maglev-engine': `export const maglevEngine = { setFeedAutomation: async (c) => { globalThis.__pushed.push(c); } };`,
+  'reelnest-engine': `export const reelnestEngine = { setFeedAutomation: async (c) => { globalThis.__pushed.push(c); } };`,
   react: `export const useSyncExternalStore = () => null;`,
 };
 globalThis.__kv = kv;
@@ -90,8 +90,8 @@ async function main() {
   const auto = await import('../utils/prefs/feedAutomation.ts');
   feeds.saveFeeds(p3.feeds);
   auto.updateFeedAutomation({ rules: p3.rules, enabled: p3.automationEnabled });
-  check('store: feeds persisted as JSON in kv', JSON.parse(kv.get('maglev.feeds.list.v1')).length === 1);
-  const saved = JSON.parse(kv.get('maglev.feeds.automation.v1'));
+  check('store: feeds persisted as JSON in kv', JSON.parse(kv.get('reelnest.feeds.list.v1')).length === 1);
+  const saved = JSON.parse(kv.get('reelnest.feeds.automation.v1'));
   check('store: rules and toggle persisted', saved.enabled === true && saved.rules.length === 2 && saved.rules[1].include === 'andor 1080p');
   // A fresh load (restart) reads the same thing back through normalize.
   const restarted = (await import('../utils/prefs/feedAutomation.ts?restart')).getFeedAutomation();
@@ -102,7 +102,7 @@ async function main() {
 
   // Removing the rule (as the Auto-download settings do) round-trips too.
   auto.updateFeedAutomation((p) => ({ rules: p.rules.filter((r) => r.id !== ep.rule.id) }));
-  check('remove: rule gone from store', JSON.parse(kv.get('maglev.feeds.automation.v1')).rules.length === 1);
+  check('remove: rule gone from store', JSON.parse(kv.get('reelnest.feeds.automation.v1')).rules.length === 1);
   const again = planFollow({ feeds: feeds.loadFeeds(), rules: auto.getFeedAutomation().rules, automationEnabled: true }, ep, false, 5000);
   check('remove: can follow again', again.status === 'followed');
 

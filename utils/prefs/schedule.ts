@@ -1,10 +1,10 @@
 import { useSyncExternalStore } from 'react';
 import Storage from 'expo-sqlite/kv-store';
-import { maglevEngine } from 'maglev-engine';
-import type { ScheduleConfig, ScheduleRule } from 'maglev-engine';
+import { reelnestEngine } from 'reelnest-engine';
+import type { ScheduleConfig, ScheduleRule } from 'reelnest-engine';
 
 /** Contract: docs/NATIVE_CONTRACT.md section 11.5. Days are 0 = Monday through 6 = Sunday. */
-const KEY = 'maglev.schedule.v1';
+const KEY = 'reelnest.schedule.v1';
 const MB = 1_048_576;
 
 export const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
@@ -69,7 +69,7 @@ function getSchedule(): ScheduleConfig {
 /** Sends the current schedule to Kotlin. Failures are swallowed: the next change or app start retries. */
 export async function syncScheduleToNative(): Promise<void> {
   try {
-    await maglevEngine.setSchedule(getSchedule());
+    await reelnestEngine.setSchedule(getSchedule());
   } catch {
     // Native side unavailable.
   }

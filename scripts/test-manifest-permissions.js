@@ -1,6 +1,6 @@
-// Contract: the release manifest declares only the permissions Maglev uses on purpose.
+// Contract: the release manifest declares only the permissions ReelNest uses on purpose.
 // SYSTEM_ALERT_WINDOW comes from Expo's base manifest template (prebuild-config), USE_BIOMETRIC and
-// USE_FINGERPRINT from the androidx.biometric AAR that expo-secure-store depends on. Maglev uses neither
+// USE_FINGERPRINT from the androidx.biometric AAR that expo-secure-store depends on. ReelNest uses neither
 // overlays nor a biometric prompt, so app.json must block them (android.blockedPermissions).
 const assert = require('assert');
 const path = require('path');
@@ -13,7 +13,7 @@ const MUST_BLOCK = [
   'android.permission.USE_FINGERPRINT',
 ];
 
-// Permissions Maglev declares on purpose (short names, as written in app.json android.permissions).
+// Permissions ReelNest declares on purpose (short names, as written in app.json android.permissions).
 const ALLOWED = [
   'INTERNET',
   'ACCESS_NETWORK_STATE',

@@ -4,7 +4,7 @@
  * and whether "Resume anyway" is allowed. Cards, detail screens and the Transfers banner read from here.
  * Pure: no React, no react-native.
  */
-import type { ActiveBlock, ActiveBlockTag } from 'maglev-engine';
+import type { ActiveBlock, ActiveBlockTag } from 'reelnest-engine';
 
 export interface ReasonSetting {
   label: string;
@@ -96,11 +96,11 @@ export function reasonFor(key: string | null | undefined, ctx: BlockContext = {}
       return fixed(key, 'Paused by your schedule', 'Paused by your schedule', body, { label: 'Schedule', route: '/settings/scheduling' }, true);
     }
     case 'storage_full':
-      return fixed(key, 'Storage full', 'Storage almost full', 'Maglev keeps some space free on your phone. Free up space to continue.', { label: 'Storage', route: '/settings/storage' }, false);
+      return fixed(key, 'Storage full', 'Storage almost full', 'ReelNest keeps some space free on your phone. Free up space to continue.', { label: 'Storage', route: '/settings/storage' }, false);
     case 'seed_metered':
       return fixed(key, 'Sharing waits for Wi-Fi', 'Sharing waits for Wi-Fi', 'Seeding on mobile data is off.', { label: 'Seeding on mobile data', route: '/settings/network' }, false);
     case 'fgs_timeout':
-      return fixed(key, 'Stopped in the background', 'Stopped in the background', 'Android stopped Maglev after running a long time in the background. Tap Resume.', null, false);
+      return fixed(key, 'Stopped in the background', 'Stopped in the background', 'Android stopped ReelNest after running a long time in the background. Tap Resume.', null, false);
     case 'queued': {
       const n = ctx.queueLimit;
       const has = n != null && n > 0;
@@ -119,9 +119,9 @@ export function reasonFor(key: string | null | undefined, ctx: BlockContext = {}
     case 'seed_limit':
       return fixed(key, 'Done', 'Done', 'It reached your seeding limit.', null, false);
     case 'files_missing':
-      return fixed(key, 'Files missing', 'Files missing', "Maglev can't find the downloaded files.", null, false);
+      return fixed(key, 'Files missing', 'Files missing', "ReelNest can't find the downloaded files.", null, false);
     case 'files_changed':
-      return fixed(key, 'Files changed', 'Files changed', 'The files on your phone changed since Maglev last checked.', null, false);
+      return fixed(key, 'Files changed', 'Files changed', 'The files on your phone changed since ReelNest last checked.', null, false);
     case 'storage_unavailable':
       return fixed(key, 'SD card removed', 'Storage not available', "The folder isn't available. Is the SD card in?", { label: 'Storage', route: '/settings/storage' }, false);
     case 'no_peers':

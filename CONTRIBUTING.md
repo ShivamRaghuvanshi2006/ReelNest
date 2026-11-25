@@ -1,4 +1,4 @@
-# Contributing to Maglev
+# Contributing to ReelNest
 
 Bug reports, fixes and ideas are welcome. This page covers what you need to send a pull request that can be merged.
 
@@ -6,7 +6,7 @@ Bug reports, fixes and ideas are welcome. This page covers what you need to send
 
 For anything other than a small bug fix or a typo, **open an issue before you write code**: a new feature, a change to how something works, a new search source, a new setting, a redesign or a refactor.
 
-1. [Open a feature request](https://github.com/Kaos599/Maglev/issues/new?template=feature.yml) that says what you want to change and why. Screenshots or a rough sketch help.
+1. [Open a feature request](https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/new?template=feature.yml) that says what you want to change and why. Screenshots or a rough sketch help.
 2. Wait for the maintainer to reply. If the idea fits, the issue gets the `approved` label, sometimes with notes on how it should work.
 3. Then open your pull request against `dev`, and link the issue in it (`Closes #123`).
 
@@ -16,23 +16,23 @@ Bug fixes don't need approval first, but please link the bug report if there is 
 
 ## Reporting a bug
 
-Use **About → Report a bug** in the app. It opens a GitHub issue with your Maglev version, Android version and phone filled in. You can also open one directly with the [bug report form](https://github.com/Kaos599/Maglev/issues/new?template=bug.yml).
+Use **About → Report a bug** in the app. It opens a GitHub issue with your ReelNest version, Android version and phone filled in. You can also open one directly with the [bug report form](https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/new?template=bug.yml).
 
-Security problems go through [private reporting](https://github.com/Kaos599/Maglev/security/advisories/new), not public issues. [SECURITY.md](SECURITY.md) says what to include.
+Security problems go through [private reporting](https://github.com/ShivamRaghuvanshi2006/ReelNest/security/advisories/new), not public issues. [SECURITY.md](SECURITY.md) says what to include.
 
 Everyone in issues and pull requests follows the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Setting up
 
-You need Node 22, the Android SDK and a phone or emulator. You don't need Rust: CI builds the engine (`libmaglev_core.so`) on every push.
+You need Node 22, the Android SDK and a phone or emulator. You don't need Rust: CI builds the engine (`libreelnest_core.so`) on every push.
 
 ```bash
-git clone -b dev https://github.com/Kaos599/Maglev.git && cd Maglev
+git clone -b dev https://github.com/ShivamRaghuvanshi2006/ReelNest.git && cd ReelNest
 npm install --legacy-peer-deps
 npx expo run:android
 ```
 
-Debug builds use a mock engine until the native library is present. For the real engine, download the `jniLibs-<abi>` artifact from a CI run and unpack it into `modules/maglev-engine/android/src/main/jniLibs/`.
+Debug builds use a mock engine until the native library is present. For the real engine, download the `jniLibs-<abi>` artifact from a CI run and unpack it into `modules/reelnest-engine/android/src/main/jniLibs/`.
 
 ## Branches
 
@@ -67,4 +67,4 @@ Small, focused pull requests get reviewed fastest. Anything beyond a bug fix nee
 
 ## Licence
 
-Maglev is GPL-3.0-only. By sending a pull request you agree that your contribution is released under the same licence.
+ReelNest is GPL-3.0-only. By sending a pull request you agree that your contribution is released under the same licence.

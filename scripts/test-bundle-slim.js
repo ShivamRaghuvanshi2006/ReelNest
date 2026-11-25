@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC = path.join(__dirname, '..', 'modules', 'maglev-engine', 'src');
+const SRC = path.join(__dirname, '..', 'modules', 'reelnest-engine', 'src');
 const read = (f) => fs.readFileSync(path.join(SRC, f), 'utf8');
 let failed = 0;
 const check = (name, ok) => {
@@ -15,14 +15,14 @@ const check = (name, ok) => {
   if (!ok) failed++;
 };
 
-const bridge = read('MaglevNativeBridge.ts');
+const bridge = read('ReelNestNativeBridge.ts');
 const index = read('index.ts');
 
-check('bridge has no static import of MaglevMock*', !/^\s*import\b[^;]*['"]\.\/MaglevMock\w*(\.ts)?['"]/m.test(bridge));
-check('index has no re-export of MaglevMock*', !/['"]\.\/MaglevMock\w*(\.ts)?['"]/.test(index));
+check('bridge has no static import of ReelNestMock*', !/^\s*import\b[^;]*['"]\.\/ReelNestMock\w*(\.ts)?['"]/m.test(bridge));
+check('index has no re-export of ReelNestMock*', !/['"]\.\/ReelNestMock\w*(\.ts)?['"]/.test(index));
 
 // The only reference to the mock module is a require() inside an `if (__DEV__ ...)` block Metro can fold.
-const reqs = [...bridge.matchAll(/require\(\s*['"]\.\/MaglevMockEngine(\.ts)?['"]\s*\)/g)];
+const reqs = [...bridge.matchAll(/require\(\s*['"]\.\/ReelNestMockEngine(\.ts)?['"]\s*\)/g)];
 check('bridge requires the mock exactly once', reqs.length === 1);
 if (reqs.length === 1) {
   const before = bridge.slice(0, reqs[0].index).replace(/const\s*\{[^}]*\}\s*=\s*$/, '');

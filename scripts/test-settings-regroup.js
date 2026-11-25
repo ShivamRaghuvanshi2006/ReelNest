@@ -5,6 +5,8 @@
 process.removeAllListeners('warning');
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('node:url');
+const load = (p) => import(pathToFileURL(p).href);
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const exists = (p) => fs.existsSync(path.join(root, p));
@@ -90,7 +92,7 @@ async function main() {
   check('assistant names Speed and sharing', /speed: 'Speed and sharing'/.test(read('utils/assistant/toolRunner.ts')));
 
   // Search index.
-  const { SETTINGS_INDEX } = await import(path.join(root, 'utils/settingsIndex.ts'));
+  const { SETTINGS_INDEX } = await load(path.join(root, 'utils/settingsIndex.ts'));
   const byId = new Map(SETTINGS_INDEX.map((e) => [e.id, e]));
   check('every index entry points at an existing page', SETTINGS_INDEX.every((e) => exists(`app/settings/${e.page}.tsx`)), SETTINGS_INDEX.filter((e) => !exists(`app/settings/${e.page}.tsx`)).map((e) => e.id).join());
   const needSection = SETTINGS_INDEX.filter((e) => ['speed', 'downloads'].includes(e.page) && !(e.section && e.section.length));

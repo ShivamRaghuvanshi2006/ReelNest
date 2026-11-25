@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import type { FreeSpace } from 'maglev-engine';
+import type { FreeSpace } from 'reelnest-engine';
 import { useTheme } from '../context/ThemeContext';
-import { useMaglevEngine } from '../context/EngineContext';
+import { useReelNestEngine } from '../context/EngineContext';
 import { ThemeColors, radius, spacing, type } from '../constants/theme';
 import { formatBytes } from '../constants/format';
 import { storageCopy } from '../constants/copy';
@@ -20,7 +20,7 @@ export default function FreeSpaceScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
-  const { telemetry, downloads, getFreeSpace, deleteTorrent, removeDownload, removeTransfers, showNotice } = useMaglevEngine();
+  const { telemetry, downloads, getFreeSpace, deleteTorrent, removeDownload, removeTransfers, showNotice } = useReelNestEngine();
   const [space, setSpace] = useState<FreeSpace | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set());
   const [confirmOpen, setConfirmOpen] = useState(false);

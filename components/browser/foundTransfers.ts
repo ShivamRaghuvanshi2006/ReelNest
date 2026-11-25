@@ -8,8 +8,8 @@
  * native dedupe drops) is never matched: two files can differ only by `?id=`, and a wrong "In Transfers" is worse
  * than none.
  */
-import type { DownloadSnapshot } from '../../modules/maglev-engine/src/MaglevEngine.types';
-import type { FoundItem } from '../../modules/maglev-engine/src/MaglevBrowser';
+import type { DownloadSnapshot } from '../../modules/reelnest-engine/src/ReelNestEngine.types';
+import type { FoundItem } from '../../modules/reelnest-engine/src/ReelNestBrowser';
 import { foundTray } from '../../constants/copy.ts';
 
 const URL_RE = /^(https?):\/\/([^/?#]*)([^?#]*)(\?[^#]*)?(#.*)?$/i;

@@ -1,11 +1,11 @@
 // The session's one background file-list reader, bound to the real engine.
 // Search starts reads (top result only); the Add screen takes them by source string.
-import { maglevEngine, parseSource } from 'maglev-engine';
+import { reelnestEngine, parseSource } from 'reelnest-engine';
 import { MetadataPrefetcher, type MetadataResult } from './prefetch';
 
 export const metadataPrefetch = new MetadataPrefetcher({
-  resolveMetadata: (source, timeoutMs) => maglevEngine.resolveMetadata(source, timeoutMs),
-  cancelResolve: (infoHash) => maglevEngine.cancelResolve(infoHash),
+  resolveMetadata: (source, timeoutMs) => reelnestEngine.resolveMetadata(source, timeoutMs),
+  cancelResolve: (infoHash) => reelnestEngine.cancelResolve(infoHash),
 });
 
 /** The info hash the engine uses for a magnet, or null for anything else. */

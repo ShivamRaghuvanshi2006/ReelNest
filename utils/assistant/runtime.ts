@@ -86,11 +86,11 @@ export interface ProposalCardView {
   /** "Add torrent?", "Pause this download?", "Remove 3 files?", "Remove download?", "Run these 3 steps?" */
   title: string;
   /**
-   * The name as the source gave it (sanitised, but not checked by Maglev). Rendered on its own row, labelled
-   * "Name from the source", never inside `facts`, so a crafted name can't pass as a Maglev fact.
+   * The name as the source gave it (sanitised, but not checked by ReelNest). Rendered on its own row, labelled
+   * "Name from the source", never inside `facts`, so a crafted name can't pass as a ReelNest fact.
    */
   sourceName?: string;
-  /** App-computed lines only: "5 files · 3.2 GB", "Needs 3.2 GB · 9 GB left after", "Saves to Download/Maglev". */
+  /** App-computed lines only: "5 files · 3.2 GB", "Needs 3.2 GB · 9 GB left after", "Saves to Download/ReelNest". */
   facts: string[];
   /** The model's one-sentence reason, output-filtered. Shown under "Assistant says". */
   reason?: string;

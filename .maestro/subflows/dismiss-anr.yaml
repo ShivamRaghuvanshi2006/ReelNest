@@ -1,6 +1,6 @@
-# On CI the emulator's own launcher sometimes freezes and Android shows "Pixel Launcher isn't responding" over Maglev.
+# On CI the emulator's own launcher sometimes freezes and Android shows "Pixel Launcher isn't responding" over ReelNest.
 # Tap Wait so the app underneath is visible again. Does nothing when no such dialog is showing.
-appId: com.maglev
+appId: com.ReelNest
 ---
 - runFlow:
     when:

@@ -9,11 +9,11 @@ function check(name, cond, extra) {
   else { failed++; console.error(`  FAIL ${name}${extra ? ` (${extra})` : ''}`); }
 }
 const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
-const base = 'modules/maglev-engine/android/src/main/java/com/maglev/engine';
-const view = read(`${base}/browser/MaglevBrowserView.kt`);
+const base = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine';
+const view = read(`${base}/browser/ReelNestBrowserView.kt`);
 const wipe = read(`${base}/browser/HistoryWipe.kt`);
 const host = read(`${base}/browser/RegistrableHost.kt`);
-const mod = read(`${base}/MaglevEngineModule.kt`);
+const mod = read(`${base}/ReelNestEngineModule.kt`);
 const fn = (src, re) => { const m = re.exec(src); return m ? m[0] : ''; };
 // Body of a Kotlin function from its signature to the next 4-space-indented closing brace.
 const body = (name) => fn(view, new RegExp(`fun ${name}\\([\\s\\S]*?\\n    \\}\\n`));
@@ -86,7 +86,7 @@ check('launch flags cleared, then only NEW_TASK', /intent\.flags = 0\s*\n\s*inte
 check('clipData, component, selector null', /intent\.clipData = null/.test(start) && /intent\.component = null/.test(start) && /intent\.selector = null/.test(start));
 check('browser_fallback_url extra removed after it was read', /removeExtra\("browser_fallback_url"\)/.test(start) && start.indexOf('getStringExtra("browser_fallback_url")') < start.indexOf('removeExtra("browser_fallback_url")'));
 check('refuses package == context.packageName', /intent\.`package` == context\.packageName/.test(start));
-check('refuses the maglev data scheme', /dataScheme == "maglev"/.test(start));
+check('refuses the reelnest data scheme', /dataScheme == "reelnest"/.test(start));
 
 console.log('section 30: pop-up captures');
 check('at most 3 captures: constant', /MAX_CAPTURES = 3/.test(view));
@@ -106,13 +106,13 @@ check('resuming cancels a pending pause', /if \(active\) \{\s*pausePending = fal
 
 console.log('HistoryWipe');
 check('the wipe counter is bumped only after a real wipe', /fun wipeCount\(context: Context\): Int/.test(wipe) && /bumpWipeCount\(context\)/.test(wipe) && wipe.indexOf('db.close()') < wipe.indexOf('bumpWipeCount(context)') && wipe.indexOf('if (!isArmed(context)) return') < wipe.indexOf('bumpWipeCount(context)'));
-check('getHistoryWipeCount is an AsyncFunction in the module and the TS bridge', /AsyncFunction\("getHistoryWipeCount"\)/.test(mod) && /HistoryWipe\.wipeCount\(c\)/.test(mod) && /export async function getHistoryWipeCount/.test(read('modules/maglev-engine/src/MaglevBrowser.tsx')));
+check('getHistoryWipeCount is an AsyncFunction in the module and the TS bridge', /AsyncFunction\("getHistoryWipeCount"\)/.test(mod) && /HistoryWipe\.wipeCount\(c\)/.test(mod) && /export async function getHistoryWipeCount/.test(read('modules/reelnest-engine/src/ReelNestBrowser.tsx')));
 check('deletes pages', /DELETE FROM pages/.test(wipe));
 check('tabs deleted in its own try', /try \{\s*db\.execSQL\("DELETE FROM tabs"\)\s*\} catch/.test(wipe));
 check('active_tab deleted in its own try', /try \{\s*db\.execSQL\("DELETE FROM meta WHERE key='active_tab'"\)\s*\} catch/.test(wipe));
 
 console.log('module registration');
-const events = /Events\(([^)]*)\)/.exec(mod.slice(mod.indexOf('View(MaglevBrowserView::class)')));
+const events = /Events\(([^)]*)\)/.exec(mod.slice(mod.indexOf('View(ReelNestBrowserView::class)')));
 for (const e of ['onNewWindow', 'onPopupRequest', 'onPopupBlocked', 'onLongPress']) {
   check(`${e} in Events(...)`, !!events && events[1].includes(`"${e}"`));
   check(`${e} has an EventDispatcher`, new RegExp(`private val ${e} by EventDispatcher`).test(view));

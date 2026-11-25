@@ -156,7 +156,7 @@ async function main() {
   // The module stays pure: no React, react-native or engine imports.
   const src = fs.readFileSync(path.join(__dirname, '..', 'utils', 'assistant', 'fileSafety.ts'), 'utf8');
   const imports = [...src.matchAll(/^\s*import[^'"]*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
-  const forbidden = imports.filter((p) => /react|engine|maglev|modules\//i.test(p));
+  const forbidden = imports.filter((p) => /react|engine|reelnest|modules\//i.test(p));
   check('fileSafety.ts imports no React or engine modules', forbidden.length === 0, forbidden.join(', '));
 
   if (failed) {

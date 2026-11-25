@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ReelNest emblem: the film reel with an R monogram, matching assets/brand/reelnest-mark.svg.
+     Internal resource name kept from the previous brand so no native call sites move. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 4 px hard black shadow -->
+    <path android:fillColor="#000000" android:pathData="M16,50 a38,38 0 1,0 76,0 a38,38 0 1,0 -76,0 Z" />
+    <path android:fillColor="#000000" android:pathData="M54 50 L80 90 L64 90 L48 60 Z" />
+    <path android:fillColor="#000000" android:pathData="M22,20 h16 v70 h-16 Z" />
+
+    <!-- Reel body and R kickstand -->
+    <path android:fillColor="#ffe17c" android:strokeColor="#000000" android:strokeWidth="3" android:pathData="M12,46 a38,38 0 1,0 76,0 a38,38 0 1,0 -76,0 Z" />
+    <path android:fillColor="#ffe17c" android:strokeColor="#000000" android:strokeWidth="3" android:strokeLineJoin="round" android:pathData="M48 46 L74 86 L58 86 L38 52 Z" />
+
+    <!-- Film spine -->
+    <path android:fillColor="#171e19" android:strokeColor="#000000" android:strokeWidth="3" android:pathData="M22,16 h8 a4,4 0 0 1 4,4 v62 a4,4 0 0 1 -4,4 h-8 a4,4 0 0 1 -4,-4 v-62 a4,4 0 0 1 4,-4 Z" />
+
+    <!-- Sprocket perforations -->
+    <path android:fillColor="#ffffff" android:strokeColor="#000000" android:strokeWidth="1.5" android:pathData="M22,24 h8 v6 h-8 Z M22,38 h8 v6 h-8 Z M22,52 h8 v6 h-8 Z M22,66 h8 v6 h-8 Z" />
+
+    <!-- Spool apertures -->
+    <path android:fillColor="#171e19" android:strokeColor="#000000" android:strokeWidth="2" android:pathData="M43,24 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+    <path android:fillColor="#b7c6c2" android:strokeColor="#000000" android:strokeWidth="2" android:pathData="M63,40 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+    <path android:fillColor="#ffffff" android:strokeColor="#000000" android:strokeWidth="2" android:pathData="M55,62 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+
+    <!-- Central hub -->
+    <path android:fillColor="#171e19" android:strokeColor="#000000" android:strokeWidth="3" android:pathData="M37,46 a13,13 0 1,0 26,0 a13,13 0 1,0 -26,0 Z" />
+    <path android:fillColor="#ffe17c" android:strokeColor="#000000" android:strokeWidth="2" android:pathData="M44,46 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 Z" />
+    <path android:fillColor="#000000" android:pathData="M47.5,46 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0 Z" />
+</vector>

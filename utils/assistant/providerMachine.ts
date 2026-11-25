@@ -63,7 +63,7 @@ export const COPY = {
   httpsOnly: 'That address must start with https://',
   needAddress: "Type your computer's address, like http://192.168.1.20:11434/v1",
   pickModel: 'Pick a model',
-  cantUseTools: "This model can't work with Maglev's actions. Pick another.",
+  cantUseTools: "This model can't work with ReelNest's actions. Pick another.",
   badKey: "{provider} didn't accept this key. Paste it again or make a new one.",
   outOfCredits: 'Your {provider} account is out of credit. Top up on their site or pick another model.',
   noCreditOpenRouter:

@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-const kt = 'modules/maglev-engine/android/src/main/java/com/maglev/engine/';
+const kt = 'modules/reelnest-engine/android/src/main/java/com/reelnest/engine/';
 
 let failed = 0;
 function check(name, cond) {
@@ -12,12 +12,12 @@ function check(name, cond) {
   else { failed++; console.error(`  FAIL ${name}`); }
 }
 
-const module_ = read(kt + 'MaglevEngineModule.kt');
+const module_ = read(kt + 'ReelNestEngineModule.kt');
 const host = read(kt + 'EngineHost.kt');
 const files = read(kt + 'storage/FileActions.kt');
-const types = read('modules/maglev-engine/src/MaglevEngine.types.ts');
-const bridge = read('modules/maglev-engine/src/MaglevNativeBridge.ts');
-const mock = read('modules/maglev-engine/src/MaglevMockEngine.ts');
+const types = read('modules/reelnest-engine/src/ReelNestEngine.types.ts');
+const bridge = read('modules/reelnest-engine/src/ReelNestNativeBridge.ts');
+const mock = read('modules/reelnest-engine/src/ReelNestMockEngine.ts');
 const intent = read('app/+native-intent.tsx');
 const { readPrivateDoc } = require('./lib/privateDocs');
 const contract = readPrivateDoc('NATIVE_CONTRACT.md');

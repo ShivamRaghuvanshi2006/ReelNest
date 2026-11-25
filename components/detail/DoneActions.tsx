@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { maglevEngine, type DetailFile } from 'maglev-engine';
+import { reelnestEngine, type DetailFile } from 'reelnest-engine';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeColors, spacing, type } from '../../constants/theme';
 import { formatBytes } from '../../constants/format';
@@ -37,9 +37,9 @@ export function DoneActions({ id, files, onNotice }: DoneActionsProps) {
       onNotice({ tone: 'danger', text: fallback });
     }
   };
-  const open = (index: number) => report(maglevEngine.openFile(id, index), 'No app can open this file.');
-  const share = (index: number) => report(maglevEngine.shareFile(id, index), 'Sharing failed.');
-  const folder = () => report(maglevEngine.openFolder(id), OPEN_FOLDER_FAILED_TEXT);
+  const open = (index: number) => report(reelnestEngine.openFile(id, index), 'No app can open this file.');
+  const share = (index: number) => report(reelnestEngine.shareFile(id, index), 'Sharing failed.');
+  const folder = () => report(reelnestEngine.openFolder(id), OPEN_FOLDER_FAILED_TEXT);
 
   const onOpen = () => (askFirst ? setChooser('open') : target && void open(target.index));
   const onShare = () => (askFirst ? setChooser('share') : target && void share(target.index));
@@ -84,7 +84,7 @@ const makeStyles = (c: ThemeColors) =>
 export function OpenFolderButton({ id, onNotice }: { id: string; onNotice: DoneActionsProps['onNotice'] }) {
   const onPress = async () => {
     try {
-      const res = await maglevEngine.openFolder(id);
+      const res = await reelnestEngine.openFolder(id);
       if (!res.ok) onNotice({ tone: 'danger', text: res.message || OPEN_FOLDER_FAILED_TEXT });
     } catch {
       onNotice({ tone: 'danger', text: OPEN_FOLDER_FAILED_TEXT });

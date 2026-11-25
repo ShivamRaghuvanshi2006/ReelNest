@@ -2,7 +2,7 @@
  * What a download card says and offers, per state (STATE_MACHINES_AND_SCREENS SM-30 "Copy").
  * Pure: no React, so `scripts/test-url-download.js` runs it directly.
  */
-import type { DownloadSnapshot } from 'maglev-engine';
+import type { DownloadSnapshot } from 'reelnest-engine';
 import { formatBytes, formatCompactAmount, formatSpeed } from '../constants/format.ts';
 import { formatEta, smoothRate } from './rates.ts';
 import { doneLead } from './stats/format.ts';
@@ -37,11 +37,11 @@ export interface DownloadAction {
 const FOLDER_GONE_CARD = 'Folder not available';
 const FOLDER_GONE_TEXT = "The folder isn't available. Is the SD card in?";
 const TOO_BIG_TEXT = "This file is bigger than the card's format allows (4 GB). Use phone storage.";
-const LOCAL_BLOCKED_TEXT = 'A redirect tried to send Maglev to a device on your network, so it stopped.';
+const LOCAL_BLOCKED_TEXT = 'A redirect tried to send ReelNest to a device on your network, so it stopped.';
 const LAN_ADDRESS_TEXT = 'This address points to a device on your network.';
 const LAN_ADDRESS_BODY = "If it's your own server, allow this device. Only do this for devices you trust.";
 const POLICY_BLOCKED_TEXT = 'Blocked by your Wi-Fi-only or VPN setting.';
-const PERMISSION_TEXT = "Maglev can't write to that folder.";
+const PERMISSION_TEXT = "ReelNest can't write to that folder.";
 export const WIFI_ANYWAY_NOTE = 'Just this one. Wi-Fi only stays on.';
 const NOT_A_FILE_BODY =
   'This is a web page, not a file. On the page, long-press the download button, tap Copy link address, then paste it here.';
@@ -57,7 +57,7 @@ const AUTH_BODY =
 /** A 403 with no sign-in details (NATIVE_CONTRACT 17, LINK_REFUSED): the site refused the link itself. */
 const LINK_REFUSED_TEXT = 'The site refused this link. Open its page again, then retry.';
 const LINK_REFUSED_PROBE_BODY =
-  "The site refused this link. Open the page in Maglev's browser and start the download from there, or paste a fresh link.";
+  "The site refused this link. Open the page in ReelNest's browser and start the download from there, or paste a fresh link.";
 
 /** The phone has no usable network (Kotlin's `offline` block, NATIVE_CONTRACT 35.4). */
 function isOffline(ctx: BlockContext): boolean {
@@ -101,7 +101,7 @@ function errorKind(code: string | undefined, httpStatus?: number | null): ErrorK
   if (c === 'PERMISSION' || c === 'EACCES') return 'permission';
   if (c === 'HTTP_STATUS') return isFinal4xx(httpStatus) ? 'httpGone' : 'network';
   if (c === 'NETWORK') return 'network';
-  // Exact codes from native/maglev-core (http_dl, NATIVE_CONTRACT §17).
+  // Exact codes from native/reelnest-core (http_dl, NATIVE_CONTRACT §17).
   if (c === 'FILE_TOO_LARGE') return 'tooBig';
   if (c === 'STORAGE_UNAVAILABLE') return 'folderGone';
   if (c === 'LOCAL_REDIRECT') return 'localBlocked';
@@ -521,18 +521,18 @@ export function sourceHost(urlDisplay: string): string {
 export const whyCopy = {
   connectingTitle: "Why it hasn't started",
   waitingTitle: 'Why it stopped',
-  torrentConnecting: 'Maglev knows who has this and is connecting to them. Popular torrents usually start within a minute.',
-  torrentNoPeers: 'No one sharing this has been found yet. Maglev keeps asking trackers and other peers.',
-  torrentWaiting: (quiet: string) => `No data for ${quiet}. The peers it had stopped sending. Maglev keeps looking.`,
+  torrentConnecting: 'ReelNest knows who has this and is connecting to them. Popular torrents usually start within a minute.',
+  torrentNoPeers: 'No one sharing this has been found yet. ReelNest keeps asking trackers and other peers.',
+  torrentWaiting: (quiet: string) => `No data for ${quiet}. The peers it had stopped sending. ReelNest keeps looking.`,
   stopsWaiting: (limit: string) => ` After ${limit} with no one sharing, it stops waiting.`,
   /** 45.1: a torrent that has no file list yet. */
-  resolvingSentence: "Maglev needs this torrent's file list from someone who has it.",
+  resolvingSentence: "ReelNest needs this torrent's file list from someone who has it.",
   resolvingNoPeers: ' No one sharing it has been found yet.',
   resolvingAsking: (n: number) => ` Asking the ${n} it found.`,
   askTrackers: 'Ask trackers again',
   askedWait: (secs: number) => `Asked · try again in ${secs} s`,
   linkConnecting: (host: string) => `Waiting for ${host} to send the file.`,
-  linkWaiting: (host: string) => `${host} stopped sending. Maglev retries by itself.`,
+  linkWaiting: (host: string) => `${host} stopped sending. ReelNest retries by itself.`,
   none: ', none sending',
   labels: { found: 'Peers found', connected: 'Connected', trackers: 'Trackers replied', trying: 'Trying for', lastData: 'Last data', server: 'Server' },
 } as const;

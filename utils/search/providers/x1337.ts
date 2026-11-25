@@ -5,7 +5,7 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'x1337';
 
-// Maglev category -> 1337x category-search segment. Books live under "Other" on 1337x.
+// ReelNest category -> 1337x category-search segment. Books live under "Other" on 1337x.
 const SEGMENT: Partial<Record<Category, string>> = {
   movies: 'Movies',
   tv: 'TV',

@@ -1,5 +1,5 @@
 # Auto-download rule: follow the same archive.org feed, create a rule, check it is listed, delete it, remove the feed.
-appId: com.maglev
+appId: com.ReelNest
 name: feeds-rule
 ---
 - runFlow: subflows/onboard-if-needed.yaml

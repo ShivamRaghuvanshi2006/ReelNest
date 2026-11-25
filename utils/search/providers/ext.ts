@@ -8,7 +8,7 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'ext';
 
-// Maglev category -> ext.to `cat` value.
+// ReelNest category -> ext.to `cat` value.
 const CAT_ID: Partial<Record<Category, number>> = { movies: 1, tv: 2, music: 3, games: 4, apps: 5, books: 6, anime: 7, other: 8 };
 
 function categoryFromPath(seg: string | undefined): Category | undefined {

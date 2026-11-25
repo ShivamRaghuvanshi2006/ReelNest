@@ -17,7 +17,7 @@ import {
   type SourcesResult,
 } from './machine.ts';
 
-export const SOURCES_URL = 'https://harshdayal.dev/maglev/lists/sources.json';
+export const SOURCES_URL = 'https://harshdayal.dev/reelnest/lists/sources.json';
 export const SIGNATURE_URL = `${SOURCES_URL}.sig`;
 export const FETCH_TIMEOUT_MS = 15_000;
 /** The signature is a short base64 string; anything bigger is not one. */

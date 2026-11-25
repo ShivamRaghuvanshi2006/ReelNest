@@ -41,7 +41,7 @@ check('no setDetailVersion state in the provider', !/setDetailVersion/.test(ctx)
 check('useDetailVersion hook exported', /export function useDetailVersion/.test(ctx));
 
 // ---- narrow hooks and the composed one
-for (const h of ['useMaglevEngine', 'useEngineActions', 'useEngineStatus', 'useEngineTelemetry', 'useEngineNotice', 'useEngineLastCompleted']) {
+for (const h of ['useReelNestEngine', 'useEngineActions', 'useEngineStatus', 'useEngineTelemetry', 'useEngineNotice', 'useEngineLastCompleted']) {
   check(`${h} exported`, new RegExp(`export function ${h}\\b`).test(ctx));
 }
 
@@ -55,11 +55,11 @@ if (am) {
 }
 
 // ---- root layout and hosts use the narrowest hook
-check('_layout.tsx does not call useMaglevEngine', !/useMaglevEngine/.test(layout));
+check('_layout.tsx does not call useReelNestEngine', !/useReelNestEngine/.test(layout));
 check('_layout.tsx reads useEngineStatus', /useEngineStatus\(\)/.test(layout));
 check('Stack screenOptions is not inline', !/screenOptions=\{\{/.test(layout));
-check('NoticeHost uses useEngineNotice', /useEngineNotice\(\)/.test(noticeHost) && !/useMaglevEngine/.test(noticeHost));
-check('StarPrompt uses useEngineLastCompleted', /useEngineLastCompleted\(\)/.test(starPrompt) && !/useMaglevEngine/.test(starPrompt));
+check('NoticeHost uses useEngineNotice', /useEngineNotice\(\)/.test(noticeHost) && !/useReelNestEngine/.test(noticeHost));
+check('StarPrompt uses useEngineLastCompleted', /useEngineLastCompleted\(\)/.test(starPrompt) && !/useReelNestEngine/.test(starPrompt));
 
 // ---- fonts embedded at build time
 const app = JSON.parse(read('app.json')).expo;
@@ -71,13 +71,13 @@ const names = (() => {
   const m = /FONT_NAMES\s*=\s*\{([\s\S]*?)\}\s*as const/.exec(src);
   return Object.fromEntries([...m[1].matchAll(/(\w+):\s*'([^']+)'/g)].map((x) => [x[1], x[2]]));
 })();
-check('FONT_NAMES parsed', Object.keys(names).length === 7, String(Object.keys(names).length));
+check('FONT_NAMES parsed', Object.keys(names).length === 8, String(Object.keys(names).length));
 for (const [key, family] of Object.entries(names)) {
   const f = fonts.find((x) => x && x.fontFamily === family);
   check(`font family ${family} (${key}) is embedded`, !!f);
   const p = f && (f.path || (f.fontDefinitions[0] && f.fontDefinitions[0].path));
   check(`${family}: font file exists`, !!p && fs.existsSync(path.join(root, p)), String(p));
-  check(`${family}: full file from @expo-google-fonts, not a subset`, !!p && /@expo-google-fonts\//.test(p));
+  check(`${family}: full file from @expo-google-fonts or the bundled brand font`, !!p && /@expo-google-fonts\/|assets\/fonts\//.test(p));
 }
 check('_layout no longer gates first paint on useFonts', !/useFonts/.test(layout));
 

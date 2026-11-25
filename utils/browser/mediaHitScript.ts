@@ -4,21 +4,21 @@
  * (parseMediaHit).
  *
  * Plain ES5 inside a string, wrapped in one function: no globals leak. The only two properties it adds to
- * `window` are non-enumerable (the install marker and `__maglevMediaHit`, which the native side can call after
+ * `window` are non-enumerable (the install marker and `__reelnestMediaHit`, which the native side can call after
  * its own long-press fires and which returns the last hit as a JSON string, or '' when there is none).
  * Injecting it twice does nothing the second time.
  *
- * Channel: `window.ReactNativeWebView.postMessage` when it exists, else the page bridge `window.MaglevScan.report`
+ * Channel: `window.ReactNativeWebView.postMessage` when it exists, else the page bridge `window.ReelNestScan.report`
  * with the per-page nonce (see PageScan.kt). It calls preventDefault on `contextmenu` only when it found media,
  * so selecting plain text keeps working. It never touches touch events' default action.
  */
 const SOURCE = String.raw`
 (function () {
   try {
-    if (window.__maglevMH) return;
-    Object.defineProperty(window, '__maglevMH', { value: 1, enumerable: false });
+    if (window.__reelnestMH) return;
+    Object.defineProperty(window, '__reelnestMH', { value: 1, enumerable: false });
     var NONCE = "%NONCE%";
-    var TYPE = 'maglev-media-hit';
+    var TYPE = 'reelnest-media-hit';
     var last = null, lastAt = 0, timer = 0, sx = 0, sy = 0;
     var LAZY = ['data-src', 'data-original', 'data-lazy-src', 'data-lazy', 'data-url'];
 
@@ -106,7 +106,7 @@ const SOURCE = String.raw`
       try {
         var json = JSON.stringify(o);
         if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) window.ReactNativeWebView.postMessage(json);
-        else if (window.MaglevScan && window.MaglevScan.report) { o.n = NONCE; window.MaglevScan.report(JSON.stringify({ n: NONCE, mediaHit: o })); }
+        else if (window.ReelNestScan && window.ReelNestScan.report) { o.n = NONCE; window.ReelNestScan.report(JSON.stringify({ n: NONCE, mediaHit: o })); }
       } catch (e) {}
     }
 
@@ -119,7 +119,7 @@ const SOURCE = String.raw`
 
     function clearTimer() { if (timer) { clearTimeout(timer); timer = 0; } }
 
-    Object.defineProperty(window, '__maglevMediaHit', {
+    Object.defineProperty(window, '__reelnestMediaHit', {
       value: function () { try { return last ? JSON.stringify(last) : ''; } catch (e) { return ''; } },
       enumerable: false
     });

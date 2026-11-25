@@ -15,7 +15,7 @@ import { postWatchNotification, watchNetwork } from './native';
 import { onWatchesChanged } from './store';
 import { createWatchStore } from './storeCore';
 
-const WATCH_TASK = 'maglev-watch-check';
+const WATCH_TASK = 'reelnest-watch-check';
 
 /** Searches the way the Search tab does, never adult, and fails when no source answered. */
 async function searchOnce(query: string, category: Watch['category']) {

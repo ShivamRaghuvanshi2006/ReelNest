@@ -6,10 +6,10 @@ import { decodeEntities, parseSize, stripTags, toInt } from '../text.ts';
 
 export const ID = 'tokyotoshokan';
 
-// Maglev category -> Tokyo Toshokan `type`. 'all' searches everything.
+// ReelNest category -> Tokyo Toshokan `type`. 'all' searches everything.
 const TYPES: Partial<Record<Category, string>> = { anime: '1', music: '2', books: '3', other: '5', tv: '7' };
 
-/** Site category sprite ("sprite_cat-anime") -> Maglev category. */
+/** Site category sprite ("sprite_cat-anime") -> ReelNest category. */
 function categoryFromSprite(sprite: string | undefined): Category {
   switch (sprite) {
     case 'anime':
