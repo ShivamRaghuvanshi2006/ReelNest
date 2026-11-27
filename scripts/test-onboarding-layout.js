@@ -22,12 +22,15 @@ function check(name, ok) {
   if (!ok) failed++;
 }
 
-const chunkFn = src.match(/function Chunk\(([^)]*)\)[\s\S]*?\n}\n/);
+const chunkStart = src.indexOf('function Chunk(');
+const chunkEnd = src.indexOf('\nexport function StepLayout', chunkStart);
+const chunkFn = chunkStart >= 0 && chunkEnd >= 0 ? src.slice(chunkStart, chunkEnd + 2) : null;
+const chunkArgs = chunkFn ? chunkFn.slice(chunkFn.indexOf('('), chunkFn.indexOf(')') + 1) : '';
 check('Chunk is defined', !!chunkFn);
-check('Chunk accepts a style prop', !!chunkFn && /\bstyle\b/.test(chunkFn[1]));
+check('Chunk accepts a style prop', /\bstyle\b/.test(chunkArgs));
 check(
   'Chunk passes that style to its Animated.View',
-  !!chunkFn && /<Animated\.View[\s\S]*?style=\{\[[^\]]*\bstyle\b/.test(chunkFn[0]),
+  !!chunkFn && /<Animated\.View[\s\S]*?style=\{\[[^\]]*\bstyle\b/.test(chunkFn),
 );
 
 const extraChunk = src.match(/\{extra \? <Chunk([^>]*)>\{extra\}<\/Chunk> : null\}/);

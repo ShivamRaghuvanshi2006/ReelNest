@@ -117,7 +117,8 @@ check('the join runs before the copy into the user folder', () => {
 
 check('the join waits in verifying, once per wait, on an IO thread, then tells Rust', () => {
   const fn = host.slice(host.indexOf('private fun runPendingMuxes'));
-  const body = fn.slice(0, fn.indexOf('\n    }\n\n') + 8);
+  const next = fn.indexOf('\n    fun ', 1);
+  const body = fn.slice(0, next > 0 ? next : fn.length);
   const jobs = stripKotlinComments(read(`${KT}/MuxJobs.kt`));
   assert(/"verifying"/.test(jobs) && /mux_needed/.test(jobs), 'must wait for verifying with mux_needed');
   assert(/started\.add\(id\)/.test(jobs), 'must start each wait once');

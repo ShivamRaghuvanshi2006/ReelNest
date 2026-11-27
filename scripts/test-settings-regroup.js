@@ -8,7 +8,7 @@ const path = require('path');
 const { pathToFileURL } = require('node:url');
 const load = (p) => import(pathToFileURL(p).href);
 const root = path.join(__dirname, '..');
-const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
+const read = (p) => fs.readFileSync(path.join(root, p), 'utf8').replace(/\r\n/g, '\n');
 const exists = (p) => fs.existsSync(path.join(root, p));
 let failed = 0;
 const check = (name, ok, extra) => {

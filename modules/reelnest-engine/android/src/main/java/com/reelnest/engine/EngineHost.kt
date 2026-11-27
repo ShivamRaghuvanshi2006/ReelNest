@@ -573,10 +573,10 @@ object EngineHost {
     fun shutdownEngine(): Map<String, Any?> = synchronized(lifecycleLock) { shutdownEngineLocked() }
 
     private fun shutdownEngineLocked(): Map<String, Any?> {
+        startWarning = null
         shutdownEpoch.incrementAndGet()
         initialized = false
         clearBlocks()
-        startWarning = null
         pollJob?.cancel()
         pollJob = null
         networkOffJob?.cancel()
