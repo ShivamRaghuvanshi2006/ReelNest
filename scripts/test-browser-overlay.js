@@ -8,7 +8,7 @@ function check(name, cond) {
   if (cond) console.log(`  ok   ${name}`);
   else { failed++; console.error(`  FAIL ${name}`); }
 }
-const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
+const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8').replace(/\r\n/g, '\n');
 const styleBlock = (src, key) => {
   const m = src.match(new RegExp(`\\n    ${key}: \\{[\\s\\S]*?\\n    \\},?\\n|\\n    ${key}: \\{[^\\n]*\\},?\\n`));
   return m ? m[0] : '';

@@ -149,6 +149,24 @@ CI also runs the Rust unit tests and checks every engine build for librqbit symb
 
 Subtitle sources are ported from the [Bazarr+](https://github.com/LavX/bazarr-provider-catalog) provider catalog (MIT). Icons are [Pixelarticons](https://github.com/halfmage/pixelarticons) by Gerrit Halfmann (MIT). The browser's built-in block list comes from the [StevenBlack/hosts](https://github.com/StevenBlack/hosts) base list (MIT); rebuild it with `node scripts/build-blocklist.js`.
 
+## Architecture
+
+ReelNest has three implementation layers:
+
+1. **React Native and Expo:** screens, navigation, settings, download management, browser UI and state.
+2. **Kotlin Expo module:** Android lifecycle, notifications, foreground service, storage, permissions and JNI bridge.
+3. **Rust core:** librqbit session management, scheduling, torrent state and native engine exports.
+
+The TypeScript bridge is the contract between the app and native engine. Native values are returned as structured JSON; release builds do not substitute mock transfer data if native startup fails.
+
+Native contracts, state-machine rules and screen behavior are defined by the source and contract tests in `scripts/`. CI enforces the reality contracts before an APK can ship.
+
+## Roadmap
+
+Development continues by tightening native reliability, transfer state, search and browser behavior, and Android platform integration. Before a release, the contract suite, TypeScript checks, Rust tests and ABI-specific APK build must pass.
+
+ReelNest does not claim support for DRM-protected media. It also does not guarantee that every third-party torrent source or subtitle provider will remain available.
+
 ## Contributing
 
 Bug reports, fixes and ideas are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before you open a pull request. For a new screen, follow [DESIGN.md](DESIGN.md). To report a bug, use **About → Report a bug** in the app, or the [bug report form](https://github.com/ShivamRaghuvanshi2006/ReelNest/issues/new?template=bug.yml). Security problems go through [private reporting](https://github.com/ShivamRaghuvanshi2006/ReelNest/security/advisories/new) (see [SECURITY.md](SECURITY.md)). Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).

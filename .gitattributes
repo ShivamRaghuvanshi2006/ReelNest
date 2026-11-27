@@ -3,3 +3,4 @@
 scripts/fixtures/** linguist-vendored
 native/reelnest-core/vendor/** linguist-vendored
 site/** linguist-documentation
+modules/reelnest-engine/android/src/main/assets/blocklist.txt text eol=lf

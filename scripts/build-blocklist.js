@@ -29,7 +29,7 @@ function validHost(h) {
 
 function parseHosts(text) {
   const out = new Set();
-  for (const raw of text.split(/\r?\n/)) {
+  for (const raw of text.replace(/\r/g, '').split('\n')) {
     const line = raw.replace(/#.*/, '').trim();
     if (!line) continue;
     const m = /^(?:0\.0\.0\.0|127\.0\.0\.1)\s+(\S+)/.exec(line);
